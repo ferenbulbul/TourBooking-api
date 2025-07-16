@@ -8,7 +8,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using TezGel.API.Controllers;
+using TourBooking.API.Controllers;
 using TourBooking.Application.DTOs;
 using TourBooking.Application.DTOs.Comman;
 using TourBooking.Application.Features.Authentication.Commands.ForgotPassword;
@@ -19,7 +19,7 @@ using TourBooking.Application.Features.Authentication.Commands.VerifyEmail;
 using TourBooking.Application.Features.Queries.Login;
 using TourBooking.Application.Interfaces.Services;
 
-namespace TourBooking.API
+namespace TourBooking.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

@@ -9,7 +9,7 @@ using TourBooking.Infrastructure.Context;
 
 namespace TourBooking.Infrastructure.Repositories
 {
-    public class GenericRepository<T> : IGenericRepository<T> where T : BaseEntity
+    public class GenericRepository<T> : IGenericRepository<T> where T : class, IBaseEntity
     {
         protected readonly AppDbContext _context;
         private readonly DbSet<T> _dbSet;

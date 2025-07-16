@@ -25,12 +25,4 @@ secrets.json
 
 # Publish output
 publish/
-TourBooking.Infrastructure/Migrations/20250714112433_InitialIdentityMigration.cs
-TourBooking.Infrastructure/Migrations/20250714112433_InitialIdentityMigration.Designer.cs
-TourBooking.Infrastructure/Migrations/20250715142503_VerificationCode.cs
-TourBooking.Infrastructure/Migrations/20250715142503_VerificationCode.Designer.cs
-TourBooking.Infrastructure/Migrations/20250716125907_AddVehicliType.cs
-TourBooking.Infrastructure/Migrations/20250716125907_AddVehicliType.Designer.cs
-TourBooking.Infrastructure/Migrations/20250716130015_AddVehicliType2.cs
-TourBooking.Infrastructure/Migrations/20250716130015_AddVehicliType2.Designer.cs
-TourBooking.Infrastructure/Migrations/AppDbContextModelSnapshot.cs
+TourBooking.Infrastructure/Migrations/

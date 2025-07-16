@@ -5,7 +5,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
-namespace TezGel.API.Controllers
+namespace TourBooking.API
 {
     [ApiController]
     public abstract class BaseController : ControllerBase

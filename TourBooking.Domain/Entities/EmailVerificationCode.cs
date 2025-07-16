@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace TourBooking.Domain.Entities
 {
-     public class EmailVerificationCode:BaseEntity
+     public class EmailVerificationCode:IBaseEntity
     {
         public Guid UserId { get; set; } 
         public string Code { get; set; } 
@@ -13,5 +13,9 @@ namespace TourBooking.Domain.Entities
         public bool IsUsed { get; set; }
 
         public virtual AppUser User { get; set; }
+        public Guid Id { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime? UpdatedDate { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }
