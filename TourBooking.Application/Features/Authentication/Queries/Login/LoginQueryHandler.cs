@@ -4,9 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Localization;
 using TourBooking.Application.Expactions;
 using TourBooking.Application.Interfaces.Services;
 using TourBooking.Domain.Entities;
+using TourBooking.Shared.Localization;
 
 namespace TourBooking.Application.Features.Queries.Login
 {
@@ -14,11 +16,14 @@ namespace TourBooking.Application.Features.Queries.Login
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly ITokenService _tokenService;
+        private readonly IStringLocalizer<SharedResource> _localizer;
 
-        public LoginQueryHandler(UserManager<AppUser> userManager, ITokenService tokenService)
+        public LoginQueryHandler(UserManager<AppUser> userManager, ITokenService tokenService, IStringLocalizer<SharedResource> localizer)
         {
             _userManager = userManager;
             _tokenService = tokenService;
+            _localizer = localizer;
+
         }
 
         public async Task<LoginQueryResponse> Handle(LoginQuery request, CancellationToken cancellationToken)
@@ -26,13 +31,13 @@ namespace TourBooking.Application.Features.Queries.Login
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null)
             {
-                throw new AuthenticationFailedException("Kullanıcı adı veya şifre hatalı.");
+                throw new AuthenticationFailedException(_localizer["InvalidLogin"]);
             }
 
             var passwordValid = await _userManager.CheckPasswordAsync(user, request.Password);
             if (!passwordValid)
             {
-                throw new AuthenticationFailedException("Kullanıcı adı veya şifre hatalı.");
+                throw new AuthenticationFailedException(_localizer["InvalidLogin"]);
             }
 
             var tokens = await _tokenService.CreateTokenAsync(user);
