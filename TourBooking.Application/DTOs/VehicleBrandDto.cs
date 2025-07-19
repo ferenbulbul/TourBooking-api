@@ -2,10 +2,8 @@ using System;
 
 namespace TourBooking.Application.DTOs
 {
-    public class VehicleBrandDto
+    public class VehicleBrandDto : BaseDto
     {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-        public bool IsActive { get; set; }
+       
     }
 }
