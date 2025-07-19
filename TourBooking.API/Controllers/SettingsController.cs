@@ -10,58 +10,57 @@ namespace TourBooking.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class VehicleController : BaseController
+    public class SettingsController : BaseController
     {
         private readonly IMediator _mediator;
 
-        public VehicleController(IMediator mediator)
+        public SettingsController(IMediator mediator)
         {
             _mediator = mediator;
         }
 
-        [HttpGet("")]
-        public async Task<IActionResult> Vehicles()
-        {
-            return Ok(new { id = 1, name = 2 });
-        }
+        #region Vehicle Types
 
-        [HttpGet("types")]
+        [HttpGet("vehicle-types")]
         public async Task<IActionResult> VehicleTypes()
         {
             var vehicleTypes = await _mediator.Send(new VehicleTypesQuery());
             return Ok(ApiResponse<VehicleTypesQueryResponse>.SuccessResponse(vehicleTypes, null));
         }
 
-        [HttpPost("types")]
+        [HttpPost("vehicle-types")]
         public async Task<IActionResult> AddVehicleType(AddVehicleTypeCommand command)
         {
             await _mediator.Send(command);
             return Ok(ApiResponse<object>.SuccessResponse(null, null));
         }
-        [HttpPatch("types")]
+
+        [HttpPatch("vehicle-types")]
         public async Task<IActionResult> UpdateVehicleType(UpdateVehicleTypeCommand command)
         {
             await _mediator.Send(command);
             return Ok(ApiResponse<object>.SuccessResponse(null, null));
         }
 
+        #endregion
+
         #region Vehicle Brands
 
-        [HttpGet("brands")]
+        [HttpGet("vehicle-brands")]
         public async Task<IActionResult> VehicleBrands()
         {
             var vehicleBrands = await _mediator.Send(new VehicleBrandsQuery());
             return Ok(ApiResponse<VehicleBrandsQueryResponse>.SuccessResponse(vehicleBrands, null));
         }
 
-        [HttpPost("brands")]
+        [HttpPost("vehicle-brands")]
         public async Task<IActionResult> AddVehicleBrand(AddVehicleBrandCommand command)
         {
             await _mediator.Send(command);
             return Ok(ApiResponse<object>.SuccessResponse(null, null));
         }
 
-        [HttpPatch("brands")]
+        [HttpPatch("vehicle-brands")]
         public async Task<IActionResult> UpdateVehicleBrand(UpdateVehicleBrandCommand command)
         {
             await _mediator.Send(command);

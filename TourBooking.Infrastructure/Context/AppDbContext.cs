@@ -17,6 +17,7 @@ namespace TourBooking.Infrastructure.Context
         public DbSet<EmailVerificationCode> EmailVerificationCodes { get; set; }
         public DbSet<VehicleType> VehicleTypes { get; set; }
         public DbSet<VehicleBrand> VehicleBrands { get; set; }
+        public DbSet<LanguageEntity> Languages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
