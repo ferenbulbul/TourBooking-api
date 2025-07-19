@@ -18,6 +18,7 @@ namespace TourBooking.Infrastructure.Context
         public DbSet<VehicleType> VehicleTypes { get; set; }
         public DbSet<VehicleBrand> VehicleBrands { get; set; }
         public DbSet<LanguageEntity> Languages { get; set; }
+        public DbSet<TourDifficultyEntity> TourDifficulties { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

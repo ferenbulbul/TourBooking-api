@@ -1,31 +1,32 @@
 using System;
 using MediatR;
-using TourBooking.Application.Features.Vehicle.Commands.AddVehicleBrand;
 using TourBooking.Application.Interfaces.Repositories;
 using TourBooking.Domain.Entities;
 
 namespace TourBooking.Application.Features.Settings.Commands
 {
-    public class AddLanguageCommandHandler : IRequestHandler<AddLanguageCommand>
+    public class AddTourDifficultyCommandHandler : IRequestHandler<AddTourDifficultyCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public AddLanguageCommandHandler(IUnitOfWork unitOfWork)
+        public AddTourDifficultyCommandHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
-        public async Task Handle(AddLanguageCommand request, CancellationToken cancellationToken)
+        public async Task Handle(
+            AddTourDifficultyCommand request,
+            CancellationToken cancellationToken
+        )
         {
-            var language = new LanguageEntity
+            var tourDifficulty = new TourDifficultyEntity
             {
                 Name = request.Name,
-                Code = request.Code,
                 IsActive = request.IsActive,
                 IsDeleted = false,
                 CreatedDate = DateTime.UtcNow,
             };
-            await _unitOfWork.GetRepository<LanguageEntity>().AddAsync(language);
+            await _unitOfWork.GetRepository<TourDifficultyEntity>().AddAsync(tourDifficulty);
         }
     }
 }

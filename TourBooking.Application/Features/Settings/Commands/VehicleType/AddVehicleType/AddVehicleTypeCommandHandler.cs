@@ -3,7 +3,7 @@ using MediatR;
 using TourBooking.Application.Interfaces.Repositories;
 using TourBooking.Domain.Entities;
 
-namespace TourBooking.Application.Features.Vehicle.Commands.AddVehicleType
+namespace TourBooking.Application.Features.Settings.Commands
 {
     public class AddVehicleTypeCommandHandler : IRequestHandler<AddVehicleTypeCommand>
     {

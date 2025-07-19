@@ -3,10 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using TourBooking.Application.DTOs.Comman;
 using TourBooking.Application.Features.Settings.Commands;
 using TourBooking.Application.Features.Settings.Queries;
-using TourBooking.Application.Features.Vehicle.Commands.AddVehicleBrand;
-using TourBooking.Application.Features.Vehicle.Commands.AddVehicleType;
-using TourBooking.Application.Features.Vehicle.Queries.VehicleBrands;
-using TourBooking.Application.Features.Vehicles.Queries.Vehicles;
+
 
 namespace TourBooking.API.Controllers
 {
@@ -88,6 +85,33 @@ namespace TourBooking.API.Controllers
 
         [HttpPatch("languages")]
         public async Task<IActionResult> UpdateLanguage(UpdateLanguageCommand command)
+        {
+            await _mediator.Send(command);
+            return Ok(ApiResponse<object>.SuccessResponse(null, null));
+        }
+
+        #endregion
+
+        #region Tour Difficulties
+
+        [HttpGet("tour-difficulties")]
+        public async Task<IActionResult> TourDifficulties()
+        {
+            var tourDifficulties = await _mediator.Send(new TourDifficultyQuery());
+            return Ok(
+                ApiResponse<TourDifficultyQueryResponse>.SuccessResponse(tourDifficulties, null)
+            );
+        }
+
+        [HttpPost("tour-difficulties")]
+        public async Task<IActionResult> AddTourDifficulty(AddTourDifficultyCommand command)
+        {
+            await _mediator.Send(command);
+            return Ok(ApiResponse<object>.SuccessResponse(null, null));
+        }
+
+        [HttpPatch("tour-difficulties")]
+        public async Task<IActionResult> UpdateTourDifficulty(UpdateTourDifficultyCommand command)
         {
             await _mediator.Send(command);
             return Ok(ApiResponse<object>.SuccessResponse(null, null));

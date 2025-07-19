@@ -1,6 +1,4 @@
-using System;
 using MediatR;
-using TourBooking.Application.Features.Vehicle.Commands.AddVehicleBrand;
 using TourBooking.Application.Interfaces.Repositories;
 using TourBooking.Domain.Entities;
 

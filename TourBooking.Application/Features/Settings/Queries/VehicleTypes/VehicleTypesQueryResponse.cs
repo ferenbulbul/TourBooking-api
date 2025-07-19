@@ -1,6 +1,6 @@
 using TourBooking.Application.DTOs;
 
-namespace TourBooking.Application.Features.Vehicles.Queries.Vehicles;
+namespace TourBooking.Application.Features.Settings.Queries;
 
 public class VehicleTypesQueryResponse
 {

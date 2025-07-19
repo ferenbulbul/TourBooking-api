@@ -1,6 +1,6 @@
 using System;
 
-namespace TourBooking.Application.Features.Vehicle.Commands.AddVehicleBrand
+namespace TourBooking.Application.Features.Settings.Commands
 {
     public class UpdateVehicleBrandCommandResponse { }
 }

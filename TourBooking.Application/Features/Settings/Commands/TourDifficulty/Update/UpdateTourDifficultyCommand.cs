@@ -1,9 +1,9 @@
 using System;
 using MediatR;
 
-namespace TourBooking.Application.Features.Vehicle.Commands.AddVehicleBrand
+namespace TourBooking.Application.Features.Settings.Commands
 {
-    public class UpdateVehicleBrandCommand : IRequest
+    public class UpdateTourDifficultyCommand : IRequest
     {
         public Guid Id { get; set; }
         public string Name { get; set; }

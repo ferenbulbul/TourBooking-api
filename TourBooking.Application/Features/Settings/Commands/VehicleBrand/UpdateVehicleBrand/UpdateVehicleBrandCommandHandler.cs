@@ -1,33 +1,33 @@
 using System;
 using MediatR;
-using TourBooking.Application.Features.Vehicle.Commands.AddVehicleBrand;
 using TourBooking.Application.Interfaces.Repositories;
 using TourBooking.Domain.Entities;
 
-namespace TourBooking.Application.Features.Vehicle.Commands.AddVehicleType
+namespace TourBooking.Application.Features.Settings.Commands
 {
-    public class AddVehicleBrandCommandHandler : IRequestHandler<AddVehicleBrandCommand>
+    public class UpdateVehicleBrandCommandHandler : IRequestHandler<UpdateVehicleBrandCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public AddVehicleBrandCommandHandler(IUnitOfWork unitOfWork)
+        public UpdateVehicleBrandCommandHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
         public async Task Handle(
-            AddVehicleBrandCommand request,
+            UpdateVehicleBrandCommand request,
             CancellationToken cancellationToken
         )
         {
             var vehicleBrand = new VehicleBrand
             {
+                Id = request.Id,
                 Name = request.Name,
                 IsActive = request.IsActive,
-                IsDeleted = false,
-                CreatedDate = DateTime.UtcNow,
+                IsDeleted = request.IsDeleted,
+                UpdatedDate = DateTime.UtcNow,
             };
-            await _unitOfWork.GetRepository<VehicleBrand>().AddAsync(vehicleBrand);
+            await _unitOfWork.GetRepository<VehicleBrand>().UpdateAsync(vehicleBrand);
         }
     }
 }

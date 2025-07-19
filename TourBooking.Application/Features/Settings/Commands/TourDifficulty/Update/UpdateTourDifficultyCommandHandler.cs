@@ -1,26 +1,25 @@
 using System;
 using MediatR;
-using TourBooking.Application.Features.Vehicle.Commands.AddVehicleBrand;
 using TourBooking.Application.Interfaces.Repositories;
 using TourBooking.Domain.Entities;
 
-namespace TourBooking.Application.Features.Vehicle.Commands.AddVehicleType
+namespace TourBooking.Application.Features.Settings.Commands
 {
-    public class UpdateVehicleBrandCommandHandler : IRequestHandler<UpdateVehicleBrandCommand>
+    public class UpdateTourDifficultyCommandHandler : IRequestHandler<UpdateTourDifficultyCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public UpdateVehicleBrandCommandHandler(IUnitOfWork unitOfWork)
+        public UpdateTourDifficultyCommandHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
         public async Task Handle(
-            UpdateVehicleBrandCommand request,
+            UpdateTourDifficultyCommand request,
             CancellationToken cancellationToken
         )
         {
-            var vehicleBrand = new VehicleBrand
+            var tourDifficulty = new TourDifficultyEntity
             {
                 Id = request.Id,
                 Name = request.Name,
@@ -28,7 +27,7 @@ namespace TourBooking.Application.Features.Vehicle.Commands.AddVehicleType
                 IsDeleted = request.IsDeleted,
                 UpdatedDate = DateTime.UtcNow,
             };
-            await _unitOfWork.GetRepository<VehicleBrand>().UpdateAsync(vehicleBrand);
+            await _unitOfWork.GetRepository<TourDifficultyEntity>().UpdateAsync(tourDifficulty);
         }
     }
 }
