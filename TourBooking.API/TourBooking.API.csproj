@@ -19,6 +19,8 @@
     <ProjectReference Include="..\TourBooking.Application\TourBooking.Application.csproj" />
     <ProjectReference Include="..\TourBooking.Infrastructure\TourBooking.Infrastructure.csproj" />
     <ProjectReference Include="..\TourBooking.Domain\TourBooking.Domain.csproj" />
+    <ProjectReference Include="..\TourBooking.Shared.Localization\TourBooking.Shared.Localization.csproj" />
   </ItemGroup>
+  
 
 </Project>

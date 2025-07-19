@@ -8,7 +8,16 @@ var configuration = builder.Configuration;
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-// Extension metotlarımızı çağırıyoruz
+
+var supportedCultures = new[] { "tr", "en" };
+
+var localizationOptions = new RequestLocalizationOptions()
+    .SetDefaultCulture("tr")
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures);
+
+
+
 builder.Services.AddApplicationServices();
 builder.Services.AddPersistenceServices(configuration);
 builder.Services.AddIdentityServices(configuration);
@@ -18,8 +27,8 @@ builder.Services.AddSwaggerServices();
 
 
 var app = builder.Build();
+app.UseRequestLocalization(localizationOptions);
 
-app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
@@ -30,6 +39,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.MapControllers();
 
 app.Run();

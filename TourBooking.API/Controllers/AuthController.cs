@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
 using TourBooking.API.Controllers;
 using TourBooking.Application.DTOs;
@@ -18,6 +19,7 @@ using TourBooking.Application.Features.Authentication.Commands.SendEmailVerifica
 using TourBooking.Application.Features.Authentication.Commands.VerifyEmail;
 using TourBooking.Application.Features.Queries.Login;
 using TourBooking.Application.Interfaces.Services;
+using TourBooking.Shared.Localization;
 
 namespace TourBooking.API.Controllers
 {
@@ -26,17 +28,19 @@ namespace TourBooking.API.Controllers
     public class AuthController : BaseController
     {
         private readonly IMediator _mediator;
+        private readonly IStringLocalizer<SharedResource> _localizer;
 
-        public AuthController(IMediator mediator)
+        public AuthController(IMediator mediator, IStringLocalizer<SharedResource> localizer)
         {
             _mediator = mediator;
+            _localizer = localizer;
         }
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginQuery query)
         {
             LoginQueryResponse result = await _mediator.Send(query);
-            return Ok(ApiResponse<LoginQueryResponse>.SuccessResponse(result, "Giriş başarılı."));
+            return Ok(ApiResponse<LoginQueryResponse>.SuccessResponse(result,_localizer["LoginSuccess"]));
         }
 
         [HttpPost("register")]

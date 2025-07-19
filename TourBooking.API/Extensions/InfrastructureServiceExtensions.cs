@@ -15,6 +15,7 @@ namespace TourBooking.API.Extensions
     {
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
+            services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IEmailVerificationCodeRepository, EmailVerificationCodeRepository>();
