@@ -3,7 +3,7 @@ using TourBooking.Domain.Entities;
 
 namespace TourBooking.Application.Interfaces.Repositories
 {
-    public interface IVehicleRepository : IGenericRepository<VehicleType>
+    public interface IVehicleRepository 
     {
         Task<IEnumerable<VehicleBrand>> GetAllVehicleBrandsAsync(CancellationToken cancellationToken);
     }
