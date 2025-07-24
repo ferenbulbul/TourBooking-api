@@ -38,8 +38,8 @@ namespace TourBooking.API.Exceptions
             }
             catch (Exception ex)
             {
-                // Hatanın detaylarını loglamak çok önemlidir!
-                _logger.LogError(ex, "An unhandled exception has occurred. Message: {Message}", ex.Message);
+                var localizedMessage = _localizer["AnUnhandledExceptionOccurred", ex.Message];
+                _logger.LogError(ex, "{Message}", localizedMessage);
                 await HandleExceptionAsync(context, ex);
             }
         }
@@ -86,11 +86,13 @@ namespace TourBooking.API.Exceptions
                     );
                     break;
 
-                default: // Tanımlamadığımız diğer tüm hatalar (sistem hataları vb.)
-                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError; // 500
+                default:
+                    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                    var userFriendlyMessage = _localizer["UnexpectedServerError"]; // resx dosyasından gelir
                     errorResponse = ApiResponse<object>.ExceptionResponse(
-                        "Beklenmedik bir sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin."
+                        userFriendlyMessage
                     );
+
                     break;
             }
 

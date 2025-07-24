@@ -48,7 +48,7 @@ namespace TourBooking.API.Controllers
         public async Task<IActionResult> Register([FromBody] RegisterCommand command)
         {
             RegisterCommandResponse result = await _mediator.Send(command);
-            return StatusCode(201, ApiResponse<RegisterCommandResponse>.SuccessResponse(result, result.Message, 201));
+            return StatusCode(201, ApiResponse<RegisterCommandResponse>.SuccessResponse(result,_localizer["RegistrationSuccessVerifyEmail"], 201));
         }
 
 
@@ -68,7 +68,6 @@ namespace TourBooking.API.Controllers
         [Authorize] 
         public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailRequestDto request)
         {
-            // Yine, işlem yapacak kullanıcının ID'sini token'dan alıyoruz.
             var userIdString = GetUserIdFromToken();
             
             var command = new VerifyEmailCommand

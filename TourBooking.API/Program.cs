@@ -3,7 +3,17 @@ using TourBooking.API.Extensions; // Oluşturduğumuz tüm extension metotları 
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration; 
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowMobileApp",
+        builder =>
+        {
+            builder
+                .AllowAnyOrigin() 
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -37,9 +47,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowMobileApp");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.MapControllers();
+
 
 app.Run();

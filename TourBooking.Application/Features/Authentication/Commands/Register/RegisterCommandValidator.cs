@@ -18,13 +18,10 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
                 .NotEmpty().WithMessage("Soyisim alanı zorunludur.")
                 .MaximumLength(50).WithMessage("Soyisim en fazla 50 karakter olabilir.");
 
-            RuleFor(x => x.UserName)
-                .NotEmpty().WithMessage("Kullanıcı adı zorunludur.")
-                .MinimumLength(3).WithMessage("Kullanıcı adı en az 3 karakter olmalıdır.");
-
             RuleFor(x => x.Email)
                 .NotEmpty().WithMessage("E-posta alanı zorunludur.")
-                .EmailAddress().WithMessage("Lütfen geçerli bir e-posta adresi girin.");
+                .Matches(@"^[^@\s]+@[^@\s]+\.[^@\s]+$").WithMessage("Geçerli bir e-posta giriniz.");
+                
 
            RuleFor(x => x.Password)
             .NotEmpty().WithMessage("Şifre alanı zorunludur.")
