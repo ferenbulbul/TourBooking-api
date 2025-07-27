@@ -48,5 +48,13 @@ namespace TourBooking.Infrastructure.Repositories
                 .Where(v => v.Code == code && !v.IsDeleted)
                 .ToListAsync(cancellationToken);
         }
+
+        public async Task<IEnumerable<TourTypeEnitity>> TourTypes(CancellationToken cancellationToken = default)
+        {
+            return await _context.TourTypes
+            .Include(t => t.Translations)
+            .ThenInclude(tt => tt.Language)
+            .ToListAsync();
+        }
     }
 }

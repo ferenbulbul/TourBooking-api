@@ -10,5 +10,6 @@ namespace TourBooking.Application.Interfaces.Repositories
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 
         Task<List<VehicleType>> VehicleTypesByCode(string code, CancellationToken cancellationToken = default);
+        Task<IEnumerable<TourTypeEnitity>> TourTypes(CancellationToken cancellationToken = default);
     }
 }

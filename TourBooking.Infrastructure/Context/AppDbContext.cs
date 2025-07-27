@@ -20,7 +20,8 @@ namespace TourBooking.Infrastructure.Context
         public DbSet<LanguageEntity> Languages { get; set; }
         public DbSet<TourDifficultyEntity> TourDifficulties { get; set; }
         public DbSet<CustomerUser> CustomerUsers { get; set; }
-
+        public DbSet<TourTypeEnitity> TourTypes { get; set; }
+        public DbSet<TourTranslation> TourTranslations { get; set; }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
