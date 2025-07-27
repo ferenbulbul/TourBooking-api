@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using MediatR;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using TourBooking.API.Controllers;
 using TourBooking.Application.DTOs;
 using TourBooking.Application.DTOs.Comman;
@@ -40,7 +42,7 @@ namespace TourBooking.API.Controllers
         public async Task<IActionResult> Login([FromBody] LoginQuery query)
         {
             LoginQueryResponse result = await _mediator.Send(query);
-            return Ok(ApiResponse<LoginQueryResponse>.SuccessResponse(result,_localizer["LoginSuccess"]));
+            return Ok(ApiResponse<LoginQueryResponse>.SuccessResponse(result, _localizer["LoginSuccess"]));
         }
 
         [HttpPost("register")]
@@ -48,12 +50,12 @@ namespace TourBooking.API.Controllers
         public async Task<IActionResult> Register([FromBody] RegisterCommand command)
         {
             RegisterCommandResponse result = await _mediator.Send(command);
-            return StatusCode(201, ApiResponse<RegisterCommandResponse>.SuccessResponse(result,_localizer["RegistrationSuccessVerifyEmail"], 201));
+            return StatusCode(201, ApiResponse<RegisterCommandResponse>.SuccessResponse(result, _localizer["RegistrationSuccessVerifyEmail"], 201));
         }
 
 
         [HttpPost("send-verification-email")]
-        [Authorize] 
+        [Authorize]
         public async Task<IActionResult> SendVerificationEmail()
         {
 
@@ -65,11 +67,11 @@ namespace TourBooking.API.Controllers
         }
 
         [HttpPost("verify-email")]
-        [Authorize] 
+        [Authorize]
         public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailRequestDto request)
         {
             var userIdString = GetUserIdFromToken();
-            
+
             var command = new VerifyEmailCommand
             {
                 UserId = userIdString,
@@ -79,6 +81,19 @@ namespace TourBooking.API.Controllers
 
             return Ok(ApiResponse<VerifyEmailCommandResponse>.SuccessResponse(result, result.Message));
         }
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordCommand command)
+        {
+            var result = await _mediator.Send(command);
+            return Ok(ApiResponse<ForgotPasswordCommandResponse>.SuccessResponse(null, result.Message));
+        }
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand command)
+        {
+            var result = await _mediator.Send(command);
+            return Ok(ApiResponse<ResetPasswordCommandResponse>.SuccessResponse(null, result.Message));
+        }
+
     }
-    
+
 }
