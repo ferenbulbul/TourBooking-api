@@ -7,10 +7,7 @@ namespace TourBooking.Application.Features.Settings.Commands
 {
     public class AddVehicleTypeCommand : IRequest
     {
-        public string Code { get; set; }
-
-        public string Title { get; set; }
-        public string LanguageCode { get; set; }
-        public bool IsActive { get; set; }
+        public Guid? Id { get; set; }
+        public List<TranslationDto> Translations { get; set; }
     }
 }

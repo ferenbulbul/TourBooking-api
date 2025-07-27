@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace TourBooking.Application.DTOs
 {
-    public class TourTypesTranslationDto
+    public class TranslationDto
     {
         public string Description { get; set; }
         public string Title { get; set; }

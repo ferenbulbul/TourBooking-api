@@ -21,22 +21,24 @@ namespace TourBooking.Application.Features
             {
                 var tourType = new TourTypeEnitity
                 {
+                    Id = request.Id.HasValue ? request.Id.Value : default,
                     MainImageUrl = request.MainImageUrl,
                     ThumbImageUrl = request.ThumbImageUrl,
-                    Translations = request.translations.Select(t => new TourTranslation
-                    {
-                        Title = t.Title,
-                        Description = t.Description,
-                        LanguageId = t.LanguageId,
-                    }).ToList()
+                    Translations = request
+                        .translations.Select(t => new TourTypeTranslation
+                        {
+                            Title = t.Title,
+                            Description = t.Description,
+                            LanguageId = t.LanguageId,
+                        })
+                        .ToList()
                 };
-                await _unitOfWork.GetRepository<TourTypeEnitity>().AddAsync(tourType);
+                await _unitOfWork.GetRepository<TourTypeEnitity>().UpdateAsync(tourType);
             }
             catch (System.Exception ex)
             {
                 throw;
             }
         }
-
     }
 }

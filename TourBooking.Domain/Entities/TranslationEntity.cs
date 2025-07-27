@@ -5,17 +5,32 @@ using System.Threading.Tasks;
 
 namespace TourBooking.Domain.Entities
 {
-    public class TourTranslation : IBaseEntity
+    public class TranslationEntity : IBaseEntity
     {
         public Guid Id { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public bool IsDeleted { get; set; }
-        public Guid TourId { get; set; }
-        public TourTypeEnitity Tour { get; set; }
         public Guid LanguageId { get; set; }
         public LanguageEntity Language { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
     }
+
+    public class VehicleTypeTranslation : TranslationEntity { }
+
+    public class VehicleBrandTranslation : TranslationEntity { }
+
+    public class TourTypeTranslation : TranslationEntity
+    {
+        public Guid TourTypeId { get; set; }
+    }
+
+    public class TourDifficultyTranslation : TranslationEntity
+    { 
+        
+        public TourDifficultyEntity Classification { get; set; }
+    }
+
+    public class LanguageTranslation : TranslationEntity { }
 }

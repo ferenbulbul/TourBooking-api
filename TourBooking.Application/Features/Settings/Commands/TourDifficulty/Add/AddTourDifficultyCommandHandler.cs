@@ -21,10 +21,14 @@ namespace TourBooking.Application.Features.Settings.Commands
         {
             var tourDifficulty = new TourDifficultyEntity
             {
-                Name = request.Name,
-                IsActive = request.IsActive,
-                IsDeleted = false,
-                CreatedDate = DateTime.UtcNow,
+                Translations = request
+                    .Translations.Select(t => new TourDifficultyTranslation
+                    {
+                        Title = t.Title,
+                        Description = t.Description,
+                        LanguageId = t.LanguageId,
+                    })
+                    .ToList()
             };
             await _unitOfWork.GetRepository<TourDifficultyEntity>().AddAsync(tourDifficulty);
         }

@@ -21,9 +21,7 @@ namespace TourBooking.Application.Features.Settings.Commands
         {
             var vehicleBrand = new VehicleBrand
             {
-                Id = request.Id,
-                Name = request.Name,
-                IsActive = request.IsActive,
+                Id = request.Id,               
                 IsDeleted = request.IsDeleted,
                 UpdatedDate = DateTime.UtcNow,
             };

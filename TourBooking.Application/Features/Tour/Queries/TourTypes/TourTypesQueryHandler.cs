@@ -4,10 +4,9 @@ using TourBooking.Application.Expactions;
 using TourBooking.Application.Interfaces.Repositories;
 using TourBooking.Domain.Entities;
 
- namespace TourBooking.Application.Features;
+namespace TourBooking.Application.Features;
 
-public class TourTypesQueryHandler
-    : IRequestHandler<TourTypesQuery, TourTypesQueryResponse>
+public class TourTypesQueryHandler : IRequestHandler<TourTypesQuery, TourTypesQueryResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
 
@@ -15,6 +14,7 @@ public class TourTypesQueryHandler
     {
         _unitOfWork = unitOfWork;
     }
+
     public async Task<TourTypesQueryResponse> Handle(
         TourTypesQuery request,
         CancellationToken cancellationToken
@@ -30,21 +30,18 @@ public class TourTypesQueryHandler
         var dtos = allTourType.Select(tt => new TourTypeDto
         {
             Id = tt.Id,
-            MainImageUrl=tt.MainImageUrl,
-            ThumbImageUrl=tt.ThumbImageUrl,
-            Translations = tt.Translations.Select(ttr => new TourTypesTranslationDto
-            {
-                Title = ttr.Title,
-                Description = ttr.Description,
-                LanguageId=ttr.LanguageId
-            })
-           .ToList()
+            MainImageUrl = tt.MainImageUrl,
+            ThumbImageUrl = tt.ThumbImageUrl,
+            Translations = tt
+                .Translations.Select(ttr => new TranslationDto
+                {
+                    Title = ttr.Title,
+                    Description = ttr.Description,
+                    LanguageId = ttr.LanguageId
+                })
+                .ToList()
         });
-        var response = new TourTypesQueryResponse
-        {
-            TourTypeDtos = dtos
-        };
+        var response = new TourTypesQueryResponse { TourTypeDtos = dtos };
         return response;
     }
-
 }

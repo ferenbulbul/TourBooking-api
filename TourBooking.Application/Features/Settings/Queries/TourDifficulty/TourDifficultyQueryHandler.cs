@@ -22,17 +22,27 @@ namespace TourBooking.Application.Features.Settings.Queries
             CancellationToken cancellationToken
         )
         {
-            var a = await _unitOfWork.GetRepository<TourDifficultyEntity>().GetAllAsync();
-            return new TourDifficultyQueryResponse
+            var difficultyEntities = await _unitOfWork.TourDifficulties();
+            if (difficultyEntities == null || !difficultyEntities.Any())
             {
-                TourDifficulties = a.Select(x => new TourDifficultyDto
+                throw new NotFoundException("Tur zorluk tipi  bulunamadı.");
+            }
+
+            var dtos = difficultyEntities.Select(tt => new TourDifficultyDto
+            {
+                Id = tt.Id,
+                Translations = tt
+                    .Translations.Select(ttr => new TranslationDto
                     {
-                        Id = x.Id,
-                        Name = x.Name,
-                        IsActive = x.IsActive
+                        Title = ttr.Title,
+                        Description = ttr.Description,
+                        LanguageId = ttr.LanguageId
                     })
                     .ToList()
-            };
+            });
+            var response = new TourDifficultyQueryResponse { TourDifficulties = dtos };
+
+            return response;
         }
     }
 }
