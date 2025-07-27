@@ -8,5 +8,7 @@ namespace TourBooking.Application.Interfaces.Repositories
         IGenericRepository<T> GetRepository<T>()
             where T : class, IBaseEntity;
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+
+        Task<List<VehicleType>> VehicleTypesByCode(string code, CancellationToken cancellationToken = default);
     }
 }

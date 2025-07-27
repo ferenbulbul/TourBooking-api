@@ -22,7 +22,8 @@ namespace TourBooking.Application.Features.Settings.Commands
             var vehicleType = new VehicleType
             {
                 Id = request.Id,
-                Name = request.Name,
+                Code = request.Code,
+                Title = request.Title,
                 IsActive = request.IsActive,
                 IsDeleted = request.IsDeleted,
                 UpdatedDate = DateTime.UtcNow,

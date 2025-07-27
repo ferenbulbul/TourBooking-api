@@ -1,4 +1,5 @@
 using System;
+using Microsoft.EntityFrameworkCore;
 using TourBooking.Application.Interfaces.Repositories;
 using TourBooking.Domain.Entities;
 using TourBooking.Infrastructure.Context;
@@ -35,6 +36,17 @@ namespace TourBooking.Infrastructure.Repositories
         public void Dispose()
         {
             _context.Dispose();
+        }
+
+        public async Task<List<VehicleType>> VehicleTypesByCode(
+            string code,
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .VehicleTypes.AsNoTracking()
+                .Where(v => v.Code == code && !v.IsDeleted)
+                .ToListAsync(cancellationToken);
         }
     }
 }

@@ -4,7 +4,6 @@ using TourBooking.Application.DTOs.Comman;
 using TourBooking.Application.Features.Settings.Commands;
 using TourBooking.Application.Features.Settings.Queries;
 
-
 namespace TourBooking.API.Controllers
 {
     [Route("api/[controller]")]
@@ -25,6 +24,15 @@ namespace TourBooking.API.Controllers
         {
             var vehicleTypes = await _mediator.Send(new VehicleTypesQuery());
             return Ok(ApiResponse<VehicleTypesQueryResponse>.SuccessResponse(vehicleTypes, null));
+        }
+
+        [HttpGet("vehicle-types/{code}")]
+        public async Task<IActionResult> VehicleTypesByCode(string code)
+        {
+            var vehicleTypes = await _mediator.Send(new VehicleTypesByCodeQuery { Code = code });
+            return Ok(
+                ApiResponse<VehicleTypesByCodeQueryResponse>.SuccessResponse(vehicleTypes, null)
+            );
         }
 
         [HttpPost("vehicle-types")]

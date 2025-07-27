@@ -21,10 +21,12 @@ namespace TourBooking.Application.Features.Settings.Commands
         {
             var vehicleType = new VehicleType
             {
-                Name = request.Name,
+                Code = request.Code,
+                Title = request.Title,
                 IsActive = request.IsActive,
                 IsDeleted = false,
                 CreatedDate = DateTime.UtcNow,
+                LanguageCode = request.LanguageCode,
             };
             await _unitOfWork.GetRepository<VehicleType>().AddAsync(vehicleType);
         }
