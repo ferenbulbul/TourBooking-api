@@ -19,25 +19,68 @@ namespace TourBooking.Application.Features
         {
             try
             {
-                var tourType = new TourTypeEnitity
+                if (request.Id != Guid.Empty && request.Id != null)
                 {
-                    Id = request.Id.HasValue ? request.Id.Value : default,
-                    MainImageUrl = request.MainImageUrl,
-                    ThumbImageUrl = request.ThumbImageUrl,
-                    Translations = request
-                        .translations.Select(t => new TourTypeTranslation
+                    var existing = await _unitOfWork.TourType(request.Id.Value);
+
+                    if (existing != null)
+                    {
+                        foreach (var newTr in request.translations)
                         {
-                            Title = t.Title,
-                            Description = t.Description,
-                            LanguageId = t.LanguageId,
-                        })
-                        .ToList()
-                };
-                await _unitOfWork.GetRepository<TourTypeEnitity>().UpdateAsync(tourType);
+                            var existingTr = existing.Translations.FirstOrDefault(t =>
+                                t.LanguageId == newTr.LanguageId
+                            );
+
+                            if (existingTr != null)
+                            {
+                                existingTr.Title = newTr.Title;
+                                existingTr.Description = newTr.Description;
+                            }
+                            else
+                            {
+                                existing.Translations.Add(
+                                    new TourTypeTranslation
+                                    {
+                                        Title = newTr.Title,
+                                        Description = newTr.Description,
+                                        LanguageId = newTr.LanguageId
+                                    }
+                                );
+                            }
+                        }
+                        if (!string.IsNullOrEmpty(request.MainImageUrl))
+                        {
+                            existing.MainImageUrl = request.MainImageUrl;
+                        }
+                        if (!string.IsNullOrEmpty(request.ThumbImageUrl))
+                        {
+                            existing.ThumbImageUrl = request.ThumbImageUrl;
+                        }
+
+                        await _unitOfWork.GetRepository<TourTypeEnitity>().UpdateAsync(existing);
+                    }
+                }
+                else
+                {
+                    var vehicleType = new TourTypeEnitity
+                    {
+                        MainImageUrl = request.MainImageUrl,
+                        ThumbImageUrl = request.ThumbImageUrl,
+                        Translations = request
+                            .translations.Select(t => new TourTypeTranslation
+                            {
+                                Title = t.Title,
+                                Description = t.Description,
+                                LanguageId = t.LanguageId,
+                            })
+                            .ToList()
+                    };
+                    await _unitOfWork.GetRepository<TourTypeEnitity>().AddAsync(vehicleType);
+                }
             }
             catch (System.Exception ex)
             {
-                throw;
+                throw ex;
             }
         }
     }

@@ -78,5 +78,27 @@ namespace TourBooking.Infrastructure.Repositories
                 .ThenInclude(tt => tt.Language)
                 .FirstOrDefaultAsync(x => x.Id == Id);
         }
+
+        public async Task<TourDifficultyEntity> TourDifficulty(
+            Guid Id,
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .TourDifficulties.Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .FirstOrDefaultAsync(x => x.Id == Id);
+        }
+
+        public async Task<TourTypeEnitity> TourType(
+            Guid Id,
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .TourTypes.Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .FirstOrDefaultAsync(x => x.Id == Id);
+        }
     }
 }

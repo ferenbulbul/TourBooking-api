@@ -21,15 +21,10 @@ namespace TourBooking.Domain.Entities
 
     public class VehicleBrandTranslation : TranslationEntity { }
 
-    public class TourTypeTranslation : TranslationEntity
-    {
-        public Guid TourTypeId { get; set; }
-    }
+    public class TourTypeTranslation : TranslationEntity { }
 
     public class TourDifficultyTranslation : TranslationEntity
-    { 
-        
-        public TourDifficultyEntity Classification { get; set; }
+    {        
     }
 
     public class LanguageTranslation : TranslationEntity { }
