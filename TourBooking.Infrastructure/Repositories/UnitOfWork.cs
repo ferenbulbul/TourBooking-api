@@ -187,5 +187,53 @@ namespace TourBooking.Infrastructure.Repositories
                 .ThenInclude(tt => tt.Language)
                 .FirstOrDefaultAsync(x => x.Id == Id);
         }
+
+        public async Task<IEnumerable<TourPointEntity>> TourPoints(
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                var res = await _context
+                    .TourPoints.Include(t => t.Country)
+                    .ThenInclude(c => c.Translations)
+                    .Include(t => t.Region)
+                    .ThenInclude(r => r.Translations)
+                    .Include(t => t.City)
+                    .ThenInclude(c => c.Translations)
+                    .Include(t => t.District)
+                    .ThenInclude(d => d.Translations)
+                    .Include(t => t.TourDifficulty)
+                    .ThenInclude(td => td.Translations)
+                    .Include(t => t.TourType)
+                    .ThenInclude(tt => tt.Translations)
+                    .Include(t => t.Translations)
+                    .ThenInclude(tt => tt.Language)
+                    .ToListAsync();
+
+                return res;
+            }
+            catch (System.Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<TourPointEntity> TourPoint(
+            Guid Id,
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .TourPoints.Include(t => t.Country)
+                .Include(t => t.Region)
+                .Include(t => t.City)
+                .Include(t => t.District)
+                .Include(t => t.TourDifficulty)
+                .Include(t => t.TourType)
+                .Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .FirstOrDefaultAsync(x => x.Id == Id);
+        }
     }
 }

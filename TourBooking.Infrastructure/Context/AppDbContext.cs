@@ -35,7 +35,7 @@ namespace TourBooking.Infrastructure.Context
         public DbSet<CityEntity> Cities { get; set; }
         public DbSet<CityTranslation> CityTranslations { get; set; }
         public DbSet<DistrictEntity> Districts { get; set; }
-        public DbSet<DistrictTranslation> DistrictTranslations { get; set; }
+        public DbSet<DistrictTranslation> DistrictTranslations { get; set; }        
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

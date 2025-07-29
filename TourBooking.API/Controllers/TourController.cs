@@ -32,5 +32,19 @@ namespace TourBooking.API.Controllers
             await _mediator.Send(request);
             return Ok(ApiResponse<AddTourTypeCommandResponse>.SuccessResponse(null, null));
         }
+
+        [HttpPost("tour-points")]
+        public async Task<IActionResult> UpsertTourPoints(UpsertTourPointCommand request)
+        {
+            await _mediator.Send(request);
+            return Ok(ApiResponse<UpsertTourPointCommandResponse>.SuccessResponse(null, null));
+        }
+
+        [HttpGet("tour-points")]
+        public async Task<IActionResult> TourPoints()
+        {
+            var tourPoints = await _mediator.Send(new TourPointsQuery());
+            return Ok(ApiResponse<TourPointsQueryResponse>.SuccessResponse(tourPoints, null));
+        }
     }
 }
