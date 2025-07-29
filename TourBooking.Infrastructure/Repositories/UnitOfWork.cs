@@ -100,5 +100,92 @@ namespace TourBooking.Infrastructure.Repositories
                 .ThenInclude(tt => tt.Language)
                 .FirstOrDefaultAsync(x => x.Id == Id);
         }
+
+        public async Task<IEnumerable<CityEntity>> Cities(
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .Cities.Include(a => a.Region)
+                .Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<CountryEntity>> Countries(
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .Countries.Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<RegionEntity>> Regions(
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .Regions.Include(a => a.Country)
+                .Include(a => a.Translations)
+                .ThenInclude(tt => tt.Language)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<DistrictEntity>> Districts(
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .Districts.Include(t => t.City)
+                .Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .ToListAsync();
+        }
+
+        public async Task<CityEntity> City(Guid Id, CancellationToken cancellationToken = default)
+        {
+            return await _context
+                .Cities.Include(t => t.Region)
+                .Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .FirstOrDefaultAsync(x => x.Id == Id);
+        }
+
+        public async Task<CountryEntity> Country(
+            Guid Id,
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .Countries.Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .FirstOrDefaultAsync(x => x.Id == Id);
+        }
+
+        public async Task<DistrictEntity> District(
+            Guid Id,
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .Districts.Include(t => t.City)
+                .Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .FirstOrDefaultAsync(x => x.Id == Id);
+        }
+
+        public async Task<RegionEntity> Region(
+            Guid Id,
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .Regions.Include(t => t.Country)
+                .Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .FirstOrDefaultAsync(x => x.Id == Id);
+        }
     }
 }

@@ -23,9 +23,33 @@ namespace TourBooking.Domain.Entities
 
     public class TourTypeTranslation : TranslationEntity { }
 
-    public class TourDifficultyTranslation : TranslationEntity
-    {        
-    }
+    public class TourDifficultyTranslation : TranslationEntity { }
 
     public class LanguageTranslation : TranslationEntity { }
+
+    public class TourPointTranslation : TranslationEntity { }
+
+    public class RegionTranslation : TranslationEntity
+    {
+        public Guid RegionId { get; set; }
+        public RegionEntity Region { get; set; }
+    }
+
+    public class DistrictTranslation : TranslationEntity
+    {
+        public Guid DistrictId { get; set; }
+        public DistrictEntity District { get; set; }
+    }
+
+    public class CityTranslation : TranslationEntity
+    {
+        public Guid CityId { get; set; }
+        public CityEntity City { get; set; }
+    }
+
+    public class CountryTranslation : TranslationEntity
+    {
+        public Guid CountryId { get; set; }
+        public CountryEntity Country { get; set; }
+    }
 }

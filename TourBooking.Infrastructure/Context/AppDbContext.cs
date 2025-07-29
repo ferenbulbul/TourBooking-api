@@ -26,6 +26,16 @@ namespace TourBooking.Infrastructure.Context
         public DbSet<CustomerUser> CustomerUsers { get; set; }
         public DbSet<TourTypeEnitity> TourTypes { get; set; }
         public DbSet<TourTypeTranslation> TourTypeTranslations { get; set; }
+        public DbSet<TourPointEntity> TourPoints { get; set; }
+        public DbSet<TourPointTranslation> TourPointTranslations { get; set; }
+        public DbSet<CountryEntity> Countries { get; set; }
+        public DbSet<CountryTranslation> CountryTranslations { get; set; }
+        public DbSet<RegionEntity> Regions { get; set; }
+        public DbSet<RegionTranslation> RegionTranslations { get; set; }
+        public DbSet<CityEntity> Cities { get; set; }
+        public DbSet<CityTranslation> CityTranslations { get; set; }
+        public DbSet<DistrictEntity> Districts { get; set; }
+        public DbSet<DistrictTranslation> DistrictTranslations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -35,6 +45,28 @@ namespace TourBooking.Infrastructure.Context
             builder.Entity<VehicleBrandTranslation>().ToTable("VehicleBrandTranslations");
             builder.Entity<TourTypeTranslation>().ToTable("TourTypeTranslations");
             builder.Entity<TourDifficultyTranslation>().ToTable("TourDifficultyTranslations");
+            builder.Entity<TourPointTranslation>().ToTable("TourPointTranslations");
+            builder.Entity<CountryTranslation>().ToTable("CountryTranslations");
+            builder.Entity<RegionTranslation>().ToTable("RegionTranslations");
+            builder.Entity<CityTranslation>().ToTable("CityTranslations");
+            builder.Entity<DistrictTranslation>().ToTable("DistrictTranslations");
+            builder
+                .Entity<RegionEntity>()
+                .HasOne(r => r.Country)
+                .WithMany(c => c.Regions)
+                .HasForeignKey(r => r.CountryId);
+
+            builder
+                .Entity<CityEntity>()
+                .HasOne(c => c.Region)
+                .WithMany(r => r.Cities)
+                .HasForeignKey(c => c.RegionId);
+
+            builder
+                .Entity<DistrictEntity>()
+                .HasOne(d => d.City)
+                .WithMany(c => c.Districts)
+                .HasForeignKey(d => d.CityId);
         }
     }
 }
