@@ -11,6 +11,6 @@ namespace TourBooking.Domain.Entities
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public bool IsDeleted { get; set; }
-        public ICollection<TourTranslation> TourTranslations { get; set; }
+        public ICollection<LanguageTranslation> Translations { get; set; }
     }
 }

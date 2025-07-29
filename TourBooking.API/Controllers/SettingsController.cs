@@ -26,28 +26,12 @@ namespace TourBooking.API.Controllers
             return Ok(ApiResponse<VehicleTypesQueryResponse>.SuccessResponse(vehicleTypes, null));
         }
 
-        [HttpGet("vehicle-types/{code}")]
-        public async Task<IActionResult> VehicleTypesByCode(string code)
-        {
-            var vehicleTypes = await _mediator.Send(new VehicleTypesByCodeQuery { Code = code });
-            return Ok(
-                ApiResponse<VehicleTypesByCodeQueryResponse>.SuccessResponse(vehicleTypes, null)
-            );
-        }
-
         [HttpPost("vehicle-types")]
         public async Task<IActionResult> AddVehicleType(AddVehicleTypeCommand command)
         {
             await _mediator.Send(command);
             return Ok(ApiResponse<object>.SuccessResponse(null, null));
-        }
-
-        [HttpPatch("vehicle-types")]
-        public async Task<IActionResult> UpdateVehicleType(UpdateVehicleTypeCommand command)
-        {
-            await _mediator.Send(command);
-            return Ok(ApiResponse<object>.SuccessResponse(null, null));
-        }
+        }        
 
         #endregion
 

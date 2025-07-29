@@ -13,6 +13,6 @@ namespace TourBooking.Domain.Entities
         public bool IsDeleted { get; set; }
         public string MainImageUrl { get; set; }
         public string ThumbImageUrl { get; set; }
-        public ICollection<TourTranslation> Translations { get; set; }
+        public ICollection<TourTypeTranslation> Translations { get; set; }
     }
 }

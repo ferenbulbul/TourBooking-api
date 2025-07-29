@@ -14,29 +14,63 @@ namespace TourBooking.Application.Features.Settings.Commands
             _unitOfWork = unitOfWork;
         }
 
-        public async Task Handle2(
-            AddVehicleTypeCommand request,
-            CancellationToken cancellationToken
-        )
+        public async Task Handle(AddVehicleTypeCommand request, CancellationToken cancellationToken)
         {
-            var vehicleType = new VehicleType
+            try
             {
-                Code = request.Code,
-                Title = request.Title,
-                IsActive = request.IsActive,
-                IsDeleted = false,
-                CreatedDate = DateTime.UtcNow,
-                LanguageCode = request.LanguageCode,
-            };
-            await _unitOfWork.GetRepository<VehicleType>().AddAsync(vehicleType);
-        }
+                if (request.Id != Guid.Empty && request.Id != null)
+                {
+                    var existing = await _unitOfWork.VehicleType(request.Id.Value);
 
-        Task IRequestHandler<AddVehicleTypeCommand>.Handle(
-            AddVehicleTypeCommand request,
-            CancellationToken cancellationToken
-        )
-        {
-            return Handle2(request, cancellationToken);
+                    if (existing != null)
+                    {
+                        foreach (var newTr in request.Translations)
+                        {
+                            var existingTr = existing.Translations.FirstOrDefault(t =>
+                                t.LanguageId == newTr.LanguageId
+                            );
+
+                            if (existingTr != null)
+                            {
+                                existingTr.Title = newTr.Title;
+                                existingTr.Description = newTr.Description;
+                            }
+                            else
+                            {
+                                existing.Translations.Add(
+                                    new VehicleTypeTranslation
+                                    {
+                                        Title = newTr.Title,
+                                        Description = newTr.Description,
+                                        LanguageId = newTr.LanguageId
+                                    }
+                                );
+                            }
+                        }
+
+                        await _unitOfWork.GetRepository<VehicleType>().UpdateAsync(existing);
+                    }
+                }
+                else
+                {
+                    var vehicleType = new VehicleType
+                    {
+                        Translations = request
+                            .Translations.Select(t => new VehicleTypeTranslation
+                            {
+                                Title = t.Title,
+                                Description = t.Description,
+                                LanguageId = t.LanguageId,
+                            })
+                            .ToList()
+                    };
+                    await _unitOfWork.GetRepository<VehicleType>().AddAsync(vehicleType);
+                }
+            }
+            catch (System.Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

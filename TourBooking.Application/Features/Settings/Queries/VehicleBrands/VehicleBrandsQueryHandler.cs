@@ -27,9 +27,8 @@ namespace TourBooking.Application.Features.Settings.Queries
             {
                 VehicleBrands = a.Select(x => new VehicleBrandDto
                     {
-                        Id = x.Id,
-                        Name = x.Name,
-                        IsActive = x.IsActive
+                        Id = x.Id,                        
+                        
                     })
                     .ToList()
             };

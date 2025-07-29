@@ -1,11 +1,12 @@
 using System;
 using MediatR;
+using TourBooking.Application.DTOs;
 
 namespace TourBooking.Application.Features.Settings.Commands
 {
     public class AddTourDifficultyCommand : IRequest
     {
-        public string Name { get; set; }
-        public bool IsActive { get; set; }
+        public Guid? Id { get; set; }
+        public List<TranslationDto> Translations { get; set; }
     }
 }

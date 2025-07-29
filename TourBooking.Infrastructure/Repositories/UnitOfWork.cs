@@ -38,23 +38,67 @@ namespace TourBooking.Infrastructure.Repositories
             _context.Dispose();
         }
 
-        public async Task<List<VehicleType>> VehicleTypesByCode(
-            string code,
+        public async Task<IEnumerable<TourTypeEnitity>> TourTypes(
             CancellationToken cancellationToken = default
         )
         {
             return await _context
-                .VehicleTypes.AsNoTracking()
-                .Where(v => v.Code == code && !v.IsDeleted)
-                .ToListAsync(cancellationToken);
+                .TourTypes.Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .ToListAsync();
         }
 
-        public async Task<IEnumerable<TourTypeEnitity>> TourTypes(CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<TourDifficultyEntity>> TourDifficulties(
+            CancellationToken cancellationToken = default
+        )
         {
-            return await _context.TourTypes
-            .Include(t => t.Translations)
-            .ThenInclude(tt => tt.Language)
-            .ToListAsync();
+            return await _context
+                .TourDifficulties.Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<VehicleType>> VehicleTypes(
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .VehicleTypes.Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .ToListAsync();
+        }
+
+        public async Task<VehicleType> VehicleType(
+            Guid Id,
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .VehicleTypes.Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .FirstOrDefaultAsync(x => x.Id == Id);
+        }
+
+        public async Task<TourDifficultyEntity> TourDifficulty(
+            Guid Id,
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .TourDifficulties.Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .FirstOrDefaultAsync(x => x.Id == Id);
+        }
+
+        public async Task<TourTypeEnitity> TourType(
+            Guid Id,
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .TourTypes.Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .FirstOrDefaultAsync(x => x.Id == Id);
         }
     }
 }

@@ -22,8 +22,6 @@ namespace TourBooking.Application.Features.Settings.Commands
             var tourDifficulty = new TourDifficultyEntity
             {
                 Id = request.Id,
-                Name = request.Name,
-                IsActive = request.IsActive,
                 IsDeleted = request.IsDeleted,
                 UpdatedDate = DateTime.UtcNow,
             };

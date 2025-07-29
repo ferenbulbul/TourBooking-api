@@ -20,9 +20,7 @@ namespace TourBooking.Application.Features.Settings.Commands
         )
         {
             var vehicleBrand = new VehicleBrand
-            {
-                Name = request.Name,
-                IsActive = request.IsActive,
+            {                                
                 IsDeleted = false,
                 CreatedDate = DateTime.UtcNow,
             };
