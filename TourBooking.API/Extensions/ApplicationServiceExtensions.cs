@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using FluentValidation;
 using MediatR;
 using TourBooking.Application.Common.Behaviors;
+using TourBooking.Application.Features.Authentication.Commands.Register;
+using TourBooking.Application.Features.Authentication.Commands.ResetPassword;
 
 namespace TourBooking.API.Extensions
 {
@@ -15,13 +17,11 @@ namespace TourBooking.API.Extensions
         {
             var appAssembly = Assembly.Load("TourBooking.Application");
 
-            services.AddMediatR(cfg => 
+            services.AddMediatR(cfg =>
                 cfg.RegisterServicesFromAssembly(appAssembly)
             );
-              services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(appAssembly));
-              services.AddValidatorsFromAssembly(appAssembly);
-              services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
-
+            services.AddValidatorsFromAssembly(appAssembly);
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
             return services;
         }
     }

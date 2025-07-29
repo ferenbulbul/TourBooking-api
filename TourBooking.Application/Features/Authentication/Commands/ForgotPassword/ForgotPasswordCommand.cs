@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 
-namespace TourBooking.Application.Features.Authentication.Commands.ForgotPassword
+namespace TourBooking.Application.Features
 {
-    public class ForgotPasswordCommand : IRequest<ForgotPasswordCommandResponse>
+    public class ForgotPasswordCommand : IRequest
     {
         public string Email { get; set; }
     }

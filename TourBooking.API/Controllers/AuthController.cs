@@ -14,11 +14,12 @@ using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pag
 using TourBooking.API.Controllers;
 using TourBooking.Application.DTOs;
 using TourBooking.Application.DTOs.Comman;
-using TourBooking.Application.Features.Authentication.Commands.ForgotPassword;
+using TourBooking.Application.Features;
 using TourBooking.Application.Features.Authentication.Commands.Register;
 using TourBooking.Application.Features.Authentication.Commands.ResetPassword;
 using TourBooking.Application.Features.Authentication.Commands.SendEmailVerificationCode;
 using TourBooking.Application.Features.Authentication.Commands.VerifyEmail;
+using TourBooking.Application.Features.Authentication.Commands.VerifyPasswordCode;
 using TourBooking.Application.Features.Queries.Login;
 using TourBooking.Application.Interfaces.Services;
 using TourBooking.Shared.Localization;
@@ -84,14 +85,20 @@ namespace TourBooking.API.Controllers
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordCommand command)
         {
-            var result = await _mediator.Send(command);
-            return Ok(ApiResponse<ForgotPasswordCommandResponse>.SuccessResponse(null, result.Message));
+            await _mediator.Send(command);
+            return Ok(ApiResponse<object>.SuccessResponse(null, "Doğrulama kodu e-posta adresinize gönderildi."));
         }
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand command)
         {
-            var result = await _mediator.Send(command);
-            return Ok(ApiResponse<ResetPasswordCommandResponse>.SuccessResponse(null, result.Message));
+            await _mediator.Send(command);
+            return Ok(ApiResponse<object>.SuccessResponse(null, "Şifreniz başarıyla değiştirildi"));
+        }
+        [HttpPost("verify-password-code")]
+        public async Task<IActionResult> ResetPassword([FromBody] VerifyPasswordCommand command)
+        {
+             await _mediator.Send(command);
+            return Ok(ApiResponse<object>.SuccessResponse(null, "Doğrulama Kodu Geçerli"));
         }
 
     }

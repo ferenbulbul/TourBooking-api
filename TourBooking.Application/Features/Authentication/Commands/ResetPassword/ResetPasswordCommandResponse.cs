@@ -7,6 +7,5 @@ namespace TourBooking.Application.Features.Authentication.Commands.ResetPassword
 {
      public class ResetPasswordCommandResponse
     {
-        public string Message { get; set; }
     }
 }

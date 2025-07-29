@@ -4,42 +4,45 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.WebUtilities;
 using TourBooking.Application.Expactions;
+using TourBooking.Application.Interfaces.Repositories;
 using TourBooking.Domain.Entities;
 
 namespace TourBooking.Application.Features.Authentication.Commands.ResetPassword
 {
-    public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand, ResetPasswordCommandResponse>
+    public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand,ResetPasswordCommandResponse>
     {
         private readonly UserManager<AppUser> _userManager;
+        private readonly IEmailVerificationCodeRepository _repository;
 
-        public ResetPasswordCommandHandler(UserManager<AppUser> userManager)
+        public ResetPasswordCommandHandler(UserManager<AppUser> userManager,IEmailVerificationCodeRepository repository)
         {
             _userManager = userManager;
+            _repository = repository;
         }
 
         public async Task<ResetPasswordCommandResponse> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
         {
-            var user = await _userManager.FindByEmailAsync(request.Email);
+            var user =await _userManager.FindByEmailAsync(request.Email);
             if (user == null)
             {
-                throw new BusinessRuleValidationException("Şifre sıfırlama işlemi başarısız oldu. Lütfen tekrar deneyin.");
+                throw new BusinessRuleValidationException("Doğrulama koduyla ilişkili kullanıcı bulunamadı.");
             }
-            var tokenBytes = WebEncoders.Base64UrlDecode(request.Token);
-            var decodedToken = Encoding.UTF8.GetString(tokenBytes);
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var identityResult= await _userManager.ResetPasswordAsync(user, token, request.NewPassword);
 
-            var result = await _userManager.ResetPasswordAsync(user, decodedToken, request.NewPassword);
+            
+           ;
 
-            if (!result.Succeeded)
+            if (!identityResult.Succeeded)
             {
-                throw new ValidationException(new List<string> {
-                    "Şifre sıfırlama işlemi başarısız oldu. Lütfen geçerli bir bağlantı kullandığınızdan emin olun."
-                });
+                var errors = identityResult.Errors.Select(e => e.Description).ToList();
+                throw new Expactions.ValidationException(errors);
             }
-
-            return new ResetPasswordCommandResponse { Message = "Şifreniz başarıyla güncellenmiştir." };
+            return new ResetPasswordCommandResponse { };
         }
     }
 }
