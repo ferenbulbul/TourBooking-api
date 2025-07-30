@@ -235,5 +235,20 @@ namespace TourBooking.Infrastructure.Repositories
                 .ThenInclude(tt => tt.Language)
                 .FirstOrDefaultAsync(x => x.Id == Id);
         }
+
+        public async Task<DriverEntity> Driver(
+            Guid Id,
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context.Drivers.AsNoTracking().FirstOrDefaultAsync(x => x.Id == Id);
+        }
+
+        public async Task<IEnumerable<DriverEntity>> Drivers(
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context.Drivers.AsNoTracking().ToListAsync();
+        }
     }
 }

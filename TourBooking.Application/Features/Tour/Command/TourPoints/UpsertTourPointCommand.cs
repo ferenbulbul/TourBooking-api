@@ -15,7 +15,7 @@ namespace TourBooking.Application.Features
         public Guid CityId { get; set; }
         public Guid DistrictId { get; set; }
         public Guid DifficultyId { get; set; }
-        public Guid TourTypeId { get; set; }       
+        public Guid TourTypeId { get; set; }
         public string? MainImage { get; set; }
         public List<string> OtherImages { get; set; }
         public List<TranslationDto> Translations { get; set; }
