@@ -250,5 +250,172 @@ namespace TourBooking.Infrastructure.Repositories
         {
             return await _context.Drivers.AsNoTracking().ToListAsync();
         }
+
+        public async Task<IEnumerable<VehicleBrand>> VehicleBrands(
+            CancellationToken cancellationToken = default
+        )
+        {
+            try
+            {
+                var res = await _context
+                    .VehicleBrands.AsNoTracking()
+                    .Include(t => t.Translations)
+                    .ThenInclude(tt => tt.Language)
+                    .ToListAsync();
+                return res;
+            }
+            catch (System.Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public async Task<VehicleBrand> VehicleBrand(
+            Guid Id,
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .VehicleBrands.AsNoTracking()
+                .Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .FirstOrDefaultAsync(x => x.Id == Id);
+        }
+
+        public async Task<SeatTypeEntity> SeatType(
+            Guid Id,
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .SeatTypes.AsNoTracking()
+                .Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .FirstOrDefaultAsync(x => x.Id == Id);
+        }
+
+        public async Task<IEnumerable<SeatTypeEntity>> SeatTypes(
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .SeatTypes.AsNoTracking()
+                .Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<LegroomSpaceEntity>> Legrooms(
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .LegroomSpaces.AsNoTracking()
+                .Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .ToListAsync();
+        }
+
+        public async Task<LegroomSpaceEntity> Legroom(
+            Guid Id,
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .LegroomSpaces.AsNoTracking()
+                .Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .FirstOrDefaultAsync(x => x.Id == Id);
+        }
+
+        public async Task<IEnumerable<VehicleClassEntity>> VehicleClasses(
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .VehicleClasses.AsNoTracking()
+                .Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .ToListAsync();
+        }
+
+        public async Task<VehicleClassEntity> VehicleClass(
+            Guid Id,
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .VehicleClasses.AsNoTracking()
+                .Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .FirstOrDefaultAsync(x => x.Id == Id);
+        }
+
+        public async Task<IEnumerable<VehicleEntity>> Vehicles(
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context.Vehicles.AsNoTracking().ToListAsync();
+        }
+
+        public async Task<VehicleEntity> Vehicle(
+            Guid Id,
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context.Vehicles.AsNoTracking().FirstOrDefaultAsync(x => x.Id == Id);
+        }
+
+        public async Task<TourEntity> Tour(Guid Id, CancellationToken cancellationToken = default)
+        {
+            return await _context
+                .Tours.AsNoTracking()
+                .Include(t => t.PricingEntity)
+                .ThenInclude(pe => pe.City)
+                .Include(t => t.PricingEntity)
+                .ThenInclude(pe => pe.Country)
+                .Include(t => t.PricingEntity)
+                .ThenInclude(pe => pe.Region)
+                .Include(t => t.PricingEntity)
+                .ThenInclude(pe => pe.District)
+                .Include(t => t.PricingEntity)
+                .ThenInclude(pe => pe.Vehicle)
+                .Include(t => t.PricingEntity)
+                .ThenInclude(pe => pe.Driver)
+                .Include(q => q.TourPoint)
+                .FirstOrDefaultAsync(x => x.Id == Id);
+        }
+
+        public async Task<IEnumerable<TourEntity>> Tours(
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .Tours.AsNoTracking()
+                .Include(t => t.PricingEntity)
+                .ThenInclude(pe => pe.City)
+                .ThenInclude(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .Include(t => t.PricingEntity)
+                .ThenInclude(pe => pe.Country)
+                .ThenInclude(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .Include(t => t.PricingEntity)
+                .ThenInclude(pe => pe.Region)
+                .ThenInclude(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .Include(t => t.PricingEntity)
+                .ThenInclude(pe => pe.District)
+                .ThenInclude(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .Include(t => t.PricingEntity)
+                .ThenInclude(pe => pe.Vehicle)
+                .Include(t => t.PricingEntity)
+                .ThenInclude(pe => pe.Driver)
+                .Include(t => t.TourPoint)
+                .ThenInclude(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .ToListAsync();
+        }
     }
 }

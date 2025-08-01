@@ -2,9 +2,9 @@ using System;
 using MediatR;
 using TourBooking.Application.DTOs;
 
-namespace TourBooking.Application.Features.Settings.Commands
+namespace TourBooking.Application.Features
 {
-    public class AddVehicleBrandCommand : IRequest
+    public class UpsertLegroomCommand : IRequest
     {
         public Guid? Id { get; set; }
         public List<TranslationDto> Translations { get; set; }

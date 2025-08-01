@@ -7,28 +7,28 @@ using TourBooking.Domain.Entities;
 
 namespace TourBooking.Application.Features.Settings.Queries
 {
-    public class VehicleBrandsQueryHandler
-        : IRequestHandler<VehicleBrandsQuery, VehicleBrandsQueryResponse>
+    public class VehicleClassQueryHandler
+        : IRequestHandler<VehicleClassQuery, VehicleClassQueryResponse>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public VehicleBrandsQueryHandler(IUnitOfWork unitOfWork)
+        public VehicleClassQueryHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<VehicleBrandsQueryResponse> Handle(
-            VehicleBrandsQuery request,
+        public async Task<VehicleClassQueryResponse> Handle(
+            VehicleClassQuery request,
             CancellationToken cancellationToken
         )
         {
-            var vehicleBrands = await _unitOfWork.VehicleBrands();
+            var vehicleClasses = await _unitOfWork.VehicleClasses();
 
-            if (vehicleBrands == null || !vehicleBrands.Any())
+            if (vehicleClasses == null || !vehicleClasses.Any())
             {
                 throw new NotFoundException("Araç tipi  bulunamadı.");
             }
-            var dtos = vehicleBrands.Select(tt => new VehicleBrandDto
+            var dtos = vehicleClasses.Select(tt => new VehicleClassDto
             {
                 Id = tt.Id,
                 Translations = tt
@@ -40,7 +40,7 @@ namespace TourBooking.Application.Features.Settings.Queries
                     })
                     .ToList()
             });
-            var response = new VehicleBrandsQueryResponse { VehicleBrands = dtos };
+            var response = new VehicleClassQueryResponse { VehicleClasses = dtos };
             return response;
         }
     }

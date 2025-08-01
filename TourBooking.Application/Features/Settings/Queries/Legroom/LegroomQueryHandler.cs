@@ -7,28 +7,28 @@ using TourBooking.Domain.Entities;
 
 namespace TourBooking.Application.Features.Settings.Queries
 {
-    public class VehicleBrandsQueryHandler
-        : IRequestHandler<VehicleBrandsQuery, VehicleBrandsQueryResponse>
+    public class LegroomQueryHandler
+        : IRequestHandler<LegroomQuery, LegroomQueryResponse>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public VehicleBrandsQueryHandler(IUnitOfWork unitOfWork)
+        public LegroomQueryHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<VehicleBrandsQueryResponse> Handle(
-            VehicleBrandsQuery request,
+        public async Task<LegroomQueryResponse> Handle(
+            LegroomQuery request,
             CancellationToken cancellationToken
         )
         {
-            var vehicleBrands = await _unitOfWork.VehicleBrands();
+            var legrooms = await _unitOfWork.Legrooms();
 
-            if (vehicleBrands == null || !vehicleBrands.Any())
+            if (legrooms == null || !legrooms.Any())
             {
                 throw new NotFoundException("Araç tipi  bulunamadı.");
             }
-            var dtos = vehicleBrands.Select(tt => new VehicleBrandDto
+            var dtos = legrooms.Select(tt => new LegroomSpaceDto
             {
                 Id = tt.Id,
                 Translations = tt
@@ -40,7 +40,7 @@ namespace TourBooking.Application.Features.Settings.Queries
                     })
                     .ToList()
             });
-            var response = new VehicleBrandsQueryResponse { VehicleBrands = dtos };
+            var response = new LegroomQueryResponse { Legrooms = dtos };
             return response;
         }
     }

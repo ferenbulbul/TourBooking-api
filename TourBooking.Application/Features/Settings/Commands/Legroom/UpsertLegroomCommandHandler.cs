@@ -3,19 +3,19 @@ using MediatR;
 using TourBooking.Application.Interfaces.Repositories;
 using TourBooking.Domain.Entities;
 
-namespace TourBooking.Application.Features.Settings.Commands
+namespace TourBooking.Application.Features
 {
-    public class AddVehicleBrandCommandHandler : IRequestHandler<AddVehicleBrandCommand>
+    public class UpsertLegroomCommandHandler : IRequestHandler<UpsertLegroomCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public AddVehicleBrandCommandHandler(IUnitOfWork unitOfWork)
+        public UpsertLegroomCommandHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
         public async Task Handle(
-            AddVehicleBrandCommand request,
+            UpsertLegroomCommand request,
             CancellationToken cancellationToken
         )
         {
@@ -23,7 +23,7 @@ namespace TourBooking.Application.Features.Settings.Commands
             {
                 if (request.Id != Guid.Empty && request.Id != null)
                 {
-                    var existing = await _unitOfWork.VehicleBrand(request.Id.Value);
+                    var existing = await _unitOfWork.Legroom(request.Id.Value);
 
                     if (existing != null)
                     {
@@ -41,7 +41,7 @@ namespace TourBooking.Application.Features.Settings.Commands
                             else
                             {
                                 existing.Translations.Add(
-                                    new VehicleBrandTranslation
+                                    new LegroomSpaceTranslation
                                     {
                                         Title = newTr.Title,
                                         Description = newTr.Description,
@@ -51,15 +51,15 @@ namespace TourBooking.Application.Features.Settings.Commands
                             }
                         }
 
-                        await _unitOfWork.GetRepository<VehicleBrand>().UpdateAsync(existing);
+                        await _unitOfWork.GetRepository<LegroomSpaceEntity>().UpdateAsync(existing);
                     }
                 }
                 else
                 {
-                    var vehicleBrand = new VehicleBrand
+                    var legroom = new LegroomSpaceEntity
                     {
                         Translations = request
-                            .Translations.Select(t => new VehicleBrandTranslation
+                            .Translations.Select(t => new LegroomSpaceTranslation
                             {
                                 Title = t.Title,
                                 Description = t.Description,
@@ -67,7 +67,7 @@ namespace TourBooking.Application.Features.Settings.Commands
                             })
                             .ToList()
                     };
-                    await _unitOfWork.GetRepository<VehicleBrand>().AddAsync(vehicleBrand);
+                    await _unitOfWork.GetRepository<LegroomSpaceEntity>().AddAsync(legroom);
                 }
             }
             catch (System.Exception ex)

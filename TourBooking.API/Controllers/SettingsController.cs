@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using TourBooking.Application.DTOs.Comman;
+using TourBooking.Application.Features;
 using TourBooking.Application.Features.Settings.Commands;
 using TourBooking.Application.Features.Settings.Queries;
 
@@ -31,7 +32,7 @@ namespace TourBooking.API.Controllers
         {
             await _mediator.Send(command);
             return Ok(ApiResponse<object>.SuccessResponse(null, null));
-        }        
+        }
 
         #endregion
 
@@ -50,12 +51,57 @@ namespace TourBooking.API.Controllers
             await _mediator.Send(command);
             return Ok(ApiResponse<object>.SuccessResponse(null, null));
         }
+        #endregion
 
-        [HttpPatch("vehicle-brands")]
-        public async Task<IActionResult> UpdateVehicleBrand(UpdateVehicleBrandCommand command)
+        #region Vehicle Class
+
+        [HttpGet("vehicle-class")]
+        public async Task<IActionResult> VehicleClasses()
+        {
+            var vehicleClasses = await _mediator.Send(new VehicleClassQuery());
+            return Ok(ApiResponse<VehicleClassQueryResponse>.SuccessResponse(vehicleClasses, null));
+        }
+
+        [HttpPost("vehicle-class")]
+        public async Task<IActionResult> UpsertVehicleClass(UpsertVehicleClassCommand command)
         {
             await _mediator.Send(command);
-            return Ok(ApiResponse<object>.SuccessResponse(null, null));
+            return Ok(ApiResponse<UpsertVehicleClassCommandResponse>.SuccessResponse(null, null));
+        }
+
+        #endregion
+
+        #region Seat Types
+
+        [HttpGet("seat-type")]
+        public async Task<IActionResult> SeatTypes()
+        {
+            var seatTypes = await _mediator.Send(new SeatTypeQuery());
+            return Ok(ApiResponse<SeatTypeQueryResponse>.SuccessResponse(seatTypes, null));
+        }
+
+        [HttpPost("seat-type")]
+        public async Task<IActionResult> UpsertSeatType(UpsertSeatTypeCommand command)
+        {
+            await _mediator.Send(command);
+            return Ok(ApiResponse<UpsertCityCommandResponse>.SuccessResponse(null, null));
+        }
+        #endregion
+
+        #region Legroom
+
+        [HttpGet("legroom")]
+        public async Task<IActionResult> Legrooms()
+        {
+            var legrooms = await _mediator.Send(new LegroomQuery());
+            return Ok(ApiResponse<LegroomQueryResponse>.SuccessResponse(legrooms, null));
+        }
+
+        [HttpPost("legroom")]
+        public async Task<IActionResult> UpsertLegroom(UpsertLegroomCommand command)
+        {
+            await _mediator.Send(command);
+            return Ok(ApiResponse<UpsertLegroomCommandResponse>.SuccessResponse(null, null));
         }
         #endregion
 

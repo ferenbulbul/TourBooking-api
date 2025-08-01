@@ -3,19 +3,19 @@ using MediatR;
 using TourBooking.Application.Interfaces.Repositories;
 using TourBooking.Domain.Entities;
 
-namespace TourBooking.Application.Features.Settings.Commands
+namespace TourBooking.Application.Features
 {
-    public class AddVehicleBrandCommandHandler : IRequestHandler<AddVehicleBrandCommand>
+    public class UpsertSeatTypeCommandHandler : IRequestHandler<UpsertSeatTypeCommand>
     {
         private readonly IUnitOfWork _unitOfWork;
 
-        public AddVehicleBrandCommandHandler(IUnitOfWork unitOfWork)
+        public UpsertSeatTypeCommandHandler(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
         public async Task Handle(
-            AddVehicleBrandCommand request,
+            UpsertSeatTypeCommand request,
             CancellationToken cancellationToken
         )
         {
@@ -23,7 +23,7 @@ namespace TourBooking.Application.Features.Settings.Commands
             {
                 if (request.Id != Guid.Empty && request.Id != null)
                 {
-                    var existing = await _unitOfWork.VehicleBrand(request.Id.Value);
+                    var existing = await _unitOfWork.SeatType(request.Id.Value);
 
                     if (existing != null)
                     {
@@ -41,7 +41,7 @@ namespace TourBooking.Application.Features.Settings.Commands
                             else
                             {
                                 existing.Translations.Add(
-                                    new VehicleBrandTranslation
+                                    new SeatTypeTranslation
                                     {
                                         Title = newTr.Title,
                                         Description = newTr.Description,
@@ -51,15 +51,15 @@ namespace TourBooking.Application.Features.Settings.Commands
                             }
                         }
 
-                        await _unitOfWork.GetRepository<VehicleBrand>().UpdateAsync(existing);
+                        await _unitOfWork.GetRepository<SeatTypeEntity>().UpdateAsync(existing);
                     }
                 }
                 else
                 {
-                    var vehicleBrand = new VehicleBrand
+                    var seatType = new SeatTypeEntity
                     {
                         Translations = request
-                            .Translations.Select(t => new VehicleBrandTranslation
+                            .Translations.Select(t => new SeatTypeTranslation
                             {
                                 Title = t.Title,
                                 Description = t.Description,
@@ -67,7 +67,7 @@ namespace TourBooking.Application.Features.Settings.Commands
                             })
                             .ToList()
                     };
-                    await _unitOfWork.GetRepository<VehicleBrand>().AddAsync(vehicleBrand);
+                    await _unitOfWork.GetRepository<SeatTypeEntity>().AddAsync(seatType);
                 }
             }
             catch (System.Exception ex)

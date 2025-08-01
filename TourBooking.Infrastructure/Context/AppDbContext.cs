@@ -37,6 +37,12 @@ namespace TourBooking.Infrastructure.Context
         public DbSet<DistrictEntity> Districts { get; set; }
         public DbSet<DistrictTranslation> DistrictTranslations { get; set; }
         public DbSet<DriverEntity> Drivers { get; set; }
+        public DbSet<LegroomSpaceEntity> LegroomSpaces { get; set; }
+        public DbSet<SeatTypeEntity> SeatTypes { get; set; }
+        public DbSet<VehicleClassEntity> VehicleClasses { get; set; }
+        public DbSet<VehicleEntity> Vehicles { get; set; }
+        public DbSet<TourEntity> Tours { get; set; }
+        public DbSet<TourPricingEntity> TourPricings { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -51,6 +57,10 @@ namespace TourBooking.Infrastructure.Context
             builder.Entity<RegionTranslation>().ToTable("RegionTranslations");
             builder.Entity<CityTranslation>().ToTable("CityTranslations");
             builder.Entity<DistrictTranslation>().ToTable("DistrictTranslations");
+            builder.Entity<VehicleClassTranslation>().ToTable("VehicleClassTranslations");
+            builder.Entity<SeatTypeTranslation>().ToTable("SeatTypeTranslations");
+            builder.Entity<LegroomSpaceTranslation>().ToTable("LegroomSpaceTranslations");
+
             builder
                 .Entity<RegionEntity>()
                 .HasOne(r => r.Country)

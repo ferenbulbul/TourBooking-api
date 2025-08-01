@@ -19,11 +19,15 @@ namespace TourBooking.Domain.Entities
 
     public class VehicleTypeTranslation : TranslationEntity { }
 
+    public class VehicleClassTranslation : TranslationEntity { }
+
+    public class SeatTypeTranslation : TranslationEntity { }
+
+    public class LegroomSpaceTranslation : TranslationEntity { }
+
     public class VehicleBrandTranslation : TranslationEntity { }
 
-    public class TourTypeTranslation : TranslationEntity
-    {       
-     }
+    public class TourTypeTranslation : TranslationEntity { }
 
     public class TourDifficultyTranslation : TranslationEntity { }
 
@@ -31,10 +35,9 @@ namespace TourBooking.Domain.Entities
 
     public class TourPointTranslation : TranslationEntity
     {
-         public Guid TourPointId { get; set; }
+        public Guid TourPointId { get; set; }
         public TourPointEntity TourPoint { get; set; }
-
-     }
+    }
 
     public class RegionTranslation : TranslationEntity
     {
