@@ -31,16 +31,18 @@ namespace TourBooking.Application.Features.Queries.Login
             var user = await _userManager.FindByEmailAsync(request.Email);
             if (user == null)
             {
-                throw new AuthenticationFailedException(_localizer["InvalidLogin"]);
+                throw new NotFoundException(_localizer["InvalidLogin"]);
             }
 
             var passwordValid = await _userManager.CheckPasswordAsync(user, request.Password);
             if (!passwordValid)
             {
-                throw new AuthenticationFailedException(_localizer["InvalidLogin"]);
+                throw new NotFoundException(_localizer["InvalidLogin"]);
             }
 
             var tokens = await _tokenService.CreateTokenAsync(user);
+            user.RefreshToken = tokens.RefreshToken;
+            await _userManager.UpdateAsync(user);
             var response = new LoginQueryResponse
             {
                 AccessToken = tokens.AccessToken,

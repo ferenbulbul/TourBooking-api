@@ -22,10 +22,8 @@
     <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
         <value>[base64 mime encoded serialized .NET Framework object]</value>
     </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing"
-  mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework
-  object]</value>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
         <comment>This is a comment</comment>
     </data>
 
@@ -61,47 +59,46 @@
             : using a System.ComponentModel.TypeConverter
             : and then encoded with base64 encoding.
     -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-    xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
     <xsd:element name="root" msdata:IsDataSet="true">
       <xsd:complexType>
         <xsd:choice maxOccurs="unbounded">
           <xsd:element name="metadata">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0"/>
               </xsd:sequence>
-              <xsd:attribute name="name" use="required" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-              <xsd:attribute ref="xml:space" />
+              <xsd:attribute name="name" use="required" type="xsd:string"/>
+              <xsd:attribute name="type" type="xsd:string"/>
+              <xsd:attribute name="mimetype" type="xsd:string"/>
+              <xsd:attribute ref="xml:space"/>
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="assembly">
             <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
+              <xsd:attribute name="alias" type="xsd:string"/>
+              <xsd:attribute name="name" type="xsd:string"/>
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="data">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2"/>
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-              <xsd:attribute ref="xml:space" />
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1"/>
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3"/>
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4"/>
+              <xsd:attribute ref="xml:space"/>
             </xsd:complexType>
           </xsd:element>
           <xsd:element name="resheader">
             <xsd:complexType>
               <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1"/>
               </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
+              <xsd:attribute name="name" type="xsd:string" use="required"/>
             </xsd:complexType>
           </xsd:element>
         </xsd:choice>
@@ -115,12 +112,10 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0,
-      Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0,
-      Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ValidationError" xml:space="preserve">
     <value>A validation error occurred.</value>
@@ -178,8 +173,64 @@
     <value>Registration successful. Please check your inbox to verify your email address.</value>
     <comment/>
   </data>
-
-
-
-
+  <data name="CodeSentToEmail" xml:space="preserve">
+    <value>A verification code has been sent to your email address.</value>
+    <comment/>
+  </data>
+  <data name="EmailVerifiedSuccessfully" xml:space="preserve">
+    <value>Your email address has been successfully verified.</value>
+    <comment/>
+  </data>
+  <data name="PasswordChangedSuccessfully" xml:space="preserve">
+    <value>Your password has been changed successfully.</value>
+    <comment/>
+  </data>
+  <data name="VerificationCodeValid" xml:space="preserve">
+    <value>Verification code is valid.</value>
+    <comment/>
+  </data>
+  <data name="UserNotFound" xml:space="preserve">
+    <value>User not found.</value>
+    <comment/>
+  </data>
+  <data name="ResetPasswordCodePrefix" xml:space="preserve">
+    <value>Your reset password code:</value>
+    <comment/>
+  </data>
+  <data name="ResetPasswordCodeTitle" xml:space="preserve">
+    <value>Reset Password Code</value>
+    <comment/>
+  </data>
+  <data name="ResetCodeUserNotFound" xml:space="preserve">
+    <value>No user associated with the verification code was found.</value>
+    <comment/>
+  </data>
+  <data name="InvalidOrUsedCode" xml:space="preserve">
+    <value>You entered an invalid or previously used code.</value>
+    <comment/>
+  </data>
+  <data name="VerificationCodeExpired" xml:space="preserve">
+    <value>The verification code has expired. Please request a new one.</value>
+    <comment/>
+  </data>
+  <data name="PhoneNumberAlreadyInUse" xml:space="preserve">
+    <value>This phone number is already in use.</value>
+    <comment/>
+  </data>
+  <data name="EmailAlreadyVerified" xml:space="preserve">
+    <value>This email address has already been verified.</value>
+    <comment/>
+  </data>
+  <data name="EmailVerificationCodePrefix" xml:space="preserve">
+    <value>Your email verification code:</value>
+    <comment/>
+  </data>
+  <data name="EmailVerificationCodeTitle" xml:space="preserve">
+    <value>Email Verification Code</value>
+    <comment/>
+  </data>
+  <data name="VerificationCodeSentTo" xml:space="preserve">
+    <value>A verification code has been sent to {0}.</value>
+    <comment/>
+  </data>
 </root>

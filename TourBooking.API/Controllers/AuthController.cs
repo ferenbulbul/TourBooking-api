@@ -80,25 +80,25 @@ namespace TourBooking.API.Controllers
             };
             var result = await _mediator.Send(command);
 
-            return Ok(ApiResponse<VerifyEmailCommandResponse>.SuccessResponse(result, result.Message));
+            return Ok(ApiResponse<VerifyEmailCommandResponse>.SuccessResponse(result,_localizer["EmailVerifiedSuccessfully"]));
         }
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordCommand command)
         {
             await _mediator.Send(command);
-            return Ok(ApiResponse<object>.SuccessResponse(null, "Doğrulama kodu e-posta adresinize gönderildi."));
+            return Ok(ApiResponse<object>.SuccessResponse(null, _localizer["CodeSentToEmail"]));
         }
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand command)
         {
             await _mediator.Send(command);
-            return Ok(ApiResponse<object>.SuccessResponse(null, "Şifreniz başarıyla değiştirildi"));
+            return Ok(ApiResponse<object>.SuccessResponse(null,  _localizer["PasswordChangedSuccessfully"]));
         }
         [HttpPost("verify-password-code")]
         public async Task<IActionResult> ResetPassword([FromBody] VerifyPasswordCommand command)
         {
              await _mediator.Send(command);
-            return Ok(ApiResponse<object>.SuccessResponse(null, "Doğrulama Kodu Geçerli"));
+            return Ok(ApiResponse<object>.SuccessResponse(null,_localizer["VerificationCodeValid"]));
         }
 
     }

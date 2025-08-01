@@ -4,9 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Localization;
 using TourBooking.Application.Expactions;
 using TourBooking.Application.Interfaces.Repositories;
 using TourBooking.Domain.Entities;
+using TourBooking.Shared.Localization;
 
 namespace TourBooking.Application.Features.Authentication.Commands.VerifyEmail
 {
@@ -14,11 +16,13 @@ namespace TourBooking.Application.Features.Authentication.Commands.VerifyEmail
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly IEmailVerificationCodeRepository _repository;
+        private readonly IStringLocalizer<SharedResource> _localizer;
 
-        public VerifyEmailCommandHandler(UserManager<AppUser> userManager, IEmailVerificationCodeRepository repository)
+        public VerifyEmailCommandHandler(UserManager<AppUser> userManager, IEmailVerificationCodeRepository repository, IStringLocalizer<SharedResource> localizer)
         {
             _userManager = userManager;
             _repository = repository;
+            _localizer = localizer;
         }
 
         public async Task<VerifyEmailCommandResponse> Handle(VerifyEmailCommand request, CancellationToken cancellationToken)
@@ -27,18 +31,18 @@ namespace TourBooking.Application.Features.Authentication.Commands.VerifyEmail
 
             if (verificationCode == null)
             {
-                throw new BusinessRuleValidationException("Geçersiz veya daha önce kullanılmış bir kod girdiniz.");
+                throw new BusinessRuleValidationException(_localizer["InvalidOrUsedCode"]);
             }
 
             if (verificationCode.ExpiryDate < DateTime.UtcNow)
             {
-                throw new BusinessRuleValidationException("Doğrulama kodunun süresi dolmuş. Lütfen yeni bir kod isteyin.");
+                throw new BusinessRuleValidationException(_localizer["VerificationCodeExpired"]);
             }
 
             var user = await _userManager.FindByIdAsync(request.UserId.ToString());
             if (user == null)
             {
-                throw new BusinessRuleValidationException("Doğrulama koduyla ilişkili kullanıcı bulunamadı.");
+                throw new BusinessRuleValidationException(_localizer["ResetCodeUserNotFound"]);
             }
             
             verificationCode.IsUsed = true;
@@ -53,7 +57,7 @@ namespace TourBooking.Application.Features.Authentication.Commands.VerifyEmail
                 throw new Expactions.ValidationException(errors);
             }
 
-            return new VerifyEmailCommandResponse { Message = "E-posta adresiniz başarıyla doğrulandı." };
+            return new VerifyEmailCommandResponse { Message = "" };
         }
     }
 }

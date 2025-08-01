@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using TourBooking.Application.Expactions;
 using TourBooking.Application.Interfaces.Repositories;
@@ -32,13 +33,21 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
 
         public async Task<RegisterCommandResponse> Handle(RegisterCommand request, CancellationToken cancellationToken)
         {
-            var existingUser = await _userManager.FindByEmailAsync(request.Email);
-            if (existingUser != null)
+            var emailExists = await _userManager.FindByEmailAsync(request.Email);
+            if (emailExists != null)
             {
                 throw new BusinessRuleValidationException(_localizer["EmailAlreadyInUse"]);
             }
-            var user = await _userManager.FindByEmailAsync(request.Email);
-            var token = await _tokenService.CreateTokenAsync(user);
+
+            var phoneExists = await _userManager.Users
+                .AnyAsync(u => u.PhoneNumber == request.PhoneNumber);
+
+            if (phoneExists)
+            {
+                throw new BusinessRuleValidationException(_localizer["PhoneNumberAlreadyInUse"]);
+            }
+
+
             var newUser = new AppUser
             {
                 FirstName = request.FirstName,
@@ -47,12 +56,8 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
                 UserName = request.Email,
                 EmailConfirmed = false,
                 UserType = UserType.Customer,
-                RefreshToken = token.RefreshToken,
-                RefreshTokenExpireDate = DateTime.UtcNow.AddDays(7)
+                PhoneNumber = request.PhoneNumber
             };
-
-
-
             var result = await _userManager.CreateAsync(newUser, request.Password);
             if (!result.Succeeded)
             {
@@ -65,6 +70,12 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
                 PhoneNumber = request.PhoneNumber,
                 BirthDate = request.BirthDate
             };
+            var user = await _userManager.FindByEmailAsync(request.Email);
+            var token = await _tokenService.CreateTokenAsync(user);
+            user.RefreshToken = token.RefreshToken;
+            user.RefreshTokenExpireDate = DateTime.UtcNow.AddDays(7);
+            await _userManager.UpdateAsync(user);
+
             await _unitOfWork.GetRepository<CustomerUser>().AddAsync(newCustomerUser);
             var response = new RegisterCommandResponse
             {

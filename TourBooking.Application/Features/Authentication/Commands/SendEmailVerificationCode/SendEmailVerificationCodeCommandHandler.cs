@@ -4,46 +4,57 @@ using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Localization;
 using TourBooking.Application.Expactions;
+using TourBooking.Application.Features.Authentication.Commands.Register;
 using TourBooking.Application.Interfaces.Repositories;
 using TourBooking.Application.Interfaces.Services;
 using TourBooking.Domain.Entities;
+using TourBooking.Shared.Localization;
 
 namespace TourBooking.Application.Features.Authentication.Commands.SendEmailVerificationCode
 {
     public class SendEmailVerificationCodeCommandHandler : IRequestHandler<SendEmailVerificationCodeCommand, SendEmailVerificationCodeCommandResponse>
-{
-    private readonly UserManager<AppUser> _userManager;
-    private readonly IEmailService _emailService;
-    private readonly IEmailVerificationCodeRepository _repository;
-
-    public SendEmailVerificationCodeCommandHandler(UserManager<AppUser> userManager, IEmailService emailService, IEmailVerificationCodeRepository repository)
     {
-        _userManager = userManager;
-        _emailService = emailService;
-        _repository = repository;
-    }
+        private readonly UserManager<AppUser> _userManager;
+        private readonly IEmailService _emailService;
+        private readonly IEmailVerificationCodeRepository _repository;
+        IStringLocalizer<SharedResource> _localizer;
 
-    public async Task<SendEmailVerificationCodeCommandResponse> Handle(SendEmailVerificationCodeCommand request, CancellationToken cancellationToken)
-    {
-        var user = await _userManager.FindByIdAsync(request.UserId.ToString());
-        if (user == null) { throw new NotFoundException("Kullanıcı bulunamadı."); }
-        if (user.EmailConfirmed) { throw new BusinessRuleValidationException("Bu e-posta adresi zaten doğrulanmış."); }
-        
-        var code = new Random().Next(100000, 999999).ToString("D6");
-        var verificationCode = new EmailVerificationCode
+        public SendEmailVerificationCodeCommandHandler(UserManager<AppUser> userManager, IEmailService emailService, IEmailVerificationCodeRepository repository, IStringLocalizer<SharedResource> localizer)
         {
-            UserId = user.Id,
-            Code = code,
-            ExpiryDate = DateTime.UtcNow.AddMinutes(3),
-            IsUsed = false
-        };
+            _userManager = userManager;
+            _emailService = emailService;
+            _repository = repository;
+            _localizer = localizer;
+        }
 
-        await _repository.AddAsync(verificationCode);
-        var emailBody = $"E-posta doğrulama kodunuz: <h2>{code}</h2>";
-        await _emailService.SendEmailAsync(user.Email, "E-posta Doğrulama Kodu", emailBody);
+        public async Task<SendEmailVerificationCodeCommandResponse> Handle(SendEmailVerificationCodeCommand request, CancellationToken cancellationToken)
+        {
+            var user = await _userManager.FindByIdAsync(request.UserId.ToString());
+            if (user == null) { throw new NotFoundException(_localizer["UserNotFound"]); }
+            if (user.EmailConfirmed) { throw new BusinessRuleValidationException(_localizer["EmailAlreadyVerified"]); }
 
-        return new SendEmailVerificationCodeCommandResponse { Message = $"'{user.Email}' adresine doğrulama kodu gönderildi." };
+            var code = new Random().Next(100000, 999999).ToString("D6");
+            var verificationCode = new EmailVerificationCode
+            {
+                UserId = user.Id,
+                Code = code,
+                ExpiryDate = DateTime.UtcNow.AddMinutes(3),
+                IsUsed = false
+            };
+
+            await _repository.AddAsync(verificationCode);
+            var body = $"{_localizer["EmailVerificationCodePrefix"]} <h2>{code}</h2>";
+            await _emailService.SendEmailAsync(user.Email!,$"{ _localizer["EmailVerificationCodeTitle"]}" , body);
+            var message = string.Format(_localizer["VerificationCodeSentTo"], user.Email);
+
+            Console.WriteLine($"LOCALIZED MESSAGE: {_localizer["UserNotFound"]}");
+            Console.WriteLine($"LOCALIZED MESSAGE: {_localizer["EmailVerificationCodePrefix"]}");
+            Console.WriteLine($"LOCALIZED MESSAGE: {_localizer["EmailVerificationCodeTitle"]}");
+            Console.WriteLine($"LOCALIZED MESSAGE: {_localizer["VerificationCodeSentTo"]}");
+
+            return new SendEmailVerificationCodeCommandResponse { Message = message };
+        }
     }
-}
 }
