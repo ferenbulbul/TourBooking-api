@@ -4,6 +4,7 @@ namespace TourBooking.Application.DTOs
 {
     public class TourPointDto : BaseDto
     {
+        public bool? IsHighlighted { get; set; }
         public Guid Id { get; set; }
         public Guid CountryId { get; set; }
         public Guid RegionId { get; set; }

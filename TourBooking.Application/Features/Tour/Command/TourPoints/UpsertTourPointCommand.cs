@@ -17,6 +17,8 @@ namespace TourBooking.Application.Features
         public Guid DifficultyId { get; set; }
         public Guid TourTypeId { get; set; }
         public string? MainImage { get; set; }
+        public bool IsActive { get; set; }
+        public bool IsHighlighted { get; set; }
         public List<string> OtherImages { get; set; }
         public List<TranslationDto> Translations { get; set; }
     }

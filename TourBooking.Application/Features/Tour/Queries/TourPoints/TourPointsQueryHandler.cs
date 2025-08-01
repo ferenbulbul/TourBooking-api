@@ -48,6 +48,8 @@ public class TourPointsQueryHandler : IRequestHandler<TourPointsQuery, TourPoint
             DistrictId = tt.DistrictId,
             RegionId = tt.RegionId,
             TourTypeId = tt.TourTypeId,
+            IsActive = tt.IsActive,
+            IsHighlighted = tt.IsHighlighted,
 
             CountryName = tt
                 .Country.Translations.FirstOrDefault(x => x.Language.Code == languageCode)

@@ -4,6 +4,7 @@ namespace TourBooking.Domain.Entities
 {
     public class TourPointEntity : IBaseEntity
     {
+        public bool IsHighlighted { get; set; }
         public bool IsActive { get; set; }
         public Guid Id { get; set; }
         public Guid CountryId { get; set; }

@@ -59,6 +59,15 @@ namespace TourBooking.Application.Features
                         {
                             existing.OtherImages = request.OtherImages;
                         }
+                        existing.IsActive = request.IsActive;
+                        existing.IsHighlighted = request.IsHighlighted;
+                        existing.CountryId = request.CountryId;
+                        existing.RegionId = request.RegionId;
+                        existing.CityId = request.CityId;
+                        existing.DistrictId = request.DistrictId;
+                        existing.TourDifficultyId = request.DifficultyId;
+                        existing.TourTypeId = request.TourTypeId;
+
 
                         await _unitOfWork.GetRepository<TourPointEntity>().UpdateAsync(existing);
                     }
@@ -69,7 +78,8 @@ namespace TourBooking.Application.Features
                     {
                         MainImage = request.MainImage,
                         OtherImages = request.OtherImages,
-
+                        IsHighlighted = request.IsHighlighted,
+                        IsActive = request.IsActive,
                         CountryId = request.CountryId,
                         RegionId = request.RegionId,
                         CityId = request.CityId,
