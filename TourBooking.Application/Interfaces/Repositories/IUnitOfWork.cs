@@ -42,6 +42,10 @@ namespace TourBooking.Application.Interfaces.Repositories
         Task<TourPointEntity> TourPoint(Guid Id, CancellationToken cancellationToken = default);
         Task<DriverEntity> Driver(Guid Id, CancellationToken cancellationToken = default);
         Task<VehicleEntity> Vehicle(Guid Id, CancellationToken cancellationToken = default);
+        Task<AvailabilityEntity> VehicleAvailabilityByVehicleId(Guid vehicleId, CancellationToken cancellationToken = default);
+        Task<IEnumerable<AvailabilityEntity>> VehicleAvailabilities(
+            CancellationToken cancellationToken = default
+        );
         Task<IEnumerable<DriverEntity>> Drivers(CancellationToken cancellationToken = default);
         Task<IEnumerable<VehicleEntity>> Vehicles(CancellationToken cancellationToken = default);
         Task<TourEntity> Tour(Guid Id, CancellationToken cancellationToken = default);

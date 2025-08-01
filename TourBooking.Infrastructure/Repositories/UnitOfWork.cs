@@ -417,5 +417,32 @@ namespace TourBooking.Infrastructure.Repositories
                 .ThenInclude(tt => tt.Language)
                 .ToListAsync();
         }
+
+        public async Task<AvailabilityEntity> VehicleAvailabilityByVehicleId(
+            Guid vehicleId,
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .Availabilities.AsNoTracking()
+                .FirstOrDefaultAsync(x => x.VehicleId == vehicleId);
+        }
+
+        public async Task<AvailabilityEntity> VehicleAvailabilityBy(
+            Guid Id,
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .Availabilities.AsNoTracking()
+                .FirstOrDefaultAsync(x => x.Id == Id);
+        }
+
+        public async Task<IEnumerable<AvailabilityEntity>> VehicleAvailabilities(
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context.Availabilities.AsNoTracking().ToListAsync();
+        }
     }
 }

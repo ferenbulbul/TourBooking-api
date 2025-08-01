@@ -18,8 +18,7 @@ namespace TourBooking.API.Extensions
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
             services.AddScoped<IEmailService, EmailService>();
-            services.AddScoped<IEmailVerificationCodeRepository, EmailVerificationCodeRepository>();
-            services.AddScoped<IVehicleRepository, VehicleRepository>();
+            services.AddScoped<IEmailVerificationCodeRepository, EmailVerificationCodeRepository>();            
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             return services;

@@ -44,6 +44,9 @@ namespace TourBooking.Infrastructure.Context
         public DbSet<TourEntity> Tours { get; set; }
         public DbSet<TourPricingEntity> TourPricings { get; set; }
 
+        public DbSet<AvailabilityEntity> Availabilities => Set<AvailabilityEntity>();
+        public DbSet<BusyDayEntity> BusyDays => Set<BusyDayEntity>();
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -60,7 +63,20 @@ namespace TourBooking.Infrastructure.Context
             builder.Entity<VehicleClassTranslation>().ToTable("VehicleClassTranslations");
             builder.Entity<SeatTypeTranslation>().ToTable("SeatTypeTranslations");
             builder.Entity<LegroomSpaceTranslation>().ToTable("LegroomSpaceTranslations");
+            builder.Entity<AvailabilityEntity>().HasIndex(x => x.VehicleId).IsUnique();
 
+            builder
+                .Entity<BusyDayEntity>()
+                .HasIndex(x => new { x.AvailabilityId, x.Day })
+                .IsUnique(); // aynı günü iki kez yazmayı engelle
+
+            // İlişki
+            builder
+                .Entity<BusyDayEntity>()
+                .HasOne(x => x.Availability)
+                .WithMany(a => a.BusyDays)
+                .HasForeignKey(x => x.AvailabilityId)
+                .OnDelete(DeleteBehavior.Cascade);
             builder
                 .Entity<RegionEntity>()
                 .HasOne(r => r.Country)

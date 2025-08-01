@@ -14,12 +14,12 @@ namespace TourBooking.Application.DTOs
         public Guid DistrictId { get; set; }
         public Guid DriverId { get; set; }
         public Guid VehicleId { get; set; }
-        public string CountryName { get; set; }
-        public string RegionName { get; set; }
-        public string CityName { get; set; }
-        public string DistrictName { get; set; }
-        public string VehicleName { get; set; }
-        public string DriverName { get; set; }
+        public string? CountryName { get; set; }
+        public string? RegionName { get; set; }
+        public string? CityName { get; set; }
+        public string? DistrictName { get; set; }
+        public string? VehicleName { get; set; }
+        public string? DriverName { get; set; }
         public decimal Price { get; set; }
     }
 }
