@@ -43,7 +43,8 @@ namespace TourBooking.Infrastructure.Context
         public DbSet<VehicleEntity> Vehicles { get; set; }
         public DbSet<TourEntity> Tours { get; set; }
         public DbSet<TourPricingEntity> TourPricings { get; set; }
-
+        public DbSet<GuideUserEntity> Guides { get; set; }
+        public DbSet<AgencyUserEntity> Agencies { get; set; }
         public DbSet<AvailabilityEntity> Availabilities => Set<AvailabilityEntity>();
         public DbSet<BusyDayEntity> BusyDays => Set<BusyDayEntity>();
 

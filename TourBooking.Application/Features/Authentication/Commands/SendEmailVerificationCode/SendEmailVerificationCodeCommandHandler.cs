@@ -14,14 +14,23 @@ using TourBooking.Shared.Localization;
 
 namespace TourBooking.Application.Features.Authentication.Commands.SendEmailVerificationCode
 {
-    public class SendEmailVerificationCodeCommandHandler : IRequestHandler<SendEmailVerificationCodeCommand, SendEmailVerificationCodeCommandResponse>
+    public class SendEmailVerificationCodeCommandHandler
+        : IRequestHandler<
+            SendEmailVerificationCodeCommand,
+            SendEmailVerificationCodeCommandResponse
+        >
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly IEmailService _emailService;
         private readonly IEmailVerificationCodeRepository _repository;
         IStringLocalizer<SharedResource> _localizer;
 
-        public SendEmailVerificationCodeCommandHandler(UserManager<AppUser> userManager, IEmailService emailService, IEmailVerificationCodeRepository repository, IStringLocalizer<SharedResource> localizer)
+        public SendEmailVerificationCodeCommandHandler(
+            UserManager<AppUser> userManager,
+            IEmailService emailService,
+            IEmailVerificationCodeRepository repository,
+            IStringLocalizer<SharedResource> localizer
+        )
         {
             _userManager = userManager;
             _emailService = emailService;
@@ -29,11 +38,20 @@ namespace TourBooking.Application.Features.Authentication.Commands.SendEmailVeri
             _localizer = localizer;
         }
 
-        public async Task<SendEmailVerificationCodeCommandResponse> Handle(SendEmailVerificationCodeCommand request, CancellationToken cancellationToken)
+        public async Task<SendEmailVerificationCodeCommandResponse> Handle(
+            SendEmailVerificationCodeCommand request,
+            CancellationToken cancellationToken
+        )
         {
             var user = await _userManager.FindByIdAsync(request.UserId.ToString());
-            if (user == null) { throw new NotFoundException(_localizer["UserNotFound"]); }
-            if (user.EmailConfirmed) { throw new BusinessRuleValidationException(_localizer["EmailAlreadyVerified"]); }
+            if (user == null)
+            {
+                throw new NotFoundException(_localizer["UserNotFound"]);
+            }
+            if (user.EmailConfirmed)
+            {
+                throw new BusinessRuleValidationException(_localizer["EmailAlreadyVerified"]);
+            }
 
             var code = new Random().Next(100000, 999999).ToString("D6");
             var verificationCode = new EmailVerificationCode
@@ -46,13 +64,12 @@ namespace TourBooking.Application.Features.Authentication.Commands.SendEmailVeri
 
             await _repository.AddAsync(verificationCode);
             var body = $"{_localizer["EmailVerificationCodePrefix"]} <h2>{code}</h2>";
-            await _emailService.SendEmailAsync(user.Email!,$"{ _localizer["EmailVerificationCodeTitle"]}" , body);
+            await _emailService.SendEmailAsync(
+                user.Email!,
+                $"{_localizer["EmailVerificationCodeTitle"]}",
+                body
+            );
             var message = string.Format(_localizer["VerificationCodeSentTo"], user.Email);
-
-            Console.WriteLine($"LOCALIZED MESSAGE: {_localizer["UserNotFound"]}");
-            Console.WriteLine($"LOCALIZED MESSAGE: {_localizer["EmailVerificationCodePrefix"]}");
-            Console.WriteLine($"LOCALIZED MESSAGE: {_localizer["EmailVerificationCodeTitle"]}");
-            Console.WriteLine($"LOCALIZED MESSAGE: {_localizer["VerificationCodeSentTo"]}");
 
             return new SendEmailVerificationCodeCommandResponse { Message = message };
         }

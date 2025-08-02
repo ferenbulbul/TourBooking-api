@@ -43,7 +43,9 @@ namespace TourBooking.API.Controllers
         public async Task<IActionResult> Login([FromBody] LoginQuery query)
         {
             LoginQueryResponse result = await _mediator.Send(query);
-            return Ok(ApiResponse<LoginQueryResponse>.SuccessResponse(result, _localizer["LoginSuccess"]));
+            return Ok(
+                ApiResponse<LoginQueryResponse>.SuccessResponse(result, _localizer["LoginSuccess"])
+            );
         }
 
         [HttpPost("register")]
@@ -51,20 +53,60 @@ namespace TourBooking.API.Controllers
         public async Task<IActionResult> Register([FromBody] RegisterCommand command)
         {
             RegisterCommandResponse result = await _mediator.Send(command);
-            return StatusCode(201, ApiResponse<RegisterCommandResponse>.SuccessResponse(result, _localizer["RegistrationSuccessVerifyEmail"], 201));
+            return StatusCode(
+                201,
+                ApiResponse<RegisterCommandResponse>.SuccessResponse(
+                    result,
+                    _localizer["RegistrationSuccessVerifyEmail"],
+                    201
+                )
+            );
         }
 
+        [HttpPost("agency-register")]
+        [ProducesResponseType(typeof(ApiResponse<RegisterCommandResponse>), 201)]
+        public async Task<IActionResult> AgencyRegister([FromBody] AgencyRegisterCommand command)
+        {
+            AgencyRegisterCommandResponse result = await _mediator.Send(command);
+            return StatusCode(
+                201,
+                ApiResponse<AgencyRegisterCommandResponse>.SuccessResponse(
+                    result,
+                    _localizer["RegistrationSuccessVerifyEmail"],
+                    201
+                )
+            );
+        }
+
+        [HttpPost("guide-register")]
+        [ProducesResponseType(typeof(ApiResponse<GuideRegisterCommandResponse>), 201)]
+        public async Task<IActionResult> GuideRegister([FromBody] GuideRegisterCommand command)
+        {
+            GuideRegisterCommandResponse result = await _mediator.Send(command);
+            return StatusCode(
+                201,
+                ApiResponse<GuideRegisterCommandResponse>.SuccessResponse(
+                    result,
+                    _localizer["RegistrationSuccessVerifyEmail"],
+                    201
+                )
+            );
+        }
 
         [HttpPost("send-verification-email")]
         [Authorize]
         public async Task<IActionResult> SendVerificationEmail()
         {
-
             var userIdString = GetUserIdFromToken();
 
             var command = new SendEmailVerificationCodeCommand { UserId = userIdString };
             var result = await _mediator.Send(command);
-            return Ok(ApiResponse<SendEmailVerificationCodeCommandResponse>.SuccessResponse(null, result.Message));
+            return Ok(
+                ApiResponse<SendEmailVerificationCodeCommandResponse>.SuccessResponse(
+                    null,
+                    result.Message
+                )
+            );
         }
 
         [HttpPost("verify-email")]
@@ -73,34 +115,40 @@ namespace TourBooking.API.Controllers
         {
             var userIdString = GetUserIdFromToken();
 
-            var command = new VerifyEmailCommand
-            {
-                UserId = userIdString,
-                Code = request.Code
-            };
+            var command = new VerifyEmailCommand { UserId = userIdString, Code = request.Code };
             var result = await _mediator.Send(command);
 
-            return Ok(ApiResponse<VerifyEmailCommandResponse>.SuccessResponse(result,_localizer["EmailVerifiedSuccessfully"]));
+            return Ok(
+                ApiResponse<VerifyEmailCommandResponse>.SuccessResponse(
+                    result,
+                    _localizer["EmailVerifiedSuccessfully"]
+                )
+            );
         }
+
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordCommand command)
         {
             await _mediator.Send(command);
             return Ok(ApiResponse<object>.SuccessResponse(null, _localizer["CodeSentToEmail"]));
         }
+
         [HttpPost("reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand command)
         {
             await _mediator.Send(command);
-            return Ok(ApiResponse<object>.SuccessResponse(null,  _localizer["PasswordChangedSuccessfully"]));
+            return Ok(
+                ApiResponse<object>.SuccessResponse(null, _localizer["PasswordChangedSuccessfully"])
+            );
         }
+
         [HttpPost("verify-password-code")]
         public async Task<IActionResult> ResetPassword([FromBody] VerifyPasswordCommand command)
         {
-             await _mediator.Send(command);
-            return Ok(ApiResponse<object>.SuccessResponse(null,_localizer["VerificationCodeValid"]));
+            await _mediator.Send(command);
+            return Ok(
+                ApiResponse<object>.SuccessResponse(null, _localizer["VerificationCodeValid"])
+            );
         }
-
     }
-
 }

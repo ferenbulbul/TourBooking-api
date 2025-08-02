@@ -1,3 +1,4 @@
+using System.Globalization;
 using MediatR;
 using TourBooking.Application.DTOs;
 using TourBooking.Application.Expactions;
@@ -20,6 +21,7 @@ public class TourTypesQueryHandler : IRequestHandler<TourTypesQuery, TourTypesQu
         CancellationToken cancellationToken
     )
     {
+        var culture = CultureInfo.CurrentUICulture.Name;
         // Adjust the parameters below to match the required signature of GetAllAsync
         var allTourType = await _unitOfWork.TourTypes();
 
@@ -33,7 +35,7 @@ public class TourTypesQueryHandler : IRequestHandler<TourTypesQuery, TourTypesQu
             MainImageUrl = tt.MainImageUrl,
             ThumbImageUrl = tt.ThumbImageUrl,
             Translations = tt
-                .Translations.Select(ttr => new TranslationDto
+                .Translations. Select(ttr => new TranslationDto
                 {
                     Title = ttr.Title,
                     Description = ttr.Description,

@@ -2,7 +2,10 @@ namespace TourBooking.Domain.Enums
 {
     public enum UserType
     {
+        Admin = 0,
         Customer = 1,
-        Business = 2
+        Agency = 2,
+        Guide = 3,
+        Driver = 4,
     }
 }
