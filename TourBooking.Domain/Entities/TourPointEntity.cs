@@ -1,5 +1,3 @@
-using System;
-
 namespace TourBooking.Domain.Entities
 {
     public class TourPointEntity : IBaseEntity

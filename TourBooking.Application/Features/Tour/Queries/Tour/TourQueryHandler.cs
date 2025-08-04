@@ -1,8 +1,6 @@
 using MediatR;
 using TourBooking.Application.DTOs;
-using TourBooking.Application.Expactions;
 using TourBooking.Application.Interfaces.Repositories;
-using TourBooking.Domain.Entities;
 
 namespace TourBooking.Application.Features;
 
@@ -21,18 +19,20 @@ public class TourQueryHandler : IRequestHandler<TourQuery, TourQueryResponse>
     )
     {
         // Adjust the parameters below to match the required signature of GetAllAsync
-        var tours = await _unitOfWork.Tours();
+        var tours = await _unitOfWork.ToursForAgency(request.AgencyId, cancellationToken);
         var languageCode = "tr";
 
         if (tours == null || !tours.Any())
         {
-            throw new NotFoundException("Tur noktası bulunamadı.");
+            return new TourQueryResponse { Tours = new List<TourDto>() };
         }
         var dtos = tours.Select(tt => new TourDto
         {
             Id = tt.Id,
             TourPointId = tt.TourPointId,
-            TourPointName = tt.TourPoint.Translations.FirstOrDefault(x => x.Language.Code == languageCode).Title,
+            TourPointName = tt
+                .TourPoint.Translations.FirstOrDefault(x => x.Language.Code == languageCode)
+                .Title,
             Pricings = tt
                 .PricingEntity.Select(ttr => new PricingDto
                 {

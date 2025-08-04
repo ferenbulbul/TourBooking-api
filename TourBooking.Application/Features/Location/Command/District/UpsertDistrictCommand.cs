@@ -1,4 +1,3 @@
-using System;
 using MediatR;
 using TourBooking.Application.DTOs;
 

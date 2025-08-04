@@ -1,5 +1,3 @@
-using System;
-
 namespace TourBooking.Application.DTOs.Mobile
 {
     public class MobileHighlightedTourPointDto

@@ -1,4 +1,3 @@
-using TourBooking.Application.DTOs;
 using TourBooking.Application.DTOs.Mobile;
 
 namespace TourBooking.Application.Features;

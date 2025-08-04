@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using TourBooking.Application.Expactions;
-using TourBooking.Application.Features.Authentication.Commands.Register;
 using TourBooking.Application.Interfaces.Repositories;
 using TourBooking.Application.Interfaces.Services;
 using TourBooking.Domain.Entities;

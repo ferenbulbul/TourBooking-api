@@ -1,4 +1,3 @@
-using System;
 using MediatR;
 using TourBooking.Application.Interfaces.Repositories;
 using TourBooking.Domain.Entities;
@@ -25,7 +24,7 @@ namespace TourBooking.Application.Features
                     if (existing != null)
                     {
                         existing.AracResmi = request.AracResmi;
-    
+
                         existing.LegRoomSpaceId = request.LegRoomSpaceId;
                         existing.LicensePlate = request.LicensePlate;
                         existing.ModelYear = request.ModelYear;
@@ -57,7 +56,8 @@ namespace TourBooking.Application.Features
                         VehicleClassId = request.VehicleClassId,
                         VehicleName = request.VehicleName,
                         VehicleTypeId = request.VehicleTypeId,
-                        AracResmi = request.AracResmi
+                        AracResmi = request.AracResmi,
+                        AgencyId = request.AgencyId
                     };
                     await _unitOfWork.GetRepository<VehicleEntity>().AddAsync(driver);
                 }

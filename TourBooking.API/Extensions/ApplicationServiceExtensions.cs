@@ -1,13 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using FluentValidation;
 using MediatR;
 using TourBooking.Application.Common.Behaviors;
-using TourBooking.Application.Features.Authentication.Commands.Register;
-using TourBooking.Application.Features.Authentication.Commands.ResetPassword;
 
 namespace TourBooking.API.Extensions
 {

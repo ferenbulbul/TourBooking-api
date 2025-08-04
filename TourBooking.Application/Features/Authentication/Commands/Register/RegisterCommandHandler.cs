@@ -1,8 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -22,8 +17,12 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
         private readonly ITokenService _tokenService;
         IStringLocalizer<RegisterCommandHandler> _localizer;
 
-
-        public RegisterCommandHandler(UserManager<AppUser> userManager, IUnitOfWork unitOfWork, ITokenService tokenService, IStringLocalizer<RegisterCommandHandler> localizer)
+        public RegisterCommandHandler(
+            UserManager<AppUser> userManager,
+            IUnitOfWork unitOfWork,
+            ITokenService tokenService,
+            IStringLocalizer<RegisterCommandHandler> localizer
+        )
         {
             _userManager = userManager;
             _unitOfWork = unitOfWork;
@@ -31,7 +30,10 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
             _localizer = localizer;
         }
 
-        public async Task<RegisterCommandResponse> Handle(RegisterCommand request, CancellationToken cancellationToken)
+        public async Task<RegisterCommandResponse> Handle(
+            RegisterCommand request,
+            CancellationToken cancellationToken
+        )
         {
             var emailExists = await _userManager.FindByEmailAsync(request.Email);
             if (emailExists != null)
@@ -39,14 +41,14 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
                 throw new BusinessRuleValidationException(_localizer["EmailAlreadyInUse"]);
             }
 
-            var phoneExists = await _userManager.Users
-                .AnyAsync(u => u.PhoneNumber == request.PhoneNumber);
+            var phoneExists = await _userManager.Users.AnyAsync(u =>
+                u.PhoneNumber == request.PhoneNumber
+            );
 
             if (phoneExists)
             {
                 throw new BusinessRuleValidationException(_localizer["PhoneNumberAlreadyInUse"]);
             }
-
 
             var newUser = new AppUser
             {

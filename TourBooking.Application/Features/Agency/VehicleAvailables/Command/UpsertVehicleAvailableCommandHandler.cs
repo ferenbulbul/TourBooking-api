@@ -1,7 +1,5 @@
-using System;
 using MediatR;
 using TourBooking.Application.Interfaces.Repositories;
-using TourBooking.Domain.Entities;
 
 namespace TourBooking.Application.Features
 {

@@ -1,17 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
-using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
-using TourBooking.API.Controllers;
 using TourBooking.Application.DTOs;
 using TourBooking.Application.DTOs.Comman;
 using TourBooking.Application.Features;
@@ -21,7 +11,6 @@ using TourBooking.Application.Features.Authentication.Commands.SendEmailVerifica
 using TourBooking.Application.Features.Authentication.Commands.VerifyEmail;
 using TourBooking.Application.Features.Authentication.Commands.VerifyPasswordCode;
 using TourBooking.Application.Features.Queries.Login;
-using TourBooking.Application.Interfaces.Services;
 using TourBooking.Shared.Localization;
 
 namespace TourBooking.API.Controllers

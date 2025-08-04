@@ -1,4 +1,3 @@
-using System;
 using MediatR;
 
 namespace TourBooking.Application.Features
@@ -6,7 +5,7 @@ namespace TourBooking.Application.Features
     public class UpsertVehicleCommand : IRequest
     {
         public Guid? Id { get; set; }
-        public Guid? AgencyId { get; set; }
+        public Guid AgencyId { get; set; }
         public string? VehicleName { get; set; }
         public Guid VehicleTypeId { get; set; }
 

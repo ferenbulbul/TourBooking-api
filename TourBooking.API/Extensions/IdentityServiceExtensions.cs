@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using TourBooking.Application.Interfaces.Services;
-using TourBooking.Domain.Comman;
 using TourBooking.Domain.Entities;
 using TourBooking.Infrastructure.Context;
 using TourBooking.Infrastructure.Services;

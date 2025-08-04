@@ -1,6 +1,4 @@
-using System;
 using MediatR;
-using TourBooking.Application.DTOs;
 
 namespace TourBooking.Application.Features
 {

@@ -1,4 +1,3 @@
-using System;
 using Microsoft.EntityFrameworkCore;
 using TourBooking.Application.Interfaces.Repositories;
 using TourBooking.Domain.Entities;
@@ -476,6 +475,51 @@ namespace TourBooking.Infrastructure.Repositories
             return await _context
                 .Drivers.AsNoTracking()
                 .Where(d => d.AgencyId == agencyId)
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task<IEnumerable<VehicleEntity>> VehiclesForAgency(
+            Guid agencyId,
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .Vehicles.AsNoTracking()
+                .Where(v => v.AgencyId == agencyId)
+                .ToListAsync(cancellationToken);
+        }
+
+        public async Task<IEnumerable<TourEntity>> ToursForAgency(
+            Guid agencyId,
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .Tours.AsNoTracking()
+                .Include(t => t.PricingEntity)
+                .ThenInclude(pe => pe.City)
+                .ThenInclude(tt => tt.Translations)
+                .ThenInclude(tt => tt.Language)
+                .Include(t => t.PricingEntity)
+                .ThenInclude(pe => pe.Country)
+                .ThenInclude(tt => tt.Translations)
+                .ThenInclude(tt => tt.Language)
+                .Include(t => t.PricingEntity)
+                .ThenInclude(pe => pe.Region)
+                .ThenInclude(tt => tt.Translations)
+                .ThenInclude(tt => tt.Language)
+                .Include(t => t.PricingEntity)
+                .ThenInclude(pe => pe.District)
+                .ThenInclude(tt => tt.Translations)
+                .ThenInclude(tt => tt.Language)
+                .Include(t => t.PricingEntity)
+                .ThenInclude(pe => pe.Vehicle)
+                .Include(t => t.PricingEntity)
+                .ThenInclude(pe => pe.Driver)
+                .Include(t => t.TourPoint)
+                .ThenInclude(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .Where(t => t.AgencyId == agencyId)
                 .ToListAsync(cancellationToken);
         }
     }

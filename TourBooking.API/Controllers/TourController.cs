@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using TourBooking.Application.DTOs.Comman;
@@ -20,25 +16,13 @@ namespace TourBooking.API.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet("tour")]
-        public async Task<IActionResult> Tours()
-        {
-            var tours = await _mediator.Send(new TourQuery());
-            return Ok(ApiResponse<TourQueryResponse>.SuccessResponse(tours, null));
-        }
-        [HttpPost("tour")]
-        public async Task<IActionResult> CreateTour(UpsertTourCommand request)
-        {
-            await _mediator.Send(request);
-            return Ok(ApiResponse<UpsertTourCommandResponse>.SuccessResponse(null, null));
-        }
-
         [HttpGet("tour-types")]
         public async Task<IActionResult> TourTypes()
         {
             var tourTypes = await _mediator.Send(new TourTypesQuery());
             return Ok(ApiResponse<TourTypesQueryResponse>.SuccessResponse(tourTypes, null));
         }
+
         [HttpPost("tour-types")]
         public async Task<IActionResult> CreateTourTypes(AddTourTypeCommand request)
         {

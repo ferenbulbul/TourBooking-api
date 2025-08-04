@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +15,29 @@ namespace TourBooking.API.Controllers
         public AgencyController(IMediator mediator)
         {
             _mediator = mediator;
+        }
+
+        [Authorize]
+        [HttpGet("tour")]
+        public async Task<IActionResult> Tours()
+        {
+            var userIdString = GetUserIdFromToken();
+            var tours = await _mediator.Send(new TourQuery { AgencyId = userIdString });
+            if (tours == null || !tours.Tours.Any())
+            {
+                return Ok(ApiResponse<TourQueryResponse>.SuccessResponse(null, null));
+            }
+            return Ok(ApiResponse<TourQueryResponse>.SuccessResponse(tours, null));
+        }
+
+        [Authorize]
+        [HttpPost("tour")]
+        public async Task<IActionResult> CreateTour(UpsertTourCommand request)
+        {
+            var userIdString = GetUserIdFromToken();
+            request.AgencyId = userIdString;
+            await _mediator.Send(request);
+            return Ok(ApiResponse<UpsertTourCommandResponse>.SuccessResponse(null, null));
         }
 
         [Authorize]
@@ -47,10 +66,17 @@ namespace TourBooking.API.Controllers
             return Ok(ApiResponse<UpsertDriverCommandResponse>.SuccessResponse(null, null));
         }
 
+        [Authorize]
         [HttpGet("vehicle")]
         public async Task<IActionResult> Vehicles()
         {
-            var vehicles = await _mediator.Send(new VehicleQuery());
+            var userIdString = GetUserIdFromToken();
+
+            var vehicles = await _mediator.Send(new VehicleQuery { AgencyId = userIdString });
+            if (vehicles == null || !vehicles.Vehicles.Any())
+            {
+                return Ok(ApiResponse<VehicleQueryResponse>.SuccessResponse(null, null));
+            }
             return Ok(ApiResponse<VehicleQueryResponse>.SuccessResponse(vehicles, null));
         }
 
