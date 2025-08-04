@@ -57,7 +57,7 @@ public class TourPointsQueryHandler : IRequestHandler<TourPointsQuery, TourPoint
                 .Region.Translations.FirstOrDefault(x => x.Language.Code == languageCode)
                 .Title,
             CityName = tt
-                .City.Translations.FirstOrDefault(x => x.Language.Code == languageCode)
+                .City?.Translations.FirstOrDefault(x => x.Language.Code == languageCode)
                 .Title,
             DistrictName = tt
                 .District.Translations.FirstOrDefault(x => x.Language.Code == languageCode)

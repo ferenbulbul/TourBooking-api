@@ -127,6 +127,8 @@ namespace TourBooking.Infrastructure.Repositories
         {
             return await _context
                 .Regions.Include(a => a.Country)
+                .ThenInclude(c => c.Translations)
+                .ThenInclude(tt => tt.Language)
                 .Include(a => a.Translations)
                 .ThenInclude(tt => tt.Language)
                 .ToListAsync();
@@ -196,16 +198,22 @@ namespace TourBooking.Infrastructure.Repositories
                 var res = await _context
                     .TourPoints.Include(t => t.Country)
                     .ThenInclude(c => c.Translations)
+                    .ThenInclude(tt => tt.Language)
                     .Include(t => t.Region)
                     .ThenInclude(r => r.Translations)
+                    .ThenInclude(tt => tt.Language)
                     .Include(t => t.City)
                     .ThenInclude(c => c.Translations)
+                    .ThenInclude(tt => tt.Language)
                     .Include(t => t.District)
                     .ThenInclude(d => d.Translations)
+                    .ThenInclude(tt => tt.Language)
                     .Include(t => t.TourDifficulty)
                     .ThenInclude(td => td.Translations)
+                    .ThenInclude(tt => tt.Language)
                     .Include(t => t.TourType)
                     .ThenInclude(tt => tt.Translations)
+                    .ThenInclude(tt => tt.Language)
                     .Include(t => t.Translations)
                     .ThenInclude(tt => tt.Language)
                     .ToListAsync();

@@ -47,7 +47,7 @@ namespace TourBooking.API.Controllers
             var userIdString = GetUserIdFromToken();
             var drivers = await _mediator.Send(new DriverQuery { AgencyId = userIdString });
 
-            if (drivers == null || !drivers.Drivers.Any())
+            if (drivers?.Drivers?.Any() != true)
             {
                 return Ok(ApiResponse<DriverQueryResponse>.SuccessResponse(null, null));
             }

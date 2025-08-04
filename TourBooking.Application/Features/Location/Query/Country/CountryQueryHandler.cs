@@ -33,7 +33,8 @@ namespace TourBooking.Application.Features.Settings.Queries
                     {
                         Title = ttr.Title,
                         Description = ttr.Description,
-                        LanguageId = ttr.LanguageId
+                        LanguageId = ttr.LanguageId,
+                        LanguageName = ttr.Language.Name
                     })
                     .ToList()
             });

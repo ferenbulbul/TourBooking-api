@@ -1,3 +1,5 @@
+using System;
+
 namespace TourBooking.Application.DTOs
 {
     public class CityDto : BaseDto

@@ -29,12 +29,16 @@ namespace TourBooking.Application.Features.Settings.Queries
             {
                 Id = tt.Id,
                 CountryId = tt.CountryId,
+                CountryName = tt
+                    .Country.Translations.FirstOrDefault(x => x.Language.Code == "tr")
+                    .Title,
                 Translations = tt
                     .Translations.Select(ttr => new TranslationDto
                     {
                         Title = ttr.Title,
                         Description = ttr.Description,
-                        LanguageId = ttr.LanguageId
+                        LanguageId = ttr.LanguageId,
+                        LanguageName = ttr.Language.Name
                     })
                     .ToList()
             });
