@@ -467,5 +467,16 @@ namespace TourBooking.Infrastructure.Repositories
                 .Where(t => t.IsHighlighted)
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<DriverEntity>> DriversForAgency(
+            Guid agencyId,
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .Drivers.AsNoTracking()
+                .Where(d => d.AgencyId == agencyId)
+                .ToListAsync(cancellationToken);
+        }
     }
 }

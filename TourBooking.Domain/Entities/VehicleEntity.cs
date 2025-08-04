@@ -8,6 +8,8 @@ namespace TourBooking.Domain.Entities
     public class VehicleEntity : IBaseEntity
     {
         public Guid Id { get; set; }
+        public Guid AgencyId { get; set; }
+        public AgencyUserEntity Agency { get; set; }
         public string? VehicleName { get; set; }
         public Guid VehicleTypeId { get; set; }
         public VehicleType VehicleType { get; set; }

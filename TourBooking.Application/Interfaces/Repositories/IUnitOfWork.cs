@@ -47,6 +47,7 @@ namespace TourBooking.Application.Interfaces.Repositories
         Task<IEnumerable<AvailabilityEntity>> VehicleAvailabilities(
             CancellationToken cancellationToken = default
         );
+        Task<IEnumerable<DriverEntity>> DriversForAgency(Guid agencyId, CancellationToken cancellationToken = default);
         Task<IEnumerable<DriverEntity>> Drivers(CancellationToken cancellationToken = default);
         Task<IEnumerable<VehicleEntity>> Vehicles(CancellationToken cancellationToken = default);
         Task<TourEntity> Tour(Guid Id, CancellationToken cancellationToken = default);

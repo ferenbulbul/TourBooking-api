@@ -55,7 +55,7 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
             }
             var newAgencyUser = new AgencyUserEntity
             {
-                AppUserId = newUser.Id,
+                Id = newUser.Id,
                 PhoneNumber = request.PhoneNumber,
                 AuthorizedUserFirstName = request.FirstName,
                 AuthorizedUserLastName = request.LastName,

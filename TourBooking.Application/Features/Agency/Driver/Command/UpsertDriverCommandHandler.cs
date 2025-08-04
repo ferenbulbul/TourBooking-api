@@ -51,7 +51,8 @@ namespace TourBooking.Application.Features
                         NameSurname = request.NameSurname,
                         ProfilePhoto = request.ProfilePhoto,
                         ServiceCities = request.ServiceCities,
-                        SrcDocument = request.SrcDocument
+                        SrcDocument = request.SrcDocument,
+                        AgencyId = request.AgencyId
                     };
                     await _unitOfWork.GetRepository<DriverEntity>().AddAsync(driver);
                 }

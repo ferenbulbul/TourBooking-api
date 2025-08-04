@@ -9,7 +9,8 @@ using TourBooking.Infrastructure.Context;
 
 namespace TourBooking.Infrastructure.Repositories
 {
-    public class GenericRepository<T> : IGenericRepository<T> where T : class, IBaseEntity
+    public class GenericRepository<T> : IGenericRepository<T>
+        where T : class, IBaseEntity
     {
         protected readonly AppDbContext _context;
         private readonly DbSet<T> _dbSet;
@@ -42,17 +43,17 @@ namespace TourBooking.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task SoftDelete (T entity)
+        public async Task SoftDelete(T entity)
         {
             entity.IsDeleted = true;
             _dbSet.Update(entity);
             await _context.SaveChangesAsync();
         }
+
         public async Task HardDeleteAsync(T entity)
         {
             await Task.Run(() => _dbSet.Remove(entity));
             _context.SaveChanges();
         }
-        
     }
 }

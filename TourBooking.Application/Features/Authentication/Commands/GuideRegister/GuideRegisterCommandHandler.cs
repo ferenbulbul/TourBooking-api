@@ -55,7 +55,7 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
             }
             var newGuideUser = new GuideUserEntity
             {
-                AppUserId = newUser.Id,
+                Id = newUser.Id,
                 PhoneNumber = request.PhoneNumber,
                 CreatedDate = DateTime.Now,
                 Email = request.Email,

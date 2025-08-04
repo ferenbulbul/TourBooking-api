@@ -16,5 +16,6 @@ namespace TourBooking.Domain.Entities
         public DateTime? RefreshTokenExpireDate { get; set; }
         public CustomerUser CustomerUser { get; set; }
         public AgencyUserEntity AgencyUser { get; set; }
+        public GuideUserEntity GuideUser { get; set; }
     }
 }

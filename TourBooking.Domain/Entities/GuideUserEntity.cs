@@ -1,12 +1,17 @@
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TourBooking.Domain.Entities
 {
     public class GuideUserEntity : IBaseEntity
     {
+        [Key]
         public Guid Id { get; set; }
-        public Guid AppUserId { get; set; }
-        public virtual AppUser AppUser { get; set; }
+
+        [ForeignKey(nameof(Id))]
+        public AppUser AppUser { get; set; }
+
         public string? LicenseNumber { get; set; }
         public string? Email { get; set; }
         public string? PhoneNumber { get; set; }

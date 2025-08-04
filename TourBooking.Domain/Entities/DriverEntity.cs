@@ -8,6 +8,8 @@ namespace TourBooking.Domain.Entities
     public class DriverEntity : IBaseEntity
     {
         public Guid Id { get; set; }
+        public Guid AgencyId { get; set; }
+        public AgencyUserEntity Agency { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public bool IsDeleted { get; set; }

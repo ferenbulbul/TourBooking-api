@@ -6,6 +6,8 @@ namespace TourBooking.Domain.Entities
     {
         public bool IsActive { get; set; }
         public Guid Id { get; set; }
+        public Guid AgencyId { get; set; }
+        public AgencyUserEntity Agency { get; set; }
         public TourPointEntity TourPoint { get; set; }
         public Guid TourPointId { get; set; }
         public ICollection<TourPricingEntity> PricingEntity { get; set; }

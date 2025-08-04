@@ -67,6 +67,24 @@ namespace TourBooking.Infrastructure.Context
             builder.Entity<AvailabilityEntity>().HasIndex(x => x.VehicleId).IsUnique();
 
             builder
+                .Entity<GuideUserEntity>()
+                .HasOne(c => c.AppUser)
+                .WithOne(u => u.GuideUser)
+                .HasForeignKey<GuideUserEntity>(c => c.Id);
+
+            builder
+                .Entity<AgencyUserEntity>()
+                .HasOne(c => c.AppUser)
+                .WithOne(u => u.AgencyUser)
+                .HasForeignKey<AgencyUserEntity>(c => c.Id);
+
+            builder
+                .Entity<CustomerUser>()
+                .HasOne(c => c.AppUser)
+                .WithOne(u => u.CustomerUser)
+                .HasForeignKey<CustomerUser>(c => c.Id);
+
+            builder
                 .Entity<BusyDayEntity>()
                 .HasIndex(x => new { x.AvailabilityId, x.Day })
                 .IsUnique(); // aynı günü iki kez yazmayı engelle

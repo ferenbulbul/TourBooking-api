@@ -20,11 +20,11 @@ public class DriverQueryHandler : IRequestHandler<DriverQuery, DriverQueryRespon
         CancellationToken cancellationToken
     )
     {
-        var drivers = await _unitOfWork.Drivers();
+        var drivers = await _unitOfWork.DriversForAgency(request.AgencyId);
 
         if (drivers == null || !drivers.Any())
         {
-            throw new NotFoundException("Tur noktası bulunamadı.");
+            return new DriverQueryResponse();
         }
         var dtos = drivers.Select(tt => new DriverDto
         {

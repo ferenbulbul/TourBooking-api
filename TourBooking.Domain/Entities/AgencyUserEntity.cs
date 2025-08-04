@@ -1,12 +1,16 @@
 using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TourBooking.Domain.Entities
 {
     public class AgencyUserEntity : IBaseEntity
     {
+        [Key]
         public Guid Id { get; set; }
-        public Guid AppUserId { get; set; }
-        public virtual AppUser AppUser { get; set; }
+        
+        [ForeignKey(nameof(Id))]
+        public AppUser AppUser { get; set; }
         public string? AuthorizedUserFirstName { get; set; }
         public string? AuthorizedUserLastName { get; set; }
         public string? FullAddress { get; set; }
@@ -21,5 +25,8 @@ namespace TourBooking.Domain.Entities
         public DateTime? UpdatedDate { get; set; }
         public bool IsDeleted { get; set; }
         public bool IsConfirmed { get; set; }
+        public virtual ICollection<DriverEntity> Drivers { get; set; } = new List<DriverEntity>();
+        public virtual ICollection<VehicleEntity> Vehicles { get; set; } = new List<VehicleEntity>();
+        public virtual ICollection<TourEntity> Tours { get; set; } = new List<TourEntity>();
     }
 }

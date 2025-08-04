@@ -5,6 +5,7 @@ namespace TourBooking.Application.Features
 {
     public class UpsertDriverCommand : IRequest
     {
+        public Guid AgencyId { get; set; }
         public Guid? Id { get; set; }
         public string DateOfBirth { get; set; }
         public string DriversLicenceDocument { get; set; }
