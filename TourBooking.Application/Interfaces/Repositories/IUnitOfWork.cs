@@ -9,6 +9,7 @@ namespace TourBooking.Application.Interfaces.Repositories
             where T : class, IBaseEntity;
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         Task<IEnumerable<TourTypeEnitity>> TourTypes(CancellationToken cancellationToken = default);
+        Task<IEnumerable<TourPointEntity>> HighlightedTourPoints(CancellationToken cancellationToken = default);
         Task<IEnumerable<TourDifficultyEntity>> TourDifficulties(
             CancellationToken cancellationToken = default
         );

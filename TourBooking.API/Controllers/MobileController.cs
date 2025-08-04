@@ -1,0 +1,42 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using MediatR;
+using Microsoft.AspNetCore.Mvc;
+using TourBooking.Application.DTOs.Comman;
+using TourBooking.Application.Features;
+
+namespace TourBooking.API.Controllers
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class MobileController : BaseController
+    {
+        private readonly IMediator _mediator;
+
+        public MobileController(IMediator mediator)
+        {
+            _mediator = mediator;
+        }
+
+        [HttpGet("tourTypes")]
+        public async Task<IActionResult> TourTypes()
+        {
+            var tourTypes = await _mediator.Send(new MobileTourTypesQuery());
+            return Ok(ApiResponse<MobileTourTypesQueryResponse>.SuccessResponse(tourTypes, null));
+        }
+
+        [HttpGet("highlightedTourPoints")]
+        public async Task<IActionResult> HighlightedTourPoints()
+        {
+            var tourPoints = await _mediator.Send(new MobileHighlightedTourPointQuery());
+            return Ok(
+                ApiResponse<MobileHighlightedTourPointQueryResponse>.SuccessResponse(
+                    tourPoints,
+                    null
+                )
+            );
+        }
+    }
+}

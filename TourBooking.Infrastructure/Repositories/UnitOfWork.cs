@@ -444,5 +444,28 @@ namespace TourBooking.Infrastructure.Repositories
         {
             return await _context.Availabilities.AsNoTracking().ToListAsync();
         }
+
+        public async Task<IEnumerable<TourPointEntity>> HighlightedTourPoints(
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .TourPoints.Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .Include(t => t.Country)
+                .ThenInclude(tt => tt.Translations)
+                .ThenInclude(tt => tt.Language)
+                .Include(t => t.Region)
+                .ThenInclude(tt => tt.Translations)
+                .ThenInclude(tt => tt.Language)
+                .Include(t => t.City)
+                .ThenInclude(tt => tt.Translations)
+                .ThenInclude(tt => tt.Language)
+                .Include(t => t.TourType)
+                .ThenInclude(tt => tt.Translations)
+                .ThenInclude(tt => tt.Language)
+                .Where(t => t.IsHighlighted)
+                .ToListAsync();
+        }
     }
 }
