@@ -606,5 +606,47 @@ namespace TourBooking.Infrastructure.Repositories
 
             return combinedResults;
         }
+
+        public async Task<IEnumerable<MobileCityDto>> CitiesForMobile(
+            string culture,
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .Cities.Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .Where(t => t.Translations.Any(tr => tr.Language.Code == culture))
+                .Select(t => new MobileCityDto
+                {
+                    Name = t
+                        .Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+                    Id = t.Id
+                })
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<MobileDistrictDto>> DistrictsForMobile(
+            Guid cityId,
+            string culture
+        )
+        {
+            return await _context
+                .Districts.Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .Where(t =>
+                    t.CityId == cityId && t.Translations.Any(tr => tr.Language.Code == culture)
+                )
+                .Select(t => new MobileDistrictDto
+                {
+                    Name = t
+                        .Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+                    Id = t.Id
+                })
+                .ToListAsync();
+        }
     }
 }
