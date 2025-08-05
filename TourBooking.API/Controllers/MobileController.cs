@@ -34,15 +34,29 @@ namespace TourBooking.API.Controllers
                 )
             );
         }
+
         [HttpGet("tour-points-by-tour-type")]
-        public async Task<IActionResult> TourPointByTourTypeId([FromQuery]Guid request)
+        public async Task<IActionResult> TourPointByTourTypeId([FromQuery] Guid request)
         {
-            var tourPoints = await _mediator.Send(new MobileTourPointByTourTypeQuery(){CagetoryId=request});
-            return Ok(                                
+            var tourPoints = await _mediator.Send(
+                new MobileTourPointByTourTypeQuery() { CagetoryId = request }
+            );
+            return Ok(
                 ApiResponse<MobileTourPointByTourTypeQueryResponse>.SuccessResponse(
                     tourPoints,
                     null
                 )
+            );
+        }
+
+        [HttpGet("tour-points-by-query")]
+        public async Task<IActionResult> TourPointBySearch([FromQuery] string query)
+        {
+            var tourPoints = await _mediator.Send(
+                new MobileTourPointBySearchQuery() { Query = query }
+            );
+            return Ok(
+                ApiResponse<MobileTourPointBySearchQueryResponse>.SuccessResponse(tourPoints, null)
             );
         }
     }

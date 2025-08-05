@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TourBooking.Application.DTOs.Mobile;
 using TourBooking.Application.Interfaces.Repositories;
 using TourBooking.Domain.Entities;
 using TourBooking.Infrastructure.Context;
@@ -531,7 +532,10 @@ namespace TourBooking.Infrastructure.Repositories
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<TourPointEntity>> MobileTourPointByTourTypeId(Guid TourTypeId,CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<TourPointEntity>> MobileTourPointByTourTypeId(
+            Guid TourTypeId,
+            CancellationToken cancellationToken = default
+        )
         {
             return await _context
                 .TourPoints.Include(t => t.Translations)
@@ -548,8 +552,59 @@ namespace TourBooking.Infrastructure.Repositories
                 .Include(t => t.TourType)
                 .ThenInclude(tt => tt.Translations)
                 .ThenInclude(tt => tt.Language)
-                .Where(t => t.TourTypeId==TourTypeId)
+                .Where(t => t.TourTypeId == TourTypeId)
                 .ToListAsync();
+        }
+
+        public async Task<IEnumerable<MobileTourPointsBySearchDto>> MobileTourPointBySearch(
+            string searchQuery,
+            string culture,
+            CancellationToken cancellationToken = default
+        )
+        {
+            searchQuery = searchQuery.ToLower();
+
+            var tours = await _context
+                .TourPoints.Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .Where(t =>
+                    t.Translations.Any(tr =>
+                        tr.Language.Code == culture && tr.Title.ToLower().StartsWith(searchQuery)
+                    )
+                )
+                .Select(t => new MobileTourPointsBySearchDto
+                {
+                    Name = t
+                        .Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+                    Type = "Tour",
+                    Id = t.Id
+                })
+                .ToListAsync();
+
+            var cities = await _context
+                .Cities.Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .Where(t =>
+                    t.Translations.Any(tr =>
+                        tr.Language.Code == culture && tr.Title.ToLower().StartsWith(searchQuery)
+                    )
+                )
+                .Select(t => new MobileTourPointsBySearchDto
+                {
+                    Name = t
+                        .Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+                    Type = "City",
+                    Id = t.Id
+                })
+                .ToListAsync();
+
+            var combinedResults = tours.Concat(cities).ToList();
+
+            return combinedResults;
         }
     }
 }

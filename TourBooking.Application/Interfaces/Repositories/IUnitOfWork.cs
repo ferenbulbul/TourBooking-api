@@ -1,3 +1,4 @@
+using TourBooking.Application.DTOs.Mobile;
 using TourBooking.Domain.Entities;
 
 namespace TourBooking.Application.Interfaces.Repositories
@@ -11,8 +12,14 @@ namespace TourBooking.Application.Interfaces.Repositories
         Task<IEnumerable<TourPointEntity>> HighlightedTourPoints(
             CancellationToken cancellationToken = default
         );
-         Task<IEnumerable<TourPointEntity>> MobileTourPointByTourTypeId(
-           Guid TourTypeId, CancellationToken cancellationToken = default
+        Task<IEnumerable<TourPointEntity>> MobileTourPointByTourTypeId(
+            Guid TourTypeId,
+            CancellationToken cancellationToken = default
+        );
+        Task<IEnumerable<MobileTourPointsBySearchDto>> MobileTourPointBySearch(
+            string searchQuery,
+            string culture,
+            CancellationToken cancellationToken = default
         );
         Task<IEnumerable<TourDifficultyEntity>> TourDifficulties(
             CancellationToken cancellationToken = default
@@ -75,6 +82,9 @@ namespace TourBooking.Application.Interfaces.Repositories
         );
         Task<TourEntity> Tour(Guid Id, CancellationToken cancellationToken = default);
         Task<IEnumerable<TourEntity>> Tours(CancellationToken cancellationToken = default);
-        Task<IEnumerable<TourEntity>> ToursForAgency(Guid agencyId, CancellationToken cancellationToken = default);
+        Task<IEnumerable<TourEntity>> ToursForAgency(
+            Guid agencyId,
+            CancellationToken cancellationToken = default
+        );
     }
 }
