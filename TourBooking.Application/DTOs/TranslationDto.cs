@@ -5,6 +5,6 @@ namespace TourBooking.Application.DTOs
         public string Description { get; set; }
         public string Title { get; set; }
         public Guid LanguageId { get; set; }
-        public string LanguageName { get; set; }
+        public string? LanguageName { get; set; }
     }
 }

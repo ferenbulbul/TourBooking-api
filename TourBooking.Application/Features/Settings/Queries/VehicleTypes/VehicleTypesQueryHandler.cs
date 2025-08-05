@@ -35,7 +35,8 @@ public class VehicleTypesQueryHandler
                 {
                     Title = ttr.Title,
                     Description = ttr.Description,
-                    LanguageId = ttr.LanguageId
+                    LanguageId = ttr.LanguageId,
+                    LanguageName = ttr.Language.Name
                 })
                 .ToList()
         });
