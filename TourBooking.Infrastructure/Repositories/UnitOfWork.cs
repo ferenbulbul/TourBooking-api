@@ -530,5 +530,26 @@ namespace TourBooking.Infrastructure.Repositories
                 .Where(t => t.AgencyId == agencyId)
                 .ToListAsync(cancellationToken);
         }
+
+        public async Task<IEnumerable<TourPointEntity>> MobileTourPointByTourTypeId(Guid TourTypeId,CancellationToken cancellationToken = default)
+        {
+            return await _context
+                .TourPoints.Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .Include(t => t.Country)
+                .ThenInclude(tt => tt.Translations)
+                .ThenInclude(tt => tt.Language)
+                .Include(t => t.Region)
+                .ThenInclude(tt => tt.Translations)
+                .ThenInclude(tt => tt.Language)
+                .Include(t => t.City)
+                .ThenInclude(tt => tt.Translations)
+                .ThenInclude(tt => tt.Language)
+                .Include(t => t.TourType)
+                .ThenInclude(tt => tt.Translations)
+                .ThenInclude(tt => tt.Language)
+                .Where(t => t.TourTypeId==TourTypeId)
+                .ToListAsync();
+        }
     }
 }

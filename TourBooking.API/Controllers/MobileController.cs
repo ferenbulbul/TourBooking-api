@@ -34,5 +34,16 @@ namespace TourBooking.API.Controllers
                 )
             );
         }
+        [HttpGet("tour-points-by-tour-type")]
+        public async Task<IActionResult> TourPointByTourTypeId([FromQuery]Guid request)
+        {
+            var tourPoints = await _mediator.Send(new MobileTourPointByTourTypeQuery(){CagetoryId=request});
+            return Ok(                                
+                ApiResponse<MobileTourPointByTourTypeQueryResponse>.SuccessResponse(
+                    tourPoints,
+                    null
+                )
+            );
+        }
     }
 }

@@ -11,6 +11,9 @@ namespace TourBooking.Application.Interfaces.Repositories
         Task<IEnumerable<TourPointEntity>> HighlightedTourPoints(
             CancellationToken cancellationToken = default
         );
+         Task<IEnumerable<TourPointEntity>> MobileTourPointByTourTypeId(
+           Guid TourTypeId, CancellationToken cancellationToken = default
+        );
         Task<IEnumerable<TourDifficultyEntity>> TourDifficulties(
             CancellationToken cancellationToken = default
         );
