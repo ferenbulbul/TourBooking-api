@@ -650,15 +650,28 @@ namespace TourBooking.Infrastructure.Repositories
         }
 
         public async Task<IEnumerable<MobileDetailedSearchResultDto>> MobileTourPointsByLocation(
-            Guid cityId,
-            Guid districtId,
+            Guid regionId,
+            Guid? cityId,
+            Guid? districtId,
             string culture
         )
         {
-            return await _context
+            var query = _context
                 .TourPoints.Include(t => t.Translations)
                 .ThenInclude(tt => tt.Language)
-                .Where(t => t.CityId == cityId && t.DistrictId == districtId && t.IsActive)
+                .Where(tp => tp.RegionId == regionId);
+
+            if (cityId.HasValue)
+            {
+                query = query.Where(tp => tp.CityId == cityId.Value);
+            }
+
+            if (districtId.HasValue)
+            {
+                query = query.Where(tp => tp.DistrictId == districtId.Value);
+            }
+
+            return await query
                 .Select(t => new MobileDetailedSearchResultDto
                 {
                     Name = t
@@ -703,17 +716,30 @@ namespace TourBooking.Infrastructure.Repositories
         }
 
         public async Task<IEnumerable<MobileDetailedSearchResultDto>> MobileTourPointsByDeparture(
-            Guid cityId,
-            Guid districtId,
+            Guid regionId,
+            Guid? cityId,
+            Guid? districtId,
             string culture
         )
         {
-            return await _context
+            var query = _context
                 .TourPricings.Include(tp => tp.Tour)
                 .ThenInclude(t => t.TourPoint)
                 .ThenInclude(tp => tp.Translations)
                 .ThenInclude(tt => tt.Language)
-                .Where(t => t.CityId == cityId && t.DistrictId == districtId && t.IsActive)
+                .Where(tp => tp.RegionId == regionId);
+
+            if (cityId.HasValue)
+            {
+                query = query.Where(tp => tp.CityId == cityId.Value);
+            }
+
+            if (districtId.HasValue)
+            {
+                query = query.Where(tp => tp.DistrictId == districtId.Value);
+            }
+
+            return await query
                 .Select(t => new MobileDetailedSearchResultDto
                 {
                     Name = t

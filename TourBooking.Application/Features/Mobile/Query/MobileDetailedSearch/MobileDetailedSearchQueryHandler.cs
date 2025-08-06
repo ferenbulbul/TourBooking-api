@@ -28,6 +28,7 @@ public class MobileDetailedSearchQueryHandler
         if (request.Type == (int)MobileSearchType.TourPoint)
         {
             var points = await _unitOfWork.MobileTourPointsByLocation(
+                request.RegionId,
                 request.CityId,
                 request.DistrictId,
                 culture
@@ -43,6 +44,7 @@ public class MobileDetailedSearchQueryHandler
         else if (request.Type == (int)MobileSearchType.DeparturePoint)
         {
             var points = await _unitOfWork.MobileTourPointsByDeparture(
+                request.RegionId,
                 request.CityId,
                 request.DistrictId,
                 culture

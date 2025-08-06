@@ -92,13 +92,15 @@ namespace TourBooking.Application.Interfaces.Repositories
         );
         Task<IEnumerable<MobileDistrictDto>> DistrictsForMobile(Guid cityId, string culture);
         Task<IEnumerable<MobileDetailedSearchResultDto>> MobileTourPointsByLocation(
-            Guid cityId,
-            Guid districtId,
+            Guid regionId,
+            Guid? cityId,
+            Guid? districtId,
             string culture
         );
         Task<IEnumerable<MobileDetailedSearchResultDto>> MobileTourPointsByDeparture(
-            Guid cityId,
-            Guid districtId,
+            Guid regionId,
+            Guid? cityId,
+            Guid? districtId,
             string culture
         );
     }
