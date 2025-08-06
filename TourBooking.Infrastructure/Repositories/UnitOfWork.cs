@@ -648,5 +648,117 @@ namespace TourBooking.Infrastructure.Repositories
                 })
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<MobileDetailedSearchResultDto>> MobileTourPointsByLocation(
+            Guid cityId,
+            Guid districtId,
+            string culture
+        )
+        {
+            return await _context
+                .TourPoints.Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .Where(t => t.CityId == cityId && t.DistrictId == districtId && t.IsActive)
+                .Select(t => new MobileDetailedSearchResultDto
+                {
+                    Name = t
+                        .Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+                    Id = t.Id,
+                    TourTypeId = t.TourTypeId,
+                    TourTypeName = t
+                        .TourType.Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+                    TourDifficultyId = t.TourDifficultyId,
+                    TourDifficultyName = t
+                        .TourDifficulty.Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+                    CountryId = t.CountryId,
+                    CountryName = t
+                        .Country.Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+                    RegionId = t.RegionId,
+                    RegionName = t
+                        .Region.Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+                    CityId = t.CityId,
+                    CityName = t
+                        .City.Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+                    DistrictId = t.DistrictId,
+                    DistrictName = t
+                        .District.Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+                    MainImage = t.MainImage,
+                    OtherImages = t.OtherImages
+                })
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<MobileDetailedSearchResultDto>> MobileTourPointsByDeparture(
+            Guid cityId,
+            Guid districtId,
+            string culture
+        )
+        {
+            return await _context
+                .TourPricings.Include(tp => tp.Tour)
+                .ThenInclude(t => t.TourPoint)
+                .ThenInclude(tp => tp.Translations)
+                .ThenInclude(tt => tt.Language)
+                .Where(t => t.CityId == cityId && t.DistrictId == districtId && t.IsActive)
+                .Select(t => new MobileDetailedSearchResultDto
+                {
+                    Name = t
+                        .Tour.TourPoint.Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+                    Id = t.Id,
+                    TourTypeId = t.Tour.TourPoint.TourTypeId,
+                    TourTypeName = t
+                        .Tour.TourPoint.TourType.Translations.Where(tr =>
+                            tr.Language.Code == culture
+                        )
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+                    TourDifficultyId = t.Tour.TourPoint.TourDifficultyId,
+                    TourDifficultyName = t
+                        .Tour.TourPoint.TourDifficulty.Translations.Where(tr =>
+                            tr.Language.Code == culture
+                        )
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+                    CountryId = t.CountryId,
+                    CountryName = t
+                        .Country.Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+                    RegionId = t.RegionId,
+                    RegionName = t
+                        .Region.Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+                    CityId = t.CityId,
+                    CityName = t
+                        .City.Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+                    DistrictId = t.DistrictId,
+                    DistrictName = t
+                        .District.Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+                    MainImage = t.Tour.TourPoint.MainImage,
+                    OtherImages = t.Tour.TourPoint.OtherImages
+                })
+                .ToListAsync();
+        }
     }
 }

@@ -82,11 +82,24 @@ namespace TourBooking.Application.Interfaces.Repositories
         );
         Task<TourEntity> Tour(Guid Id, CancellationToken cancellationToken = default);
         Task<IEnumerable<TourEntity>> Tours(CancellationToken cancellationToken = default);
-        Task<IEnumerable<MobileCityDto>> CitiesForMobile(string culture, CancellationToken cancellationToken = default);
+        Task<IEnumerable<MobileCityDto>> CitiesForMobile(
+            string culture,
+            CancellationToken cancellationToken = default
+        );
         Task<IEnumerable<TourEntity>> ToursForAgency(
             Guid agencyId,
             CancellationToken cancellationToken = default
         );
         Task<IEnumerable<MobileDistrictDto>> DistrictsForMobile(Guid cityId, string culture);
+        Task<IEnumerable<MobileDetailedSearchResultDto>> MobileTourPointsByLocation(
+            Guid cityId,
+            Guid districtId,
+            string culture
+        );
+        Task<IEnumerable<MobileDetailedSearchResultDto>> MobileTourPointsByDeparture(
+            Guid cityId,
+            Guid districtId,
+            string culture
+        );
     }
 }

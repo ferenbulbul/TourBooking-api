@@ -2,7 +2,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using TourBooking.Application.DTOs.Comman;
 using TourBooking.Application.Features;
-using TourBooking.Application.Features.Settings.Queries;
 
 namespace TourBooking.API.Controllers
 {
@@ -73,6 +72,13 @@ namespace TourBooking.API.Controllers
         {
             var districts = await _mediator.Send(new MobileDistrictQuery { CityId = cityId });
             return Ok(ApiResponse<MobileDistrictQueryResponse>.SuccessResponse(districts, null));
+        }
+
+        [HttpPost("detailed-search")]
+        public async Task<IActionResult> DetailedSearch(MobileDetailedSearchQuery query)
+        {
+            var response = await _mediator.Send(query);
+            return Ok(ApiResponse<MobileDetailedSearchQueryResponse>.SuccessResponse(response, null));
         }
     }
 }
