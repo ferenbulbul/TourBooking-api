@@ -882,7 +882,7 @@ namespace TourBooking.Infrastructure.Repositories
                         .Where(pe => pe.District != null)
                         .Select(pe => new
                         {
-                            pe.Id,
+                            pe.DistrictId,
                             pe.CityId,
                             DistrictName = pe
                                 .District.Translations.Where(tr => tr.Language.Code == culture)
@@ -893,8 +893,7 @@ namespace TourBooking.Infrastructure.Repositories
                 })
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
-            bestWatch.Stop();
-            Console.WriteLine(bestWatch.ElapsedMilliseconds);
+
             // TODO : Performans bakılacak.
 
             // Ardından bellek tarafında `DistinctBy` uygula
@@ -920,16 +919,19 @@ namespace TourBooking.Infrastructure.Repositories
                         Name = g.First().CityName ?? string.Empty
                     })
                     .ToList(),
+
                 Districts = t
-                    .PricingDistricts.GroupBy(c => c.CityId)
+                    .PricingDistricts.GroupBy(d => new { d.CityId, d.DistrictId }) // Id burada DistrictId oluyor
                     .Select(g => new MobileDistrictDto2
                     {
-                        Id = g.Key,
-                        Name = g.First().DistrictName ?? string.Empty,
-                        CityId = g.First().CityId
+                        Id = g.Key.DistrictId, // DistrictId
+                        CityId = g.Key.CityId,
+                        Name = g.First().DistrictName ?? string.Empty
                     })
-                    .ToList(),
+                    .ToList()
             };
+            bestWatch.Stop();
+            Console.WriteLine(bestWatch.ElapsedMilliseconds);
 
             return result;
         }
