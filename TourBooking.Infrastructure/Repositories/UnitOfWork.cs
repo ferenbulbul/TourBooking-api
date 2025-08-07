@@ -875,8 +875,7 @@ namespace TourBooking.Infrastructure.Repositories
                                 .City.Translations.Where(tr => tr.Language.Code == culture)
                                 .Select(tr => tr.Title)
                                 .FirstOrDefault()
-                        })
-                        .ToList(), // EF buraya kadar SQL'e çevirir
+                        }),
 
                     PricingDistricts = tp
                         .Tours.SelectMany(t => t.PricingEntity)
@@ -888,6 +887,7 @@ namespace TourBooking.Infrastructure.Repositories
                             DistrictName = pe
                                 .District.Translations.Where(tr => tr.Language.Code == culture)
                                 .Select(tr => tr.Title)
+                                .Take(1)
                                 .FirstOrDefault()
                         })
                 })
