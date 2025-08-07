@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using TourBooking.Application.DTOs.Comman;
 using TourBooking.Application.Features;
+using TourBooking.Application.Features.Mobile.Query.TourPointDetails;
 
 namespace TourBooking.API.Controllers
 {
@@ -59,6 +60,7 @@ namespace TourBooking.API.Controllers
                 ApiResponse<MobileTourPointBySearchQueryResponse>.SuccessResponse(tourPoints, null)
             );
         }
+
         [HttpGet("regions")]
         public async Task<IActionResult> Regions()
         {
@@ -69,7 +71,7 @@ namespace TourBooking.API.Controllers
         [HttpGet("cities")]
         public async Task<IActionResult> Cities([FromQuery] Guid regionId)
         {
-            var cities = await _mediator.Send(new MobileCityQuery{RegionId=regionId});
+            var cities = await _mediator.Send(new MobileCityQuery { RegionId = regionId });
             return Ok(ApiResponse<MobileCityQueryResponse>.SuccessResponse(cities, null));
         }
 
@@ -84,7 +86,20 @@ namespace TourBooking.API.Controllers
         public async Task<IActionResult> DetailedSearch(MobileDetailedSearchQuery query)
         {
             var response = await _mediator.Send(query);
-            return Ok(ApiResponse<MobileDetailedSearchQueryResponse>.SuccessResponse(response, null));
+            return Ok(
+                ApiResponse<MobileDetailedSearchQueryResponse>.SuccessResponse(response, null)
+            );
+        }
+
+        [HttpGet("tour-point-details")]
+        public async Task<IActionResult> TourPointDetails([FromQuery] Guid tourPointId)
+        {
+            var tourPoint = await _mediator.Send(
+                new MobileTourPointDetailsQuery { TourPointId = tourPointId }
+            );
+            return Ok(
+                ApiResponse<MobileTourPointDetailsQueryResponse>.SuccessResponse(tourPoint, null)
+            );
         }
     }
 }

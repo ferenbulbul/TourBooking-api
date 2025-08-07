@@ -109,5 +109,7 @@ namespace TourBooking.Application.Interfaces.Repositories
             Guid? districtId,
             string culture
         );
+
+        Task<MobileTourPointDetailDto> MobileTourPointDetail(Guid tourPointId, string culture);
     }
 }
