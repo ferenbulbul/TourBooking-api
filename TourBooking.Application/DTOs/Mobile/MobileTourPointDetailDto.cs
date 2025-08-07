@@ -14,5 +14,6 @@ namespace TourBooking.Application.DTOs.Mobile
         public string Description { get; set; }
         public List<string> OtherImages { get; set; }
         public List<MobileCityDto> Cities { get; set; }
+        public List<MobileDistrictDto2> Districts { get; set; }
     }
 }

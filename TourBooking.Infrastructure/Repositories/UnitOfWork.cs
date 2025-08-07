@@ -876,13 +876,26 @@ namespace TourBooking.Infrastructure.Repositories
                                 .Select(tr => tr.Title)
                                 .FirstOrDefault()
                         })
-                        .ToList() // EF buraya kadar SQL'e çevirir
+                        .ToList(), // EF buraya kadar SQL'e çevirir
+
+                    PricingDistricts = tp
+                        .Tours.SelectMany(t => t.PricingEntity)
+                        .Where(pe => pe.District != null)
+                        .Select(pe => new
+                        {
+                            pe.Id,
+                            pe.CityId,
+                            DistrictName = pe
+                                .District.Translations.Where(tr => tr.Language.Code == culture)
+                                .Select(tr => tr.Title)
+                                .FirstOrDefault()
+                        })
                 })
                 .AsNoTracking()
                 .FirstOrDefaultAsync();
             bestWatch.Stop();
             Console.WriteLine(bestWatch.ElapsedMilliseconds);
-             // TODO : Performans bakılacak.
+            // TODO : Performans bakılacak.
 
             // Ardından bellek tarafında `DistinctBy` uygula
             var result = new MobileTourPointDetailDto
@@ -906,7 +919,16 @@ namespace TourBooking.Infrastructure.Repositories
                         Id = g.Key,
                         Name = g.First().CityName ?? string.Empty
                     })
-                    .ToList()
+                    .ToList(),
+                Districts = t
+                    .PricingDistricts.GroupBy(c => c.CityId)
+                    .Select(g => new MobileDistrictDto2
+                    {
+                        Id = g.Key,
+                        Name = g.First().DistrictName ?? string.Empty,
+                        CityId = g.First().CityId
+                    })
+                    .ToList(),
             };
 
             return result;
