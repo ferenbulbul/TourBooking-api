@@ -816,98 +816,99 @@ namespace TourBooking.Infrastructure.Repositories
             string culture
         )
         {
-            Stopwatch s = new();
-            s.Start();
+            Stopwatch bestWatch = new();
+            bestWatch.Start();
             var t = await _context
-                .TourPoints.Include(tp => tp.Translations)
-                .ThenInclude(tt => tt.Language)
-                .Include(tp => tp.Country)
-                .ThenInclude(c => c.Translations)
-                .ThenInclude(tt => tt.Language)
-                .Include(tp => tp.Region)
-                .ThenInclude(r => r.Translations)
-                .ThenInclude(tt => tt.Language)
-                .Include(tp => tp.City)
-                .ThenInclude(c => c.Translations)
-                .ThenInclude(tt => tt.Language)
-                .Include(tp => tp.District)
-                .ThenInclude(d => d.Translations)
-                .ThenInclude(tt => tt.Language)
-                .Include(tp => tp.TourType)
-                .ThenInclude(tt => tt.Translations)
-                .ThenInclude(ttl => ttl.Language)
-                .Include(tp => tp.TourDifficulty)
-                .ThenInclude(td => td.Translations)
-                .ThenInclude(tdl => tdl.Language)
-                .Include(x => x.Tours)
-                .ThenInclude(t => t.PricingEntity)
-                .ThenInclude(pe => pe.City)
-                .ThenInclude(c => c.Translations)
-                .ThenInclude(tt => tt.Language)
-                .Include(tp => tp.District)
-                .ThenInclude(d => d.Translations)
-                .ThenInclude(tt => tt.Language)
+                .TourPoints.Where(tp => tp.Id == tourPointId)
+                .Select(tp => new
+                {
+                    tp.Id,
+                    tp.MainImage,
+                    tp.OtherImages,
+                    Title = tp
+                        .Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+                    Description = tp
+                        .Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Description)
+                        .FirstOrDefault(),
+
+                    CountryName = tp
+                        .Country.Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+
+                    RegionName = tp
+                        .Region.Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+
+                    CityName = tp
+                        .City.Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+
+                    DistrictName = tp
+                        .District.Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+
+                    TourTypeName = tp
+                        .TourType.Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+
+                    TourDifficultyName = tp
+                        .TourDifficulty.Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+
+                    // Şimdi Cities için sadece Id alıyoruz
+                    PricingCities = tp
+                        .Tours.SelectMany(t => t.PricingEntity)
+                        .Where(pe => pe.City != null)
+                        .Select(pe => new
+                        {
+                            CityId = pe.City.Id,
+                            CityName = pe
+                                .City.Translations.Where(tr => tr.Language.Code == culture)
+                                .Select(tr => tr.Title)
+                                .FirstOrDefault()
+                        })
+                        .ToList() // EF buraya kadar SQL'e çevirir
+                })
                 .AsNoTracking()
-                .FirstOrDefaultAsync(tp => tp.Id == tourPointId);
-            s.Stop();
-            Console.WriteLine(s.ElapsedMilliseconds);
+                .FirstOrDefaultAsync();
+            bestWatch.Stop();
+            Console.WriteLine(bestWatch.ElapsedMilliseconds);
+             // TODO : Performans bakılacak.
 
-            Stopwatch sw = new();
-            sw.Start();
-
+            // Ardından bellek tarafında `DistinctBy` uygula
             var result = new MobileTourPointDetailDto
             {
                 Id = t.Id,
-                TourTypeName = t
-                    .TourType.Translations.Where(tr => tr.Language.Code == culture)
-                    .Select(tr => tr.Title)
-                    .FirstOrDefault(),
-                TourDifficultyName = t
-                    .TourDifficulty.Translations.Where(tr => tr.Language.Code == culture)
-                    .Select(tr => tr.Title)
-                    .FirstOrDefault(),
-                CountryName = t
-                    .Country.Translations.Where(tr => tr.Language.Code == culture)
-                    .Select(tr => tr.Title)
-                    .FirstOrDefault(),
-                RegionName = t
-                    .Region.Translations.Where(tr => tr.Language.Code == culture)
-                    .Select(tr => tr.Title)
-                    .FirstOrDefault(),
-                CityName = t
-                    .City.Translations.Where(tr => tr.Language.Code == culture)
-                    .Select(tr => tr.Title)
-                    .FirstOrDefault(),
-                DistrictName = t
-                    .District.Translations.Where(tr => tr.Language.Code == culture)
-                    .Select(tr => tr.Title)
-                    .FirstOrDefault(),
+                Title = t.Title ?? string.Empty,
+                CountryName = t.CountryName ?? string.Empty,
+                RegionName = t.RegionName ?? string.Empty,
+                CityName = t.CityName ?? string.Empty,
+                DistrictName = t.DistrictName ?? string.Empty,
+                TourTypeName = t.TourTypeName ?? string.Empty,
+                TourDifficultyName = t.TourDifficultyName ?? string.Empty,
                 MainImage = t.MainImage,
                 OtherImages = t.OtherImages,
-                Title = t
-                    .Translations.Where(tr => tr.Language.Code == culture)
-                    .Select(tr => tr.Title)
-                    .FirstOrDefault(),
-                Description = t
-                    .Translations.Where(tr => tr.Language.Code == culture)
-                    .Select(tr => tr.Description)
-                    .FirstOrDefault(),
+                Description = t.Description,
+
                 Cities = t
-                    .Tours.SelectMany(tour =>
-                        tour.PricingEntity.Select(pe => new MobileCityDto
-                        {
-                            Id = pe.City.Id,
-                            Name = pe
-                                .City.Translations.Where(tr => tr.Language.Code == culture)
-                                .Select(tr => tr.Title)
-                                .FirstOrDefault(),
-                        })
-                    )
-                    .DistinctBy(city => city.Id)
+                    .PricingCities.GroupBy(c => c.CityId)
+                    .Select(g => new MobileCityDto
+                    {
+                        Id = g.Key,
+                        Name = g.First().CityName ?? string.Empty
+                    })
                     .ToList()
             };
-            sw.Stop();
-            Console.WriteLine(sw.ElapsedMilliseconds);
+
             return result;
         }
     }
