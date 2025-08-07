@@ -22,7 +22,7 @@ public class MobileCityQueryHandler : IRequestHandler<MobileCityQuery, MobileCit
     {
         var culture = CultureInfo.CurrentUICulture.Name;
 
-        var cities = await _unitOfWork.CitiesForMobile(culture);
+        var cities = await _unitOfWork.CitiesForMobile(request.RegionId,culture);
 
         if (cities == null || !cities.Any())
         {

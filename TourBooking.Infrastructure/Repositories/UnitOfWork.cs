@@ -608,6 +608,7 @@ namespace TourBooking.Infrastructure.Repositories
         }
 
         public async Task<IEnumerable<MobileCityDto>> CitiesForMobile(
+            Guid regionId,
             string culture,
             CancellationToken cancellationToken = default
         )
@@ -615,7 +616,7 @@ namespace TourBooking.Infrastructure.Repositories
             return await _context
                 .Cities.Include(t => t.Translations)
                 .ThenInclude(tt => tt.Language)
-                .Where(t => t.Translations.Any(tr => tr.Language.Code == culture))
+                .Where(t=>t.RegionId==regionId && t.Translations.Any(tr => tr.Language.Code == culture))
                 .Select(t => new MobileCityDto
                 {
                     Name = t
@@ -627,6 +628,25 @@ namespace TourBooking.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<MobileRegionDto>> RegionsForMobile(
+            string culture,
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context
+                .Regions.Include(t => t.Translations)
+                .ThenInclude(tt => tt.Language)
+                .Where(t => t.Translations.Any(tr => tr.Language.Code == culture))
+                .Select(t => new MobileRegionDto
+                {
+                    Name = t
+                        .Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+                    Id = t.Id
+                })
+                .ToListAsync();
+        }
         public async Task<IEnumerable<MobileDistrictDto>> DistrictsForMobile(
             Guid cityId,
             string culture

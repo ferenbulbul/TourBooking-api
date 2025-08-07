@@ -1,3 +1,4 @@
+using TourBooking.Application.DTOs;
 using TourBooking.Application.DTOs.Mobile;
 using TourBooking.Domain.Entities;
 
@@ -83,6 +84,11 @@ namespace TourBooking.Application.Interfaces.Repositories
         Task<TourEntity> Tour(Guid Id, CancellationToken cancellationToken = default);
         Task<IEnumerable<TourEntity>> Tours(CancellationToken cancellationToken = default);
         Task<IEnumerable<MobileCityDto>> CitiesForMobile(
+            Guid regionId,
+            string culture,
+            CancellationToken cancellationToken = default
+        );
+        Task<IEnumerable<MobileRegionDto>> RegionsForMobile(
             string culture,
             CancellationToken cancellationToken = default
         );

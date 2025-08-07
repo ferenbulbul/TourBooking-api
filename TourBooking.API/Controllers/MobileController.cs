@@ -59,11 +59,17 @@ namespace TourBooking.API.Controllers
                 ApiResponse<MobileTourPointBySearchQueryResponse>.SuccessResponse(tourPoints, null)
             );
         }
+        [HttpGet("regions")]
+        public async Task<IActionResult> Regions()
+        {
+            var regions = await _mediator.Send(new MobileRegionQuery());
+            return Ok(ApiResponse<MobileRegionQueryResponse>.SuccessResponse(regions, null));
+        }
 
         [HttpGet("cities")]
-        public async Task<IActionResult> Cities()
+        public async Task<IActionResult> Cities([FromQuery] Guid regionId)
         {
-            var cities = await _mediator.Send(new MobileCityQuery());
+            var cities = await _mediator.Send(new MobileCityQuery{RegionId=regionId});
             return Ok(ApiResponse<MobileCityQueryResponse>.SuccessResponse(cities, null));
         }
 
