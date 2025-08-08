@@ -1,6 +1,8 @@
 using System.Diagnostics;
+using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using TourBooking.Application.DTOs.Mobile;
+using TourBooking.Application.Features;
 using TourBooking.Application.Interfaces.Repositories;
 using TourBooking.Domain.Entities;
 using TourBooking.Infrastructure.Context;
@@ -932,6 +934,46 @@ namespace TourBooking.Infrastructure.Repositories
             };
             bestWatch.Stop();
             Console.WriteLine(bestWatch.ElapsedMilliseconds);
+
+            return result;
+        }
+
+        public async Task<IEnumerable<MobileSearchVehicleDto>> MobileSearchVehicles(
+            MobileSearchVehiclesQuery request
+        )
+        {
+            var culture = CultureInfo.CurrentUICulture.Name;
+            var result = await _context
+                .TourPricings.AsNoTracking()
+                .Where(tp =>
+                    tp.CityId == request.CityId
+                    && tp.DistrictId == request.DistrictId
+                    && tp.Tour.TourPoint.Id == request.TourPointId
+                    && !tp.Vehicle.AvailabilityList.Any(a =>
+                        a.BusyDays.Any(bd => bd.Day == request.Date)
+                    )
+                )
+                .Select(tp => new MobileSearchVehicleDto
+                {
+                    VehicleId = tp.VehicleId,
+                    Price = tp.Price,
+                    VehicleBrand =
+                        tp.Vehicle.VehicleBrand.Translations.Where(x => x.Language.Code == culture)
+                            .FirstOrDefault()
+                            .Title ?? string.Empty,
+                    VehicleClass =
+                        tp.Vehicle.VehicleClass.Translations.Where(x => x.Language.Code == culture)
+                            .FirstOrDefault()
+                            .Title ?? string.Empty,
+                    VehicleType =
+                        tp.Vehicle.VehicleType.Translations.Where(x => x.Language.Code == culture)
+                            .FirstOrDefault()
+                            .Title ?? string.Empty,
+                    SeatCount = tp.Vehicle.SeatCount,
+                    Image = tp.Vehicle.AracResmi,
+                })
+                .AsNoTracking()
+                .ToListAsync();
 
             return result;
         }

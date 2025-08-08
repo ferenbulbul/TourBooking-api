@@ -1,5 +1,6 @@
 using TourBooking.Application.DTOs;
 using TourBooking.Application.DTOs.Mobile;
+using TourBooking.Application.Features;
 using TourBooking.Domain.Entities;
 
 namespace TourBooking.Application.Interfaces.Repositories
@@ -111,5 +112,8 @@ namespace TourBooking.Application.Interfaces.Repositories
         );
 
         Task<MobileTourPointDetailDto> MobileTourPointDetail(Guid tourPointId, string culture);
+        Task<IEnumerable<MobileSearchVehicleDto>> MobileSearchVehicles(
+            MobileSearchVehiclesQuery request
+        );
     }
 }

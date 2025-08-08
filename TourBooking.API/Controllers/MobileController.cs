@@ -101,5 +101,12 @@ namespace TourBooking.API.Controllers
                 ApiResponse<MobileTourPointDetailsQueryResponse>.SuccessResponse(tourPoint, null)
             );
         }
+
+        [HttpPost("search-vehicle")]
+        public async Task<IActionResult> SearchVehicle(MobileSearchVehiclesQuery request)
+        {
+            var vehicles = await _mediator.Send(request);
+            return Ok(ApiResponse<MobileSearchVehiclesQueryResponse>.SuccessResponse(vehicles, null));
+        }
     }
 }
