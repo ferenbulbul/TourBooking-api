@@ -39,9 +39,13 @@ namespace TourBooking.Infrastructure.Context
         public DbSet<TourEntity> Tours { get; set; }
         public DbSet<TourPricingEntity> TourPricings { get; set; }
         public DbSet<GuideUserEntity> Guides { get; set; }
+        public DbSet<GuideBlock> GuideBlocks => Set<GuideBlock>();
         public DbSet<AgencyUserEntity> Agencies { get; set; }
         public DbSet<AvailabilityEntity> Availabilities => Set<AvailabilityEntity>();
         public DbSet<BusyDayEntity> BusyDays => Set<BusyDayEntity>();
+        public DbSet<BookingEntity> Bookings => Set<BookingEntity>();
+        public DbSet<GuideTourPriceEntity> GuideTourPrices => Set<GuideTourPriceEntity>();
+        public DbSet<GuideLanguageEntity> GuideLanguages => Set<GuideLanguageEntity>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -60,6 +64,55 @@ namespace TourBooking.Infrastructure.Context
             builder.Entity<SeatTypeTranslation>().ToTable("SeatTypeTranslations");
             builder.Entity<LegroomSpaceTranslation>().ToTable("LegroomSpaceTranslations");
             builder.Entity<AvailabilityEntity>().HasIndex(x => x.VehicleId).IsUnique();
+
+            builder.Entity<GuideLanguageEntity>(e =>
+            {
+                e.HasKey(x => new { x.GuideId, x.LanguageId }); // birleşik PK
+                e.HasOne(gl => gl.Language)
+                    .WithMany(l => l.GuideLanguages)
+                    .HasForeignKey(gl => gl.LanguageId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<GuideTourPriceEntity>(e =>
+            {
+                e.HasKey(x => x.Id);
+                e.Property(x => x.Price).HasColumnType("decimal(10,2)");
+                e.Property(x => x.Currency).HasMaxLength(3);
+                e.HasIndex(x => new
+                    {
+                        x.GuideId,
+                        x.CityId,
+                        x.DistrictId,
+                        x.TourPointId
+                    })
+                    .IsUnique();
+            });
+
+            builder.Entity<BookingEntity>(e =>
+            {
+                e.HasKey(x => x.Id);
+                e.HasOne(x => x.Guide).WithMany(g => g.Bookings).HasForeignKey(x => x.GuideId);
+                e.Property(x => x.Status).HasConversion<int>();
+                e.HasIndex(x => new
+                {
+                    x.GuideId,
+                    x.StartDate,
+                    x.EndDate
+                });
+            });
+
+            builder.Entity<GuideBlock>(e =>
+            {
+                e.HasKey(x => x.Id);
+                e.HasOne(x => x.Guide).WithMany(g => g.Blocks).HasForeignKey(x => x.GuideId);
+                e.HasIndex(x => new
+                {
+                    x.GuideId,
+                    x.StartDate,
+                    x.EndDate
+                });
+            });
 
             builder
                 .Entity<GuideUserEntity>()
