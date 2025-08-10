@@ -499,10 +499,17 @@ namespace TourBooking.Infrastructure.Repositories
             CancellationToken cancellationToken = default
         )
         {
-            return await _context
-                .Vehicles.AsNoTracking()
-                .Where(v => v.AgencyId == agencyId)
-                .ToListAsync(cancellationToken);
+            try
+            {
+                return await _context
+                    .Vehicles.AsNoTracking()
+                    .Where(v => v.AgencyId == agencyId)
+                    .ToListAsync(cancellationToken);
+            }
+            catch (System.Exception ex)
+            {
+                throw;
+            }
         }
 
         public async Task<IEnumerable<TourEntity>> ToursForAgency(

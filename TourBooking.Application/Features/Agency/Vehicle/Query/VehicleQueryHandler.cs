@@ -41,6 +41,8 @@ public class VehicleQueryHandler : IRequestHandler<VehicleQuery, VehicleQueryRes
             VehicleName = tt.VehicleName,
             VehicleTypeId = tt.VehicleTypeId,
             IsActive = tt.IsActive,
+            OtherImages = tt.OtherImages,
+            Features = tt.VehicleFeatures
         });
         var response = new VehicleQueryResponse { Vehicles = dtos };
         return response;

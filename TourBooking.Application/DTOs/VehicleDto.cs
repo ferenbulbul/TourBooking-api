@@ -14,8 +14,10 @@ namespace TourBooking.Application.DTOs
         public int ModelYear { get; set; }
         public bool IsActive { get; set; }
         public string AracResmi { get; set; }
+        public List<string> OtherImages { get; set; }
+        public List<string> Features { get; set; }
         public string Ruhsat { get; set; }
         public string Sigorta { get; set; }
-        public string Tasimacilik { get; set; }
+        public string Tasimacilik { get; set; }        
     }
 }

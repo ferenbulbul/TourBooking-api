@@ -24,6 +24,9 @@ namespace TourBooking.Application.Features
                     if (existing != null)
                     {
                         existing.AracResmi = request.AracResmi;
+                        existing.OtherImages = request.OtherImages;
+                        existing.VehicleFeatures = request.Features;
+                        existing.IsActive = request.IsActive;
 
                         existing.LegRoomSpaceId = request.LegRoomSpaceId;
                         existing.LicensePlate = request.LicensePlate;
@@ -57,7 +60,10 @@ namespace TourBooking.Application.Features
                         VehicleName = request.VehicleName,
                         VehicleTypeId = request.VehicleTypeId,
                         AracResmi = request.AracResmi,
-                        AgencyId = request.AgencyId
+                        AgencyId = request.AgencyId,
+                        OtherImages = request.OtherImages,
+                        VehicleFeatures = request.Features,
+                        IsActive = true
                     };
                     await _unitOfWork.GetRepository<VehicleEntity>().AddAsync(driver);
                 }

@@ -27,5 +27,9 @@ namespace TourBooking.Application.Features
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public bool IsDeleted { get; set; }
+
+        public List<string> OtherImages { get; set; }
+        public List<string> Features { get; set; }
+        public bool IsActive { get; set; }
     }
 }
