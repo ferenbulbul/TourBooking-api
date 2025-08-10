@@ -118,9 +118,15 @@ namespace TourBooking.Application.Interfaces.Repositories
         Task<IEnumerable<MobileSearchVehicleDto>> MobileSearchVehicles(
             MobileSearchVehiclesQuery request
         );
+        Task<IEnumerable<MobileSearchGuidesDto>> MobileSearchGuides(
+            MobileSearchGuideQuery request
+        );
         Task<IEnumerable<CalendarEventDto2>> GuideEvents(FetchEventsQuery request);
         Task CreateGuideBlock(CreateBlockCommand request);
 
         Task RemoveGuideBlock(RemoveBlockCommand request);
+        Task<MobileDetailVehicleDto> MobileDetailVehicle(
+            Guid vehicleId
+        );
     }
 }

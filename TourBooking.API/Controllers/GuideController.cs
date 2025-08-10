@@ -197,6 +197,13 @@ namespace TourBooking.API.Controllers
                 .Select(gl => gl.LanguageId)
                 .ToListAsync();
 
+            // var languages = await _db.Guides
+            //     .Where(g => g.Id == guideId) 
+            //     .SelectMany(g => g.GuideLanguages)
+            //     .Select(gl => gl.Language.Id) 
+            //     .ToListAsync();
+            /// 11111111111!!!!!!!!!
+
             return Ok(new { languageIds = ids });
         }
 

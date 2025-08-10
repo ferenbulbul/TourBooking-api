@@ -105,12 +105,12 @@ namespace TourBooking.Infrastructure.Context
                 e.Property(x => x.Price).HasColumnType("decimal(10,2)");
                 e.Property(x => x.Currency).HasMaxLength(3);
                 e.HasIndex(x => new
-                    {
-                        x.GuideId,
-                        x.CityId,
-                        x.DistrictId,
-                        x.TourPointId
-                    })
+                {
+                    x.GuideId,
+                    x.CityId,
+                    x.DistrictId,
+                    x.TourPointId
+                })
                     .IsUnique();
             });
 
@@ -186,6 +186,30 @@ namespace TourBooking.Infrastructure.Context
                 .HasOne(d => d.City)
                 .WithMany(c => c.Districts)
                 .HasForeignKey(d => d.CityId);
+            builder.Entity<LanguageEntity>().HasData(
+    new LanguageEntity
+    {
+        Id = new Guid("11111111-1111-1111-1111-111111111111"),
+        Name = "Türkçe",
+        Code = "tr",
+        IsActive = true
+    },
+    new LanguageEntity
+    {
+        Id = new Guid("22222222-2222-2222-2222-222222222222"),
+        Name = "English",
+        Code = "en",
+        IsActive = true
+    }, new LanguageEntity
+    {
+        Id = new Guid("33333333-3333-3333-3333-333333333333"),
+        Name = "العربية", // Arapça
+        Code = "ar",
+        IsActive = true
+    }
+
+);
+
         }
     }
 }

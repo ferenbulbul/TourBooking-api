@@ -988,6 +988,65 @@ namespace TourBooking.Infrastructure.Repositories
 
             return result;
         }
+        public async Task<IEnumerable<MobileSearchGuidesDto>> MobileSearchGuides(MobileSearchGuideQuery request)
+        {
+            var culture = CultureInfo.CurrentUICulture.Name;
+            
+            var result = await _context.GuideTourPrices.AsNoTracking()
+                   .Where(tp =>
+                       tp.CityId == request.CityId
+                       && tp.DistrictId == request.DistrictId
+                       && tp.TourPointId == request.TourPointId
+                       && !tp.Guide.Blocks.Any(a =>
+                           a.StartDate == request.Date && a.EndDate == request.Date
+                       ))
+                   .Select(tp => new MobileSearchGuidesDto
+                   {
+                       GuideId = tp.GuideId,
+                       Price = tp.Price,
+                       FirstName=tp.Guide.FirstName,
+                       LastName=tp.Guide.LastName,
+                       Image=tp.Guide.LastName,
+                   })
+                   .AsNoTracking()
+                   .ToListAsync();
+
+            return result;
+        }
+        public async Task<MobileDetailVehicleDto> MobileDetailVehicle(
+            Guid vehicleId
+        )
+        {
+            var culture = CultureInfo.CurrentUICulture.Name;
+            var result = await _context
+                .Vehicles.AsNoTracking()
+                .Where(tp => tp.Id == vehicleId)
+                .Select(tp => new MobileDetailVehicleDto
+                {
+                    VehicleBrand =
+                        tp.VehicleBrand.Translations.Where(x => x.Language.Code == culture)
+                            .FirstOrDefault()
+                            .Title ?? string.Empty,
+                    VehicleClass =
+                        tp.VehicleClass.Translations.Where(x => x.Language.Code == culture)
+                            .FirstOrDefault()
+                            .Title ?? string.Empty,
+                    VehicleType =
+                        tp.VehicleType.Translations.Where(x => x.Language.Code == culture)
+                            .FirstOrDefault()
+                            .Title ?? string.Empty,
+                    SeatCount = tp.SeatCount,
+                    ModelYear = tp.ModelYear,
+                    SeatType = tp.SeatType.Translations.Where(x => x.Language.Code == culture).FirstOrDefault().Title ?? string.Empty,
+                    LegRoomSpace = tp.LegRoomSpace.Translations.Where(x => x.Language.Code == culture).FirstOrDefault().Title ?? string.Empty,
+
+                    Image = tp.AracResmi,
+                })
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
+
+            return result;
+        }
 
         public async Task<IEnumerable<CalendarEventDto2>> GuideEvents(FetchEventsQuery request)
         {
@@ -1072,5 +1131,7 @@ namespace TourBooking.Infrastructure.Repositories
             _context.GuideBlocks.Remove(block);
             await _context.SaveChangesAsync();
         }
+
+
     }
 }

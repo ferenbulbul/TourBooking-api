@@ -27,3 +27,4 @@ secrets.json
 publish/
 TourBooking.Infrastructure/Migrations/
 TourBooking.API/appsettings.Development.json
+.DS_Store
