@@ -783,7 +783,7 @@ namespace TourBooking.Infrastructure.Repositories
                         .Tour.TourPoint.Translations.Where(tr => tr.Language.Code == culture)
                         .Select(tr => tr.Title)
                         .FirstOrDefault(),
-                    Id = t.Id,
+                    Id = t.Tour.TourPoint.Id,
                     TourTypeId = t.Tour.TourPoint.TourTypeId,
                     TourTypeName = t
                         .Tour.TourPoint.TourType.Translations.Where(tr =>
