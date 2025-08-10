@@ -10,7 +10,7 @@ namespace TourBooking.Domain.Entities
 
         [ForeignKey(nameof(Id))]
         public AppUser AppUser { get; set; }
-
+        public string? PhotoUrl { get; set; }
         public string? LicenseNumber { get; set; }
         public string? Email { get; set; }
         public string? PhoneNumber { get; set; }

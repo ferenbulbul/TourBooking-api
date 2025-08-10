@@ -45,7 +45,7 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
                 UserName = request.Email,
                 EmailConfirmed = false,
                 UserType = UserType.Guide,
-                PhoneNumber = request.PhoneNumber
+                PhoneNumber = request.PhoneNumber,
             };
             var result = await _userManager.CreateAsync(newUser, request.Password);
             if (!result.Succeeded)
@@ -64,6 +64,7 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
                 LicenseNumber = request.LicenseNumber,
                 FirstName = request.FirstName,
                 LastName = request.LastName,
+                PhotoUrl = request.PhotoUrl
             };
 
             await _unitOfWork.GetRepository<GuideUserEntity>().AddAsync(newGuideUser);
