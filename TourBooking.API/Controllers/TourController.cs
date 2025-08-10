@@ -43,5 +43,8 @@ namespace TourBooking.API.Controllers
             var tourPoints = await _mediator.Send(new TourPointsQuery());
             return Ok(ApiResponse<TourPointsQueryResponse>.SuccessResponse(tourPoints, null));
         }
+
+
+        
     }
 }

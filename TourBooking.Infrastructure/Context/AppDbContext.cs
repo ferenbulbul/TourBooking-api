@@ -46,6 +46,7 @@ namespace TourBooking.Infrastructure.Context
         public DbSet<BookingEntity> Bookings => Set<BookingEntity>();
         public DbSet<GuideTourPriceEntity> GuideTourPrices => Set<GuideTourPriceEntity>();
         public DbSet<GuideLanguageEntity> GuideLanguages => Set<GuideLanguageEntity>();
+        public DbSet<TourRoutePriceEntity> TourRoutePrices => Set<TourRoutePriceEntity>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -64,6 +65,30 @@ namespace TourBooking.Infrastructure.Context
             builder.Entity<SeatTypeTranslation>().ToTable("SeatTypeTranslations");
             builder.Entity<LegroomSpaceTranslation>().ToTable("LegroomSpaceTranslations");
             builder.Entity<AvailabilityEntity>().HasIndex(x => x.VehicleId).IsUnique();
+
+            // Infrastructure/Context/AppDbContext.cs  (OnModelCreating)
+            builder.Entity<TourRoutePriceEntity>(b =>
+            {
+                b.ToTable("TourRoutePrices");
+                b.HasKey(x => x.Id);
+
+                // 🔒 Aynı kombinasyon tek olsun (unique)
+                b.HasIndex(x => new
+                    {
+                        x.TourPointId,
+                        x.CountryId,
+                        x.RegionId,
+                        x.CityId,
+                        x.DistrictId,
+                        x.VehicleId,
+                        x.DriverId,
+                        x.AgencyId
+                    })
+                    .IsUnique();
+
+                b.Property(x => x.Price).HasColumnType("decimal(18,2)");
+                b.Property(x => x.Currency).HasMaxLength(8);
+            });
 
             builder.Entity<GuideLanguageEntity>(e =>
             {
