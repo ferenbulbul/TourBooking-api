@@ -10,5 +10,6 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
         public string Password { get; set; }
         public string? PhoneNumber { get; set; }
         public string LicenseNumber { get; set; }
+        public string? PhotoUrl { get; set; }
     }
 }
