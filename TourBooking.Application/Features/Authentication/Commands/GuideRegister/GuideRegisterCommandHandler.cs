@@ -64,7 +64,7 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
                 LicenseNumber = request.LicenseNumber,
                 FirstName = request.FirstName,
                 LastName = request.LastName,
-                PhotoUrl = request.PhotoUrl
+                PhotoUrl = request.PhotoUrl,
             };
 
             await _unitOfWork.GetRepository<GuideUserEntity>().AddAsync(newGuideUser);

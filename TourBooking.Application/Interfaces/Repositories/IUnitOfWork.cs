@@ -2,6 +2,7 @@ using TourBooking.Application.DTOs;
 using TourBooking.Application.DTOs.GuideCalendar;
 using TourBooking.Application.DTOs.Mobile;
 using TourBooking.Application.Features;
+using TourBooking.Application.Features.Authentication.Queries.IsApproved;
 using TourBooking.Application.Features.Settings;
 using TourBooking.Application.Features.Settings.Queries;
 using TourBooking.Domain.Entities;
@@ -118,15 +119,12 @@ namespace TourBooking.Application.Interfaces.Repositories
         Task<IEnumerable<MobileSearchVehicleDto>> MobileSearchVehicles(
             MobileSearchVehiclesQuery request
         );
-        Task<IEnumerable<MobileSearchGuidesDto>> MobileSearchGuides(
-            MobileSearchGuideQuery request
-        );
+        Task<IEnumerable<MobileSearchGuidesDto>> MobileSearchGuides(MobileSearchGuideQuery request);
         Task<IEnumerable<CalendarEventDto2>> GuideEvents(FetchEventsQuery request);
         Task CreateGuideBlock(CreateBlockCommand request);
 
         Task RemoveGuideBlock(RemoveBlockCommand request);
-        Task<MobileDetailVehicleDto> MobileDetailVehicle(
-            Guid vehicleId
-        );
+        Task<MobileDetailVehicleDto> MobileDetailVehicle(Guid vehicleId);
+        Task<bool> IsUserApproved(IsApprovedQuery request);
     }
 }
