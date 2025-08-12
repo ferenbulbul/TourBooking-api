@@ -3,12 +3,12 @@ namespace TourBooking.Application.DTOs
     // Application/DTOs/TourRoutePriceDtos.cs
     public record UpsertTourRoutePriceRequest(
         Guid TourPointId,
-        Guid? CountryId,
-        Guid? RegionId,
-        Guid? CityId,
-        Guid? DistrictId,
-        Guid? VehicleId,
-        Guid? DriverId,
+        Guid CountryId,
+        Guid RegionId,
+        Guid CityId,
+        Guid DistrictId,
+        Guid VehicleId,
+        Guid DriverId,
         decimal Price,
         string? Currency
     );

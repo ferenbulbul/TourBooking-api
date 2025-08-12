@@ -137,7 +137,7 @@ public class TourRoutePriceController : BaseController
             existing.UpdatedAt = DateTime.UtcNow;
             existing.VehicleId = req.VehicleId;
             existing.DriverId = req.DriverId;
-            
+
             await _db.SaveChangesAsync();
 
             return Ok(

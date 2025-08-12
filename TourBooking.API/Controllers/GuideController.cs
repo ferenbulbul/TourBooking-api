@@ -212,41 +212,67 @@ namespace TourBooking.API.Controllers
         {
             var guideId = GetUserIdFromToken();
 
-            // normalize
-            var newIds = (req.LanguageIds ?? new()).Distinct().ToList();
+            // 0) Guide var mı? (FK patlamasın)
+            var guideExists = await _db.Guides
+                .AsNoTracking()
+                .AnyAsync(g => g.Id == guideId);
+            if (!guideExists)
+                return NotFound(new { message = "Guide profili bulunamadı. Önce guide kaydı oluşturun." });
 
-            // (Opsiyonel) boş listeye izin veriyorsan sorun yok; en fazla 10 dil gibi bir kural koyacaksan burada kontrol et
-            // if (newIds.Count > 10) return BadRequest("En fazla 10 dil seçebilirsiniz.");
+            // 1) normalize
+            var newIds = (req.LanguageIds ?? new List<Guid>())
+                .Where(id => id != Guid.Empty)
+                .Distinct()
+                .ToList();
 
-            // 1) geçerli dil ID'leri mi? (yoksa 400 + invalidIds)
-            var existingLanguageIds = await _db
-                .Languages.Where(l => newIds.Contains(l.Id))
+            // 2) geçerli dil ID'leri (yoksa 400)
+            var validNewIds = await _db.Languages
+                .Where(l => newIds.Contains(l.Id))
                 .Select(l => l.Id)
                 .ToListAsync();
 
-            var invalidIds = newIds.Except(existingLanguageIds).ToList();
+            var invalidIds = newIds.Except(validNewIds).ToList();
             if (invalidIds.Count > 0)
                 return BadRequest(new { message = "Geçersiz dil ID'leri", invalidIds });
 
-            // 2) rehberin mevcut seçimi
-            var current = await _db.GuideLanguages.Where(gl => gl.GuideId == guideId).ToListAsync();
+            // 3) mevcut seçim (sadece ID’ler)
+            var currentIds = await _db.GuideLanguages
+                .Where(gl => gl.GuideId == guideId)
+                .Select(gl => gl.LanguageId)
+                .ToListAsync();
 
-            var currentIds = current.Select(c => c.LanguageId).ToHashSet();
+            // 4) delta
+            var toAddIds = validNewIds.Except(currentIds).ToList();
+            var toRemoveIds = currentIds.Except(validNewIds).ToList();
 
-            // 3) delta hesapla
-            var toRemove = current.Where(c => !existingLanguageIds.Contains(c.LanguageId)).ToList();
-            var toAdd = existingLanguageIds
-                .Where(id => !currentIds.Contains(id))
-                .Select(id => new GuideLanguageEntity { GuideId = guideId, LanguageId = id });
+            // 5) uygula — composite key ise entity’i stub’layıp attach/remove yap
+            if (toRemoveIds.Count > 0)
+            {
+                var removeStubs = toRemoveIds
+                    .Select(id => new GuideLanguageEntity { GuideId = guideId, LanguageId = id })
+                    .ToList();
+                _db.AttachRange(removeStubs);
+                _db.RemoveRange(removeStubs);
+            }
 
-            // 4) uygula (tek SaveChanges)
-            if (toRemove.Count > 0)
-                _db.GuideLanguages.RemoveRange(toRemove);
-            await _db.GuideLanguages.AddRangeAsync(toAdd);
+            if (toAddIds.Count > 0)
+            {
+                var addRows = toAddIds
+                    .Select(id => new GuideLanguageEntity
+                    {
+                        GuideId = guideId,
+                        LanguageId = id
+                        // Eğer composite PK DEĞİL ve PK Id ise:
+                        // Id = Guid.NewGuid()
+                    })
+                    .ToList();
+
+                await _db.GuideLanguages.AddRangeAsync(addRows);
+            }
 
             await _db.SaveChangesAsync();
-
             return NoContent();
         }
+
     }
 }

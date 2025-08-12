@@ -24,5 +24,6 @@ namespace TourBooking.Domain.Entities
         public bool IsDeleted { get; set; }
         public ICollection<TourPointTranslation> Translations { get; set; }
         public virtual ICollection<TourEntity> Tours { get; set; }
+        public ICollection<TourRoutePriceEntity> RoutePrices { get; set; }
     }
 }

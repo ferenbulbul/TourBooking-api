@@ -6,8 +6,7 @@ namespace TourBooking.Domain.Entities
     {
         public Guid Id { get; set; }
         public Guid GuideId { get; set; }
-        public GuideUserEntity Guide { get; set; }
-
+        public GuideUserEntity Guide { get; set; } = null!;
         public Guid? CityId { get; set; }
         public Guid? DistrictId { get; set; }
         public Guid? TourPointId { get; set; }

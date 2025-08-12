@@ -74,16 +74,16 @@ namespace TourBooking.Infrastructure.Context
 
                 // 🔒 Aynı kombinasyon tek olsun (unique)
                 b.HasIndex(x => new
-                    {
-                        x.TourPointId,
-                        x.CountryId,
-                        x.RegionId,
-                        x.CityId,
-                        x.DistrictId,
-                        x.VehicleId,
-                        x.DriverId,
-                        x.AgencyId
-                    })
+                {
+                    x.TourPointId,
+                    x.CountryId,
+                    x.RegionId,
+                    x.CityId,
+                    x.DistrictId,
+                    x.VehicleId,
+                    x.DriverId,
+                    x.AgencyId
+                })
                     .IsUnique();
 
                 b.Property(x => x.Price).HasColumnType("decimal(18,2)");
@@ -91,17 +91,33 @@ namespace TourBooking.Infrastructure.Context
             });
 
             builder.Entity<GuideLanguageEntity>(e =>
-            {
-                e.HasKey(x => new { x.GuideId, x.LanguageId }); // birleşik PK
-                e.HasOne(gl => gl.Language)
-                    .WithMany(l => l.GuideLanguages)
-                    .HasForeignKey(gl => gl.LanguageId)
-                    .OnDelete(DeleteBehavior.Cascade);
-            });
+                {
+
+                    // 1) Composite PK kullanacaksan 'Id'ı kaldır/ignore et
+                    e.HasKey(x => new { x.GuideId, x.LanguageId });
+                    e.Ignore(x => x.Id);
+
+                    // 2) Guide ilişkisini AÇIKÇA tanımla => shadow FK oluşmasın
+                    e.HasOne<GuideUserEntity>()                 // navigation yazmak zorunda değilsin
+                     .WithMany(g => g.GuideLanguages)
+                     .HasForeignKey(x => x.GuideId)
+                     .OnDelete(DeleteBehavior.Cascade);
+
+                    // 3) Language ilişkisi
+                    e.HasOne(gl => gl.Language)
+                     .WithMany(l => l.GuideLanguages)
+                     .HasForeignKey(gl => gl.LanguageId)
+                     .OnDelete(DeleteBehavior.Cascade);
+
+                    // Eğer class'ta 'Id' property’si hala duruyorsa, tamamen kaldır
+                    // ya da:
+                    // e.Ignore(x => x.Id);
+                });
 
             builder.Entity<GuideTourPriceEntity>(e =>
             {
                 e.HasKey(x => x.Id);
+                e.HasOne(x => x.Guide);
                 e.Property(x => x.Price).HasColumnType("decimal(10,2)");
                 e.Property(x => x.Currency).HasMaxLength(3);
                 e.HasIndex(x => new
