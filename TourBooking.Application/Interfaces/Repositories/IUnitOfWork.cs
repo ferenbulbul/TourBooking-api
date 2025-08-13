@@ -1,4 +1,5 @@
 using TourBooking.Application.DTOs;
+using TourBooking.Application.DTOs.Admin;
 using TourBooking.Application.DTOs.GuideCalendar;
 using TourBooking.Application.DTOs.Mobile;
 using TourBooking.Application.Features;
@@ -126,5 +127,9 @@ namespace TourBooking.Application.Interfaces.Repositories
         Task RemoveGuideBlock(RemoveBlockCommand request);
         Task<MobileDetailVehicleDto> MobileDetailVehicle(Guid vehicleId);
         Task<bool> IsUserApproved(IsApprovedQuery request);
+        Task<IEnumerable<AgencyToConfirmDto>> GetAgenciesToConfirm();
+        Task<IEnumerable<GuideToConfirmDto>> GetGuidesToConfirm();
+        Task ConfirmGuide(Guid ıd);
+        Task ConfirmAgency(Guid ıd);
     }
 }

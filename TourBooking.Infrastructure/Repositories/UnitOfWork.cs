@@ -1,9 +1,11 @@
 using System.Diagnostics;
 using System.Globalization;
 using Microsoft.EntityFrameworkCore;
+using TourBooking.Application.DTOs.Admin;
 using TourBooking.Application.DTOs.GuideCalendar;
 using TourBooking.Application.DTOs.Mobile;
 using TourBooking.Application.Features;
+using TourBooking.Application.Features.Admin.Query.AgenciesToConfirm;
 using TourBooking.Application.Features.Authentication.Queries.IsApproved;
 using TourBooking.Application.Features.Settings;
 using TourBooking.Application.Features.Settings.Queries;
@@ -1166,8 +1168,64 @@ namespace TourBooking.Infrastructure.Repositories
                     throw new KeyNotFoundException();
                 return a.IsConfirmed;
             }
+            
 
-            return false;
+            return true;
+        }
+
+        public async Task<IEnumerable<AgencyToConfirmDto>> GetAgenciesToConfirm()
+        {
+            return await _context
+                .Agencies.AsNoTracking()
+                .Where(x => x.IsConfirmed == false)
+                .Select(tt => new AgencyToConfirmDto(
+                    tt.Id,
+                    tt.AuthorizedUserFirstName,
+                    tt.AuthorizedUserLastName,
+                    tt.CompanyName,
+                    tt.City,
+                    tt.FullAddress,
+                    tt.Email,
+                    tt.PhoneNumber,
+                    tt.PhoneNumber2
+                ))
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<GuideToConfirmDto>> GetGuidesToConfirm()
+        {
+            return await _context
+                .Guides.AsNoTracking()
+                .Where(x => x.IsConfirmed == false)
+                .Select(tt => new GuideToConfirmDto(
+                    tt.Id,
+                    tt.FirstName,
+                    tt.LastName,
+                    tt.LicenseNumber,
+                    tt.Email,
+                    tt.PhoneNumber
+                ))
+                .ToListAsync();
+        }
+
+        public async Task ConfirmGuide(Guid ıd)
+        {
+            var guide = await _context.Guides.FirstOrDefaultAsync(x => x.Id == ıd); // tracking açık
+            if (guide != null)
+            {
+                guide.IsConfirmed = true;
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task ConfirmAgency(Guid ıd)
+        {
+            var agency = await _context.Agencies.FirstOrDefaultAsync(x => x.Id == ıd);
+            if (agency != null)
+            {
+                agency.IsConfirmed = true;
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }
