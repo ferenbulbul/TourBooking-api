@@ -6,19 +6,19 @@ using TourBooking.Application.DTOs.Comman;
 using TourBooking.Application.Expactions;
 using TourBooking.Shared.Localization;
 
-
-
 namespace TourBooking.API.Exceptions
 {
-
     public class ExceptionHandlingMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<ExceptionHandlingMiddleware> _logger;
         private readonly IStringLocalizer<SharedResource> _localizer;
 
-
-        public ExceptionHandlingMiddleware(RequestDelegate next, ILogger<ExceptionHandlingMiddleware> logger, IStringLocalizer<SharedResource> localizer)
+        public ExceptionHandlingMiddleware(
+            RequestDelegate next,
+            ILogger<ExceptionHandlingMiddleware> logger,
+            IStringLocalizer<SharedResource> localizer
+        )
         {
             _next = next;
             _logger = logger;
@@ -81,24 +81,31 @@ namespace TourBooking.API.Exceptions
                     );
                     break;
 
+                case NotConfimedException notConfirmed:
+                    context.Response.StatusCode = (int)HttpStatusCode.Forbidden; // 403
+                    errorResponse = ApiResponse<object>.FailResponse(
+                        _localizer[notConfirmed.Message],
+                        context.Response.StatusCode
+                    );
+                    break;
+
                 default:
                     context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                     var userFriendlyMessage = _localizer["UnexpectedServerError"]; // resx dosyasından gelir
-                    errorResponse = ApiResponse<object>.ExceptionResponse(
-                        userFriendlyMessage
-                    );
+                    errorResponse = ApiResponse<object>.ExceptionResponse(userFriendlyMessage);
 
                     break;
             }
 
-            var result = JsonSerializer.Serialize(errorResponse, new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase, // Mobil taraf için camelCase daha standarttır.
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
-
-            });
+            var result = JsonSerializer.Serialize(
+                errorResponse,
+                new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase, // Mobil taraf için camelCase daha standarttır.
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+                }
+            );
             await context.Response.WriteAsync(result);
         }
     }
-
 }

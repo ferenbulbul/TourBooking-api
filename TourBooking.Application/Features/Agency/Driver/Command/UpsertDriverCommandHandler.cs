@@ -33,6 +33,7 @@ namespace TourBooking.Application.Features
                         existing.ProfilePhoto = request.ProfilePhoto;
                         existing.ServiceCities = request.ServiceCities;
                         existing.SrcDocument = request.SrcDocument;
+                        existing.PsikoDocument = request.PsikoDocument;
 
                         await _unitOfWork.GetRepository<DriverEntity>().UpdateAsync(existing);
                     }
@@ -51,7 +52,8 @@ namespace TourBooking.Application.Features
                         ProfilePhoto = request.ProfilePhoto,
                         ServiceCities = request.ServiceCities,
                         SrcDocument = request.SrcDocument,
-                        AgencyId = request.AgencyId
+                        AgencyId = request.AgencyId,
+                         PsikoDocument = request.PsikoDocument
                     };
                     await _unitOfWork.GetRepository<DriverEntity>().AddAsync(driver);
                 }

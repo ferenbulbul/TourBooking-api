@@ -36,7 +36,8 @@ public class DriverQueryHandler : IRequestHandler<DriverQuery, DriverQueryRespon
             NameSurname = tt.NameSurname,
             ProfilePhoto = tt.ProfilePhoto,
             ServiceCities = tt.ServiceCities,
-            SrcDocument = tt.SrcDocument
+            SrcDocument = tt.SrcDocument,
+            PsikoDocument = tt.PsikoDocument
         });
         var response = new DriverQueryResponse { Drivers = dtos };
         return response;

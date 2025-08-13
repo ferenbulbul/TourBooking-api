@@ -61,10 +61,11 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
                 Email = request.Email,
                 IsConfirmed = false,
                 IsDeleted = false,
-                LicenseNumber = request.LicenseNumber,
                 FirstName = request.FirstName,
                 LastName = request.LastName,
-                PhotoUrl = request.PhotoUrl
+                PhotoUrl = request.PhotoUrl,
+                DomesticUrl = request.DomesticUrl,
+                RegionalUrl = request.RegionalUrl
             };
 
             await _unitOfWork.GetRepository<GuideUserEntity>().AddAsync(newGuideUser);

@@ -18,5 +18,6 @@ namespace TourBooking.Domain.Entities
         public string ProfilePhoto { get; set; }
         public List<string> ServiceCities { get; set; }
         public string? SrcDocument { get; set; }
+        public string? PsikoDocument { get; set; }
     }
 }

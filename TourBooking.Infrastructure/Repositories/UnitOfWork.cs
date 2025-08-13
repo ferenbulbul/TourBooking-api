@@ -2,10 +2,13 @@ using System.Diagnostics;
 using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using TourBooking.Application.DTOs.Admin;
 using TourBooking.Application.DTOs.GuideCalendar;
 using TourBooking.Application.DTOs.Mobile;
 using TourBooking.Application.Features;
 using TourBooking.Application.Features.Mobile.Query.TourPointDetails;
+using TourBooking.Application.Features.Admin.Query.AgenciesToConfirm;
+using TourBooking.Application.Features.Authentication.Queries.IsApproved;
 using TourBooking.Application.Features.Settings;
 using TourBooking.Application.Features.Settings.Queries;
 using TourBooking.Application.Interfaces.Repositories;
@@ -837,6 +840,10 @@ namespace TourBooking.Infrastructure.Repositories
                     OtherImages = tp.OtherImages
                 })
                 .ToListAsync();
+                    MainImage = tp.MainImage,
+                    OtherImages = tp.OtherImages
+                })
+                .ToListAsync();
 
             return list;
         }
@@ -896,8 +903,8 @@ namespace TourBooking.Infrastructure.Repositories
                         .FirstOrDefault(),
 
                     // Şimdi Cities için sadece Id alıyoruz
-                    PricingCities = tp.RoutePrices
-                        .Where(pe => pe.City != null)
+                    PricingCities = tp
+                        .RoutePrices.Where(pe => pe.City != null)
                         .Select(pe => new
                         {
                             CityId = pe.City.Id,
@@ -908,8 +915,8 @@ namespace TourBooking.Infrastructure.Repositories
                         })
 ,
 
-                    PricingDistricts = tp.RoutePrices
-                        .Where(pe => pe.District != null)
+                    PricingDistricts = tp
+                        .RoutePrices.Where(pe => pe.District != null)
                         .Select(pe => new
                         {
                             pe.DistrictId,
@@ -1005,7 +1012,10 @@ namespace TourBooking.Infrastructure.Repositories
 
             return result;
         }
-        public async Task<IEnumerable<MobileSearchGuidesDto>> MobileSearchGuides(MobileSearchGuideQuery request)
+
+        public async Task<IEnumerable<MobileSearchGuidesDto>> MobileSearchGuides(
+            MobileSearchGuideQuery request
+        )
         {
             var culture = CultureInfo.CurrentUICulture.Name;
 
@@ -1032,9 +1042,8 @@ namespace TourBooking.Infrastructure.Repositories
 
             return result;
         }
-        public async Task<MobileDetailVehicleDto> MobileDetailVehicle(
-            Guid vehicleId
-        )
+
+        public async Task<MobileDetailVehicleDto> MobileDetailVehicle(Guid vehicleId)
         {
             var culture = CultureInfo.CurrentUICulture.Name;
             var result = await _context
@@ -1056,8 +1065,14 @@ namespace TourBooking.Infrastructure.Repositories
                             .Title ?? string.Empty,
                     SeatCount = tp.SeatCount,
                     ModelYear = tp.ModelYear,
-                    SeatType = tp.SeatType.Translations.Where(x => x.Language.Code == culture).FirstOrDefault().Title ?? string.Empty,
-                    LegRoomSpace = tp.LegRoomSpace.Translations.Where(x => x.Language.Code == culture).FirstOrDefault().Title ?? string.Empty,
+                    SeatType =
+                        tp.SeatType.Translations.Where(x => x.Language.Code == culture)
+                            .FirstOrDefault()
+                            .Title ?? string.Empty,
+                    LegRoomSpace =
+                        tp.LegRoomSpace.Translations.Where(x => x.Language.Code == culture)
+                            .FirstOrDefault()
+                            .Title ?? string.Empty,
                     OtherImages = tp.OtherImages,
                     VehicleFeatures = tp.VehicleFeatures,
                     Image = tp.AracResmi,
@@ -1290,6 +1305,87 @@ namespace TourBooking.Infrastructure.Repositories
              _context.Availabilities.Add(availability);
             await _context.SaveChangesAsync();
 
+        }
+        public async Task<bool> IsUserApproved(IsApprovedQuery request)
+        {
+            if (request.Role == "Guide")
+            {
+                var a = await _context
+                    .Guides.AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.Id == request.UserId);
+                if (a is null)
+                    throw new KeyNotFoundException();
+                return a.IsConfirmed;
+            }
+            else if (request.Role == "Agency")
+            {
+                var a = await _context
+                    .Agencies.AsNoTracking()
+                    .FirstOrDefaultAsync(x => x.Id == request.UserId);
+                if (a is null)
+                    throw new KeyNotFoundException();
+                return a.IsConfirmed;
+            }
+
+            return true;
+        }
+
+        public async Task<IEnumerable<AgencyToConfirmDto>> GetAgenciesToConfirm()
+        {
+            return await _context
+                .Agencies.AsNoTracking()
+                .Where(x => x.IsConfirmed == false)
+                .Select(tt => new AgencyToConfirmDto(
+                    tt.Id,
+                    tt.AuthorizedUserFirstName,
+                    tt.AuthorizedUserLastName,
+                    tt.CompanyName,
+                    tt.City,
+                    tt.FullAddress,
+                    tt.Email,
+                    tt.PhoneNumber,
+                    tt.PhoneNumber2,
+                    tt.TursabUrl,
+                    tt.TaxNumber
+                ))
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<GuideToConfirmDto>> GetGuidesToConfirm()
+        {
+            return await _context
+                .Guides.AsNoTracking()
+                .Where(x => x.IsConfirmed == false)
+                .Select(tt => new GuideToConfirmDto(
+                    tt.Id,
+                    tt.FirstName,
+                    tt.LastName,
+                    tt.Email,
+                    tt.PhoneNumber,
+                    tt.DomesticUrl,
+                    tt.RegionalUrl
+                ))
+                .ToListAsync();
+        }
+
+        public async Task ConfirmGuide(Guid ıd)
+        {
+            var guide = await _context.Guides.FirstOrDefaultAsync(x => x.Id == ıd); // tracking açık
+            if (guide != null)
+            {
+                guide.IsConfirmed = true;
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task ConfirmAgency(Guid ıd)
+        {
+            var agency = await _context.Agencies.FirstOrDefaultAsync(x => x.Id == ıd);
+            if (agency != null)
+            {
+                agency.IsConfirmed = true;
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

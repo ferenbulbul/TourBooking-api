@@ -3,7 +3,7 @@ using MediatR;
 namespace TourBooking.Application.Features.Authentication.Commands.Register
 {
     public class AgencyRegisterCommand : IRequest<AgencyRegisterCommandResponse>
-    {        
+    {
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
@@ -15,5 +15,6 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
         public string? PhoneNumber2 { get; set; }
         public string? PhoneNumber { get; set; }
         public string? TaxNumber { get; set; }
+        public string? TursabUrl { get; set; }
     }
 }

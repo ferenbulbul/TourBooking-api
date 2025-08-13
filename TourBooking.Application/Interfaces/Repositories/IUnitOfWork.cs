@@ -1,8 +1,10 @@
 using Microsoft.EntityFrameworkCore.Storage;
 using TourBooking.Application.DTOs;
+using TourBooking.Application.DTOs.Admin;
 using TourBooking.Application.DTOs.GuideCalendar;
 using TourBooking.Application.DTOs.Mobile;
 using TourBooking.Application.Features;
+using TourBooking.Application.Features.Authentication.Queries.IsApproved;
 using TourBooking.Application.Features.Settings;
 using TourBooking.Application.Features.Settings.Queries;
 using TourBooking.Domain.Entities;
@@ -122,9 +124,7 @@ namespace TourBooking.Application.Interfaces.Repositories
         Task<IEnumerable<MobileSearchVehicleDto>> MobileSearchVehicles(
             MobileSearchVehiclesQuery request
         );
-        Task<IEnumerable<MobileSearchGuidesDto>> MobileSearchGuides(
-            MobileSearchGuideQuery request
-        );
+        Task<IEnumerable<MobileSearchGuidesDto>> MobileSearchGuides(MobileSearchGuideQuery request);
         Task<IEnumerable<CalendarEventDto2>> GuideEvents(FetchEventsQuery request);
         Task CreateGuideBlock(CreateBlockCommand request);
 
@@ -143,5 +143,11 @@ namespace TourBooking.Application.Interfaces.Repositories
         Task<GuideTourPriceEntity> ControlGuideAvalibity(Guid guideId, decimal price, DateOnly date, Guid tourPointId, Guid districtId, Guid cityId);
         Task<Guid> FinishBooking(CreateBookingCommand request);
         Task CreateVehicleBlock(Guid vehicleId, DateOnly date);
+        Task<MobileDetailVehicleDto> MobileDetailVehicle(Guid vehicleId);
+        Task<bool> IsUserApproved(IsApprovedQuery request);
+        Task<IEnumerable<AgencyToConfirmDto>> GetAgenciesToConfirm();
+        Task<IEnumerable<GuideToConfirmDto>> GetGuidesToConfirm();
+        Task ConfirmGuide(Guid ıd);
+        Task ConfirmAgency(Guid ıd);
     }
 }
