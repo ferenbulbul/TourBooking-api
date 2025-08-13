@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore.Storage;
 using TourBooking.Application.DTOs;
 using TourBooking.Application.DTOs.GuideCalendar;
 using TourBooking.Application.DTOs.Mobile;
@@ -12,6 +13,9 @@ namespace TourBooking.Application.Interfaces.Repositories
     {
         IGenericRepository<T> GetRepository<T>()
             where T : class, IBaseEntity;
+        Task<IDbContextTransaction> BeginTransactionAsync();
+        Task<int> CommitAsync();
+        Task RollbackAsync();
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         Task<IEnumerable<TourTypeEnitity>> TourTypes(CancellationToken cancellationToken = default);
         Task<IEnumerable<TourPointEntity>> HighlightedTourPoints(
@@ -102,13 +106,13 @@ namespace TourBooking.Application.Interfaces.Repositories
         );
         Task<IEnumerable<MobileDistrictDto>> DistrictsForMobile(Guid cityId, string culture);
         Task<IEnumerable<MobileDetailedSearchResultDto>> MobileTourPointsByLocation(
-            Guid regionId,
+            Guid? regionId,
             Guid? cityId,
             Guid? districtId,
             string culture
         );
         Task<IEnumerable<MobileDetailedSearchResultDto>> MobileTourPointsByDeparture(
-            Guid regionId,
+            Guid? regionId,
             Guid? cityId,
             Guid? districtId,
             string culture
@@ -128,5 +132,16 @@ namespace TourBooking.Application.Interfaces.Repositories
         Task<MobileDetailVehicleDto> MobileDetailVehicle(
             Guid vehicleId
         );
+        Task<MobileTourBookingSummaryVehicleTourDto> TourBookingVehicleTourSummary(
+           Guid tourPointId, Guid DistrictId, Guid VehicleId, DateOnly? date
+       );
+        Task<MobileTourBookingSummaryGuideDto> TourBookingGuideSummary(
+            Guid guideId, Guid districtId, Guid tourPointId, DateOnly? date
+         );
+        Task<TourRoutePriceEntity> ControlTourRoute(Guid tourPointId, Guid cityId, Guid districtId, Guid vehicleId, decimal price);
+        Task<AvailabilityEntity> ControlVehicleAvalibity(Guid vehicleId, DateOnly date);
+        Task<GuideTourPriceEntity> ControlGuideAvalibity(Guid guideId, decimal price, DateOnly date, Guid tourPointId, Guid districtId, Guid cityId);
+        Task<Guid> FinishBooking(CreateBookingCommand request);
+        Task CreateVehicleBlock(Guid vehicleId, DateOnly date);
     }
 }

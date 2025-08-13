@@ -114,12 +114,24 @@ namespace TourBooking.API.Controllers
             var vehicle = await _mediator.Send(new MobileVehicleQuery { Id = VehicleId });
             return Ok(ApiResponse<MobileVehicleQueryResponse>.SuccessResponse(vehicle, null));
         }
-        
+
         [HttpPost("search-guide")]
         public async Task<IActionResult> GetSearchGuide(MobileSearchGuideQuery request)
         {
             var guides = await _mediator.Send(request);
             return Ok(ApiResponse<MobileSearchGuideQueryResponse>.SuccessResponse(guides, null));
+        }
+        [HttpPost("tour-summary")]
+        public async Task<IActionResult> GetTourSummary(TourBookingSummaryQuery request)
+        {
+            var summary = await _mediator.Send(request);
+            return Ok(ApiResponse<TourBookingSummaryQueryResponse>.SuccessResponse(summary, null));
+        }
+        [HttpPost("create-booking")]
+        public async Task<IActionResult> CreateBooking(CreateBookingCommand request)
+        {
+            var valid=await _mediator.Send(request);
+            return Ok(ApiResponse<CreateBookingCommandResponse>.SuccessResponse(valid, null));
         }
     }
 }
