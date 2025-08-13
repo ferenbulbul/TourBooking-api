@@ -840,11 +840,6 @@ namespace TourBooking.Infrastructure.Repositories
                     OtherImages = tp.OtherImages
                 })
                 .ToListAsync();
-                    MainImage = tp.MainImage,
-                    OtherImages = tp.OtherImages
-                })
-                .ToListAsync();
-
             return list;
         }
 

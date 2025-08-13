@@ -143,7 +143,6 @@ namespace TourBooking.Application.Interfaces.Repositories
         Task<GuideTourPriceEntity> ControlGuideAvalibity(Guid guideId, decimal price, DateOnly date, Guid tourPointId, Guid districtId, Guid cityId);
         Task<Guid> FinishBooking(CreateBookingCommand request);
         Task CreateVehicleBlock(Guid vehicleId, DateOnly date);
-        Task<MobileDetailVehicleDto> MobileDetailVehicle(Guid vehicleId);
         Task<bool> IsUserApproved(IsApprovedQuery request);
         Task<IEnumerable<AgencyToConfirmDto>> GetAgenciesToConfirm();
         Task<IEnumerable<GuideToConfirmDto>> GetGuidesToConfirm();
