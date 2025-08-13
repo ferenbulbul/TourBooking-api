@@ -9,7 +9,8 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
         public string Email { get; set; }
         public string Password { get; set; }
         public string? PhoneNumber { get; set; }
-        public string LicenseNumber { get; set; }
         public string? PhotoUrl { get; set; }
+        public string? DomesticUrl { get; set; }
+        public string? RegionalUrl { get; set; }
     }
 }

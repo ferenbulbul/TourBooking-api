@@ -1168,7 +1168,6 @@ namespace TourBooking.Infrastructure.Repositories
                     throw new KeyNotFoundException();
                 return a.IsConfirmed;
             }
-            
 
             return true;
         }
@@ -1201,9 +1200,10 @@ namespace TourBooking.Infrastructure.Repositories
                     tt.Id,
                     tt.FirstName,
                     tt.LastName,
-                    tt.LicenseNumber,
                     tt.Email,
-                    tt.PhoneNumber
+                    tt.PhoneNumber,
+                    tt.DomesticUrl,
+                    tt.RegionalUrl
                 ))
                 .ToListAsync();
         }

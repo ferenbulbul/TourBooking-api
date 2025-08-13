@@ -6,8 +6,9 @@ namespace TourBooking.Application.DTOs.Admin
         Guid GuideId,
         string? FirstName,
         string? LastName,
-        string? LicenceNumber,
         string? Email,
-        string? PhoneNumber
+        string? PhoneNumber,
+        string? DomesticUrl,
+        string? RegionalUrl
     );
 }
