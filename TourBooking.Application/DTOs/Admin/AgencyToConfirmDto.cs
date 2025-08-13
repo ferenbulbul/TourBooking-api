@@ -11,6 +11,8 @@ namespace TourBooking.Application.DTOs.Admin
         string? Address,
         string? Email,
         string? PhoneNumber,
-        string? PhoneNumber2
+        string? PhoneNumber2,
+        string? TursabUrl,
+        string? TaxNumber
     );
 }

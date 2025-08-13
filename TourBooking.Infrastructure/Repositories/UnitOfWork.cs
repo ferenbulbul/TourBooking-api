@@ -1186,7 +1186,9 @@ namespace TourBooking.Infrastructure.Repositories
                     tt.FullAddress,
                     tt.Email,
                     tt.PhoneNumber,
-                    tt.PhoneNumber2
+                    tt.PhoneNumber2,
+                    tt.TursabUrl,
+                    tt.TaxNumber
                 ))
                 .ToListAsync();
         }

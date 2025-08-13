@@ -20,6 +20,7 @@ namespace TourBooking.Domain.Entities
         public string? PhoneNumber2 { get; set; }
         public string? PhoneNumber { get; set; }
         public string? TaxNumber { get; set; }
+        public string? TursabUrl { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public bool IsDeleted { get; set; }

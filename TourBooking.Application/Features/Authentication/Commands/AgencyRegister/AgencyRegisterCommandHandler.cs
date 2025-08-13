@@ -69,6 +69,7 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
                 IsDeleted = false,
                 PhoneNumber2 = request.PhoneNumber2,
                 TaxNumber = request.TaxNumber,
+                TursabUrl = request.TursabUrl
             };
 
             await _unitOfWork.GetRepository<AgencyUserEntity>().AddAsync(newAgencyUser);
