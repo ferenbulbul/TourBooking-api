@@ -10,7 +10,7 @@ builder.Services.AddCors(options =>
         builder =>
         {
             builder
-                .WithOrigins("http://localhost:5173") // exact origin(s), no wildcard
+                .WithOrigins("http://localhost:5173","http://localhost:60729") // exact origin(s), no wildcard
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();
