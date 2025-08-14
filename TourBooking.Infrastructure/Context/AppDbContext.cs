@@ -47,6 +47,7 @@ namespace TourBooking.Infrastructure.Context
         public DbSet<GuideTourPriceEntity> GuideTourPrices => Set<GuideTourPriceEntity>();
         public DbSet<GuideLanguageEntity> GuideLanguages => Set<GuideLanguageEntity>();
         public DbSet<TourRoutePriceEntity> TourRoutePrices => Set<TourRoutePriceEntity>();
+        public DbSet<VehicleBlockEntity> VehicleBlocks => Set<VehicleBlockEntity>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -64,6 +65,7 @@ namespace TourBooking.Infrastructure.Context
             builder.Entity<VehicleClassTranslation>().ToTable("VehicleClassTranslations");
             builder.Entity<SeatTypeTranslation>().ToTable("SeatTypeTranslations");
             builder.Entity<LegroomSpaceTranslation>().ToTable("LegroomSpaceTranslations");
+
             builder.Entity<AvailabilityEntity>().HasIndex(x => x.VehicleId).IsUnique();
 
             // Infrastructure/Context/AppDbContext.cs  (OnModelCreating)
@@ -150,6 +152,18 @@ namespace TourBooking.Infrastructure.Context
                 e.HasIndex(x => new
                 {
                     x.GuideId,
+                    x.StartDate,
+                    x.EndDate
+                });
+            });
+
+            builder.Entity<VehicleBlockEntity>(e =>
+            {
+                e.HasKey(x => x.Id);
+                e.HasOne(x => x.Vehicle).WithMany(g => g.Blocks).HasForeignKey(x => x.VehicleId);
+                e.HasIndex(x => new
+                {
+                    x.VehicleId,
                     x.StartDate,
                     x.EndDate
                 });

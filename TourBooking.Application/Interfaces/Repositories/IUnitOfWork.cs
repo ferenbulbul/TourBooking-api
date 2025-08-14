@@ -139,7 +139,7 @@ namespace TourBooking.Application.Interfaces.Repositories
             Guid guideId, Guid districtId, Guid tourPointId, DateOnly? date
          );
         Task<TourRoutePriceEntity> ControlTourRoute(Guid tourPointId, Guid cityId, Guid districtId, Guid vehicleId, decimal price);
-        Task<AvailabilityEntity> ControlVehicleAvalibity(Guid vehicleId, DateOnly date);
+        Task<VehicleBlockEntity> ControlVehicleAvalibity(Guid vehicleId, DateOnly date);
         Task<GuideTourPriceEntity> ControlGuideAvalibity(Guid guideId, decimal price, DateOnly date, Guid tourPointId, Guid districtId, Guid cityId);
         Task<Guid> FinishBooking(CreateBookingCommand request);
         Task CreateVehicleBlock(Guid vehicleId, DateOnly date);
@@ -148,5 +148,8 @@ namespace TourBooking.Application.Interfaces.Repositories
         Task<IEnumerable<GuideToConfirmDto>> GetGuidesToConfirm();
         Task ConfirmGuide(Guid ıd);
         Task ConfirmAgency(Guid ıd);
+        Task CreateVehicleBlock(CreateVehicleBlockCommand request);
+        Task RemoveVehicleBlock(RemoveVehicleBlockCommand request);
+        Task<IEnumerable<CalendarEventDto2>> VehicleEvents(FetchVehicleEventsQuery request);
     }
 }

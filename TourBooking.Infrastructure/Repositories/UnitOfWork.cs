@@ -1157,12 +1157,13 @@ namespace TourBooking.Infrastructure.Repositories
                          ).FirstOrDefaultAsync();
 
         }
-        public async Task<AvailabilityEntity> ControlVehicleAvalibity(Guid vehicleId, DateOnly date)
+        public async Task<VehicleBlockEntity> ControlVehicleAvalibity(Guid vehicleId, DateOnly date)
         {
-            return await _context.Availabilities
+            return await _context.VehicleBlocks
                .AsNoTracking()
                .Where(tp => tp.VehicleId == vehicleId
-                         && !tp.BusyDays.Any(x => x.Day == date)
+                         && tp.StartDate ==date
+                         && tp.EndDate ==date
                          ).FirstOrDefaultAsync();
         }
 
@@ -1188,9 +1189,9 @@ namespace TourBooking.Infrastructure.Repositories
             var bookings = await _context
                 .Bookings.Where(x =>
                     x.GuideId == request.GuidId
-                    && x.Status != BookingStatus.Cancelled
                     && x.StartDate <= request.To
                     && request.From <= x.EndDate
+                    && x.Status == BookingStatus.Confirmed
                 )
                 .Select(x => new CalendarEventDto2(
                     null,
@@ -1206,6 +1207,45 @@ namespace TourBooking.Infrastructure.Repositories
             var blocks = await _context
                 .GuideBlocks.Where(x =>
                     x.GuideId == request.GuidId
+                    && x.StartDate <= request.To
+                    && request.From <= x.EndDate
+                )
+                .Select(x => new CalendarEventDto2(
+                    x.Id,
+                    "Meşgul",
+                    x.StartDate,
+                    x.EndDate,
+                    true,
+                    "#6b7280" // gri
+                ))
+                .ToListAsync();
+
+            return bookings.Concat(blocks).ToList();
+        }
+        public async Task<IEnumerable<CalendarEventDto2>> VehicleEvents(FetchVehicleEventsQuery request)
+        {
+            // Bookings (read-only)
+            var bookings = await _context
+                .Bookings.Where(x =>
+                    x.VehicleId == request.VehicleId
+                    && x.StartDate <= request.To
+                    && request.From <= x.EndDate
+                    && x.Status == BookingStatus.Confirmed
+                )
+                .Select(x => new CalendarEventDto2(
+                    null,
+                    "Rezerve",
+                    x.StartDate,
+                    x.EndDate,
+                    false,
+                    "#dc2626" // kırmızı
+                ))
+                .ToListAsync();
+
+            // Guide Blocks (editable)
+            var blocks = await _context
+                .VehicleBlocks.Where(x =>
+                    x.VehicleId == request.VehicleId
                     && x.StartDate <= request.To
                     && request.From <= x.EndDate
                 )
@@ -1254,6 +1294,38 @@ namespace TourBooking.Infrastructure.Repositories
             );
             await _context.SaveChangesAsync();
         }
+         public async Task CreateVehicleBlock(CreateVehicleBlockCommand request)
+        {
+            bool overlapsBooking = await _context.Bookings.AnyAsync(b =>
+                b.VehicleId == request.VehicleId
+                && b.Status == BookingStatus.Confirmed
+                && b.StartDate <= request.End
+                && request.Start <= b.EndDate
+            );
+            if (overlapsBooking)
+                throw new InvalidOperationException("Seçilen aralıkta müşteri rezervasyonu var.");
+
+            bool overlapsBlock = await _context.VehicleBlocks.AnyAsync(gb =>
+                gb.VehicleId == request.VehicleId
+                && gb.StartDate <= request.End
+                && request.Start <= gb.EndDate
+            );
+            if (overlapsBlock)
+                throw new InvalidOperationException("Seçilen aralık mevcut bir blokla çakışıyor.");
+
+            _context.VehicleBlocks.Add(
+                new VehicleBlockEntity
+                {
+                    Id = Guid.NewGuid(),
+                    VehicleId = request.VehicleId,
+                    StartDate = request.Start,
+                    EndDate = request.End,
+                    Note = request.Note,
+                    CreatedDate = DateTime.UtcNow
+                }
+            );
+            await _context.SaveChangesAsync();
+        }
 
         public async Task RemoveGuideBlock(RemoveBlockCommand request)
         {
@@ -1263,6 +1335,16 @@ namespace TourBooking.Infrastructure.Repositories
             if (block is null)
                 throw new KeyNotFoundException();
             _context.GuideBlocks.Remove(block);
+            await _context.SaveChangesAsync();
+        }
+        public async Task RemoveVehicleBlock(RemoveVehicleBlockCommand request)
+        {
+            var block = await _context.VehicleBlocks.FirstOrDefaultAsync(x =>
+                x.Id == request.BlockId && x.VehicleId == request.VehicleId
+            );
+            if (block is null)
+                throw new KeyNotFoundException();
+            _context.VehicleBlocks.Remove(block);
             await _context.SaveChangesAsync();
         }
 

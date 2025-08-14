@@ -14,7 +14,7 @@ using TourBooking.Infrastructure.Services;
 namespace TourBooking.API.Controllers
 {
     [ApiController]
-    [Route("api/guides/calendar")]
+    [Route("api/calendar")]
     public class CalendarController : BaseController
     {
         private readonly IMediator _mediator;
@@ -25,7 +25,7 @@ namespace TourBooking.API.Controllers
         }
 
         // aralık bazlı getir (ay görünümü için from-to zorunlu tut)
-        [HttpGet]
+        [HttpGet("guide-blocks")]
         public async Task<ActionResult<IEnumerable<CalendarEventDto2>>> Get(
             [FromQuery] DateOnly from,
             [FromQuery] DateOnly to
@@ -44,7 +44,7 @@ namespace TourBooking.API.Controllers
             return Ok(ApiResponse<FetchEventsQueryResponse>.SuccessResponse(events, null));
         }
 
-        [HttpPost("blocks")]
+        [HttpPost("guide-blocks")]
         public async Task<IActionResult> CreateBlock(CreateBlockRequest req)
         {
             var userIdString = GetUserIdFromToken();
@@ -61,7 +61,7 @@ namespace TourBooking.API.Controllers
             return Ok(ApiResponse<CreateBlockCommandResponse>.SuccessResponse(null, null));
         }
 
-        [HttpDelete("blocks/{blockId:guid}")]
+        [HttpDelete("guide-blocks/{blockId:guid}")]
         public async Task<IActionResult> DeleteBlock(Guid blockId)
         {
             var userIdString = GetUserIdFromToken();
@@ -69,6 +69,51 @@ namespace TourBooking.API.Controllers
                 new RemoveBlockCommand { BlockId = blockId, GuideId = userIdString }
             );
             return Ok(ApiResponse<RemoveBlockCommandResponse>.SuccessResponse(null, null));
+        }
+
+        [HttpGet("vehicle-calendar")]
+        public async Task<ActionResult<IEnumerable<CalendarEventDto2>>> GetVehicleCalendar(
+            [FromQuery] DateOnly from,
+            [FromQuery] DateOnly to,
+            [FromQuery] Guid vehicleId
+        )
+        {
+
+
+            var events = await _mediator.Send(
+                new FetchVehicleEventsQuery
+                {
+                    From = from,
+                    VehicleId = vehicleId,
+                    To = to
+                }
+            );
+            return Ok(ApiResponse<FetchVehicleEventsQueryResponse>.SuccessResponse(events, null));
+        }
+
+        [HttpPost("vehicle-blocks")]
+        public async Task<IActionResult> CreateVehicleBlock(CreateVehicleBlockRequest req)
+        {
+
+            await _mediator.Send(
+                new CreateVehicleBlockCommand
+                {
+                    VehicleId = req.vehicleId,
+                    End = req.end,
+                    Note = req.note,
+                    Start = req.start
+                }
+            );
+            return Ok(ApiResponse<CreateVehicleBlockCommandResponse>.SuccessResponse(null, null));
+        }
+
+        [HttpDelete("vehicle-blocks")]
+        public async Task<IActionResult> DeleteVehicleBlock([FromQuery] Guid blockId,[FromQuery] Guid vehicleId)
+        {
+            await _mediator.Send(
+                new RemoveVehicleBlockCommand { BlockId = blockId, VehicleId = vehicleId }
+            );
+            return Ok(ApiResponse<RemoveVehicleBlockCommandResponse>.SuccessResponse(null, null));
         }
     }
 }

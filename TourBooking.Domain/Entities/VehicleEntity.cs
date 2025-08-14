@@ -30,5 +30,6 @@ namespace TourBooking.Domain.Entities
         public DateTime? UpdatedDate { get; set; }
         public bool IsDeleted { get; set; }
         public virtual ICollection<AvailabilityEntity> AvailabilityList { get; set; }
+        public ICollection<VehicleBlockEntity> Blocks { get; set; } = new List<VehicleBlockEntity>();
     }
 }

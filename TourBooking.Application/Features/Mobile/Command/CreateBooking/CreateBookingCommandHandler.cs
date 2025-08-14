@@ -31,7 +31,7 @@ public class CreateBookingCommandHandler
             throw new BusinessRuleValidationException("tur kontrol fayil");
         }
         var vehicleControl = await _unitOfWork.ControlVehicleAvalibity(request.VehicleId, request.Date);
-        if (vehicleControl == null)
+        if (vehicleControl != null)
         {
             throw new BusinessRuleValidationException("araç kontrol fayil");
         }

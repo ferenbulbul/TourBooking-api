@@ -12,4 +12,5 @@ namespace TourBooking.Application.DTOs.GuideCalendar
     );
 
     public record CreateBlockRequest(DateOnly start, DateOnly end, string? note);
+    public record CreateVehicleBlockRequest(DateOnly start, DateOnly end, string? note,Guid vehicleId);
 }
