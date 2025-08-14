@@ -7,7 +7,7 @@ namespace TourBooking.Application.Features
     {
         public Guid TourPointId { get; set; }
         public Guid? GuideId { get; set; }
-        public Guid CustomerId { get; set; }
+        public Guid? CustomerId { get; set; }
         public Guid CityId { get; set; }
         public Guid DistrictId { get; set; }
         public Guid VehicleId { get; set; }

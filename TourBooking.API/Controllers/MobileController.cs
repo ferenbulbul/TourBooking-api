@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TourBooking.Application.DTOs.Comman;
 using TourBooking.Application.Features;
@@ -127,11 +128,14 @@ namespace TourBooking.API.Controllers
             var summary = await _mediator.Send(request);
             return Ok(ApiResponse<TourBookingSummaryQueryResponse>.SuccessResponse(summary, null));
         }
+        [Authorize]
         [HttpPost("create-booking")]
         public async Task<IActionResult> CreateBooking(CreateBookingCommand request)
         {
+            var userIdString = GetUserIdFromToken();
+            request.CustomerId = userIdString;
             var valid=await _mediator.Send(request);
-            return Ok(ApiResponse<CreateBookingCommandResponse>.SuccessResponse(valid, null));
+            return Ok(ApiResponse<CreateBookingCommandResponse>.SuccessResponse(valid, "Oldu"));
         }
     }
 }

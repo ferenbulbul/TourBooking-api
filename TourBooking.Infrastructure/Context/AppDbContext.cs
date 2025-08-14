@@ -173,18 +173,15 @@ namespace TourBooking.Infrastructure.Context
                 .WithOne(u => u.CustomerUser)
                 .HasForeignKey<CustomerUser>(c => c.Id);
 
-            builder
-                .Entity<BusyDayEntity>()
-                .HasIndex(x => new { x.AvailabilityId, x.Day })
-                .IsUnique(); // aynı günü iki kez yazmayı engelle
+            builder.Entity<BusyDayEntity>(entity =>
+            {
+                entity.HasIndex(x => new { x.AvailabilityId, x.Day }).IsUnique();
 
-            // İlişki
-            builder
-                .Entity<BusyDayEntity>()
-                .HasOne(x => x.Availability)
-                .WithMany(a => a.BusyDays)
-                .HasForeignKey(x => x.AvailabilityId)
-                .OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(x => x.Availability)
+                     .WithMany(a => a.BusyDays)
+                     .HasForeignKey(x => x.AvailabilityId)
+                     .OnDelete(DeleteBehavior.Cascade);
+            });
             builder
                 .Entity<RegionEntity>()
                 .HasOne(r => r.Country)

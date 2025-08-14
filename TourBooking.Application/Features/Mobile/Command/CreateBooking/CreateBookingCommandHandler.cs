@@ -25,7 +25,7 @@ public class CreateBookingCommandHandler
     )
     {
         
-        var tourControl = await _unitOfWork.ControlTourRoute(request.TourPointId, request.CityId, request.DistrictId, request.VehicleId,0);
+        var tourControl = await _unitOfWork.ControlTourRoute(request.TourPointId, request.CityId, request.DistrictId, request.VehicleId,request.TourPrice);
         if (tourControl == null)
         {
             throw new BusinessRuleValidationException("tur kontrol fayil");
@@ -35,9 +35,9 @@ public class CreateBookingCommandHandler
         {
             throw new BusinessRuleValidationException("araç kontrol fayil");
         }
-        if (request.GuideId is not null)
+        if (request.GuideId is not null && request.GuidePrice is not null)
         {
-            var guideControl = await _unitOfWork.ControlGuideAvalibity(request.GuideId.Value, 0, request.Date, request.TourPointId, request.DistrictId, request.CityId);
+            var guideControl = await _unitOfWork.ControlGuideAvalibity(request.GuideId.Value,request.GuidePrice.Value, request.Date, request.TourPointId, request.DistrictId, request.CityId);
             if (guideControl == null)
             {
                 throw new BusinessRuleValidationException("rehberss kontrol fayil");

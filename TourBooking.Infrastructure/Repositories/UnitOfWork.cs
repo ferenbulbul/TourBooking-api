@@ -1226,7 +1226,7 @@ namespace TourBooking.Infrastructure.Repositories
         {
             bool overlapsBooking = await _context.Bookings.AnyAsync(b =>
                 b.GuideId == request.GuideId
-                && b.Status != BookingStatus.Cancelled
+                && b.Status != BookingStatus.Pending
                 && b.StartDate <= request.End
                 && request.Start <= b.EndDate
             );
@@ -1271,15 +1271,17 @@ namespace TourBooking.Infrastructure.Repositories
             var entity = new BookingEntity();
             entity.CreatedDate = DateTime.Now;
             entity.CreatedAt = DateTime.Now;
-            entity.CustomerId = request.CustomerId;
+            entity.CustomerId = request.CustomerId ?? throw new InvalidOperationException("CustomerId boş");
             entity.VehicleId = request.VehicleId;
             entity.EndDate = request.Date;
             entity.StartDate = request.Date;
             entity.FromCityId = request.CityId;
             entity.FromDistrictId = request.DistrictId;
-            entity.GuideId = request.GuideId.HasValue ? request.GuideId.Value : default;
+            entity.GuideId = request.GuideId;
             entity.TourPointId = request.TourPointId;
-            entity.TotalPrice = request.TourPrice + request.GuidePrice ?? 0;
+            entity.TotalPrice = request.TourPrice + (request.GuidePrice ?? 0);
+
+
 
             await _context.Bookings.AddAsync(entity);
             await _context.SaveChangesAsync();
@@ -1288,19 +1290,34 @@ namespace TourBooking.Infrastructure.Repositories
 
         public async Task CreateVehicleBlock(Guid vehicleId, DateOnly date)
         {
-            var list = new List<BusyDayEntity>
-            {
-                new BusyDayEntity { Day = date }
-            };
-            var availability = new AvailabilityEntity
-            {
-                VehicleId = vehicleId,
-                BusyDays = list,
-            };
-             _context.Availabilities.Add(availability);
-            await _context.SaveChangesAsync();
+            var availability = await _context.Availabilities
+                .Include(a => a.BusyDays)
+                .FirstOrDefaultAsync(a => a.VehicleId == vehicleId);
 
+            if (availability == null)
+            {
+                availability = new AvailabilityEntity
+                {
+                    VehicleId = vehicleId,
+                    BusyDays = new List<BusyDayEntity>()
+                };
+                _context.Availabilities.Add(availability);
+            }
+
+            // Aynı gün eklenmiş mi kontrol et
+            if (!availability.BusyDays.Any(b => b.Day == date))
+            {
+                availability.BusyDays.Add(new BusyDayEntity
+                {
+                    Day = date
+                });
+            }
+
+            await _context.SaveChangesAsync();
         }
+
+
+
         public async Task<bool> IsUserApproved(IsApprovedQuery request)
         {
             if (request.Role == "Guide")
