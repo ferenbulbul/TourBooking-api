@@ -72,6 +72,41 @@ builder.Services.AddSwaggerServices();
 
 var app = builder.Build();
 
+
+
+// ... app.Build() ve pipeline kurulumundan sonra, app.Run'dan ÖNCE:
+var migrateFlag = Environment.GetEnvironmentVariable("MIGRATE_ON_STARTUP") == "true";
+if (migrateFlag)
+{
+    app.Lifetime.ApplicationStarted.Register(() =>
+    {
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                using var scope = app.Services.CreateScope();
+                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                await db.Database.MigrateAsync();
+
+                var logger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>()
+                    .CreateLogger("Migrate");
+                logger.LogInformation("EF Core migration completed.");
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    var logger = app.Services.GetRequiredService<ILoggerFactory>()
+                        .CreateLogger("Migrate");
+                    logger.LogError(ex, "EF Core migration failed.");
+                }
+                catch { /* logger yoksa sessiz geç */ }
+            }
+        });
+    });
+}
+
+
 // ===== Cloud Run reverse proxy başlıkları =====
 var fwd = new ForwardedHeadersOptions
 {
