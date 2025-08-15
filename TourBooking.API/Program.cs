@@ -200,11 +200,11 @@ app.MapGet("/db-ping", async () =>
      try { return Results.Ok(new { canConnect = await db.Database.CanConnectAsync() }); }
     catch (Exception ex) { return Results.Problem("db-health failed: " + ex.Message); }
  });
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate();
-}
+// using (var scope = app.Services.CreateScope())
+// {
+//     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+//     db.Database.Migrate();
+// }
 // Controller'lar
 app.MapControllers();
 app.Run();
