@@ -1,0 +1,29 @@
+# 1. Build aşaması
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Proje dosyalarını kopyala
+COPY ["TourBooking.API/TourBooking.API.csproj", "TourBooking.API/"]
+COPY ["TourBooking.Application/TourBooking.Application.csproj", "TourBooking.Application/"]
+COPY ["TourBooking.Domain/TourBooking.Domain.csproj", "TourBooking.Domain/"]
+COPY ["TourBooking.Infrastructure/TourBooking.Infrastructure.csproj", "TourBooking.Infrastructure/"]
+COPY ["TourBooking.Shared.Localization/TourBooking.Shared.Localization.csproj", "TourBooking.Shared.Localization/"]
+
+RUN dotnet restore "TourBooking.API/TourBooking.API.csproj"
+
+# Tüm kaynak dosyaları kopyala
+COPY . .
+WORKDIR "/src/TourBooking.API"
+
+# Publish
+RUN dotnet publish "TourBooking.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+# 2. Runtime aşaması
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+WORKDIR /app
+EXPOSE 8080
+
+COPY --from=build /app/publish .
+
+ENTRYPOINT ["dotnet", "TourBooking.API.dll"]
+
