@@ -25,5 +25,5 @@ EXPOSE 8080
 
 COPY --from=build /app/publish .
 
-# EF Core migration'ı çalıştırıp API'yi başlatan script
-CMD ["sh", "-c", "dotnet TourBooking.API.dll"]
+ENTRYPOINT ["dotnet", "TourBooking.API.dll"]
+
