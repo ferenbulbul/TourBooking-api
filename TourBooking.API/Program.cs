@@ -229,17 +229,17 @@ app.MapGet("/db-ping", async () =>
     }
 });
 
-// EF Core katmanı üzerinden de kontrol etmek istersen type adını verip aç:
+app.MapGet("/ef-info", async (TourBooking.Infrastructure.Context.AppDbContext db) =>
+{
+    var pending = await db.Database.GetPendingMigrationsAsync();
+    var applied = await db.Database.GetAppliedMigrationsAsync();
+    return Results.Ok(new { pending, applied });
+});
  app.MapGet("/db-health", async (AppDbContext db) =>
  {
      try { return Results.Ok(new { canConnect = await db.Database.CanConnectAsync() }); }
     catch (Exception ex) { return Results.Problem("db-health failed: " + ex.Message); }
  });
-// using (var scope = app.Services.CreateScope())
-// {
-//     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-//     db.Database.Migrate();
-// }
-// Controller'lar
+
 app.MapControllers();
 app.Run();
