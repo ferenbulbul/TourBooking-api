@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.EntityFrameworkCore;
 using TourBooking.API.Exceptions;
 using TourBooking.API.Extensions;
+using TourBooking.Infrastructure.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -76,7 +78,39 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
+// Basit DB sağlık kontrolü (EF Core üzerinden gerçek bağlantı açar)
+app.MapGet("/db-health", async (AppDbContext db, ILoggerFactory lf) =>
+{
+    var log = lf.CreateLogger("DbHealth");
+    try
+    {
+        // EF Core bağlantısı kurulabiliyor mu?
+        var can = await db.Database.CanConnectAsync();
+
+        // Bağlantıyı gerçekten açıp basit bir SELECT çalıştır
+        await using var conn = db.Database.GetDbConnection();
+        await conn.OpenAsync();
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = "SELECT DATABASE(), USER(), VERSION()";
+        await using var r = await cmd.ExecuteReaderAsync();
+
+        string? database = null, user = null, version = null;
+        if (await r.ReadAsync())
+        {
+            database = r.IsDBNull(0) ? null : r.GetString(0);
+            user     = r.IsDBNull(1) ? null : r.GetString(1);
+            version  = r.IsDBNull(2) ? null : r.GetString(2);
+        }
+
+        return Results.Ok(new { canConnect = can, database, user, version });
+    }
+    catch (Exception ex)
+    {
+        log.LogError(ex, "DB health check failed");
+        return Results.Problem("DB connection failed: " + ex.Message);
+    }
+});
+
 app.MapControllers();
 
 // (Opsiyonel) ilk açılışta migration
