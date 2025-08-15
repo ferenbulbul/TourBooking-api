@@ -14,11 +14,11 @@ namespace TourBooking.API.Extensions
             // });
 
             services.AddDbContext<AppDbContext>(options =>
-                 options.UseMySql(
-                 configuration.GetConnectionString("DefaultConnection"),
-                  ServerVersion.AutoDetect(configuration.GetConnectionString("DefaultConnection"))
-           )
-);
+                {
+                    var cs = configuration.GetConnectionString("Default"); // <-- ayni anahtar
+                    options.UseMySql(cs, ServerVersion.AutoDetect(cs),
+                        b => b.MigrationsAssembly(typeof(AppDbContext).Assembly.FullName));
+                });
             return services;
         }
     }
