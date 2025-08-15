@@ -1,20 +1,28 @@
+using System;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
-using TourBooking.API.Exceptions;
+using MySqlConnector;
+
+using TourBooking.API.Exceptions;  // ExceptionHandlingMiddleware
 using TourBooking.API.Extensions;
-using TourBooking.Infrastructure.Context;
+using TourBooking.Infrastructure.Context;  // Add*Services extension'ların (Application/Persistence/Identity/Infrastructure/Swagger)
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
-// Cloud Run $PORT'u dinle
+// Cloud Run: $PORT'u dinle
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
-// --- Eğer Cloud Run env'leri geldiyse, connection string'i override et ---
-var dbUser = Environment.GetEnvironmentVariable("DB_USER");
-var dbPass = Environment.GetEnvironmentVariable("DB_PASS");
-var dbName = Environment.GetEnvironmentVariable("DB_NAME");
+// ===== Cloud SQL (Unix socket) için bağlantı dizesini ENV/Secret'lardan üret =====
+var dbUser   = Environment.GetEnvironmentVariable("DB_USER");
+var dbPass   = Environment.GetEnvironmentVariable("DB_PASS");
+var dbName   = Environment.GetEnvironmentVariable("DB_NAME");
 var instance = Environment.GetEnvironmentVariable("INSTANCE_CONNECTION_NAME"); // project:region:instance
 
 if (!string.IsNullOrWhiteSpace(dbUser) &&
@@ -22,25 +30,29 @@ if (!string.IsNullOrWhiteSpace(dbUser) &&
     !string.IsNullOrWhiteSpace(dbName) &&
     !string.IsNullOrWhiteSpace(instance))
 {
-    // Cloud Run, bu soketi otomatik mount eder (Cloud Run dokümanı).
-    var socketPath = $"/cloudsql/{instance}";
+    var csb = new MySqlConnectionStringBuilder
+    {
+        // UnixSocket verildiğinde TCP kullanılmaz.
+        Server     = $"/cloudsql/{instance}",
+        UserID     = dbUser,
+        Password   = dbPass,
+        Database   = dbName,
+        SslMode    = MySqlSslMode.None
+    };
 
-    // MySqlConnector: Server'a soket yolunu verirsen Unix socket kullanır (doküman).
-    var connStr =
-        $"Server={socketPath};" +           // alternatif: $"UnixSocket={socketPath};"
-        $"ConnectionProtocol=Unix;" +       // açıkça belirtmek istersen (opsiyonel)
-        $"User Id={dbUser};" +
-        $"Password={dbPass};" +
-        $"Database={dbName};";
-
-    // Senin AddPersistenceServices(configuration) zaten ConnectionStrings:Default okuyor
-    configuration["ConnectionStrings:Default"] = connStr;
+    // Persistence katmanının okuduğu anahtarı override ediyoruz.
+    configuration["ConnectionStrings:Default"] = csb.ConnectionString;
 }
 
-// --- senin mevcut servis kayıtların ---
-builder.Services.AddCors(o => o.AddPolicy("AllowMobileApp", p =>
-    p.WithOrigins("http://localhost:5173","http://localhost:60729")
-     .AllowAnyHeader().AllowAnyMethod().AllowCredentials()));
+// ===== CORS / Controllers / Localization =====
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowMobileApp", p =>
+        p.WithOrigins("http://localhost:5173", "http://localhost:60729")
+         .AllowAnyHeader()
+         .AllowAnyMethod()
+         .AllowCredentials());
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -51,6 +63,7 @@ var localizationOptions = new RequestLocalizationOptions()
     .AddSupportedCultures(supportedCultures)
     .AddSupportedUICultures(supportedCultures);
 
+// ===== Senin extension'ların =====
 builder.Services.AddApplicationServices();
 builder.Services.AddPersistenceServices(configuration);
 builder.Services.AddIdentityServices(configuration);
@@ -59,39 +72,50 @@ builder.Services.AddSwaggerServices();
 
 var app = builder.Build();
 
-// Cloud Run reverse proxy uyumu
-app.UseForwardedHeaders(new ForwardedHeadersOptions {
-    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-});
+// ===== Cloud Run reverse proxy başlıkları =====
+var fwd = new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto,
+    RequireHeaderSymmetry = false,
+    ForwardLimit = null
+};
+fwd.KnownNetworks.Clear();
+fwd.KnownProxies.Clear();
+app.UseForwardedHeaders(fwd);
 
+// ===== Localization =====
 app.UseRequestLocalization(localizationOptions);
 
+// ===== Swagger (sadece Development) =====
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
+// Cloud Run TLS'yi dışta sonlandırır; aşağıdaki redirect X-Forwarded-Proto ile uyumlu çalışır.
 app.UseHttpsRedirection();
+
+// ===== Pipeline =====
 app.UseCors("AllowMobileApp");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-// Basit DB sağlık kontrolü (EF Core üzerinden gerçek bağlantı açar)
-app.MapGet("/db-health", async (AppDbContext db, ILoggerFactory lf) =>
+// ===== Basit test endpoint'leri =====
+app.MapGet("/", () => Results.Ok(new { status = "ok" }));
+app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
+
+// DB'yi doğrudan MySqlConnector ile ping'leyen endpoint (en net teşhis)
+app.MapGet("/db-ping", async () =>
 {
-    var log = lf.CreateLogger("DbHealth");
     try
     {
-        // EF Core bağlantısı kurulabiliyor mu?
-        var can = await db.Database.CanConnectAsync();
-
-        // Bağlantıyı gerçekten açıp basit bir SELECT çalıştır
-        await using var conn = db.Database.GetDbConnection();
+        var cs = builder.Configuration.GetConnectionString("Default");
+        await using var conn = new MySqlConnection(cs);
         await conn.OpenAsync();
-        await using var cmd = conn.CreateCommand();
-        cmd.CommandText = "SELECT DATABASE(), USER(), VERSION()";
+
+        await using var cmd = new MySqlCommand("SELECT DATABASE(), USER(), VERSION()", conn);
         await using var r = await cmd.ExecuteReaderAsync();
 
         string? database = null, user = null, version = null;
@@ -102,21 +126,28 @@ app.MapGet("/db-health", async (AppDbContext db, ILoggerFactory lf) =>
             version  = r.IsDBNull(2) ? null : r.GetString(2);
         }
 
-        return Results.Ok(new { canConnect = can, database, user, version });
+        return Results.Ok(new { ok = true, database, user, version });
     }
     catch (Exception ex)
     {
-        log.LogError(ex, "DB health check failed");
-        return Results.Problem("DB connection failed: " + ex.Message);
+        return Results.Problem("db-ping failed: " + ex.Message);
     }
 });
 
+// EF Core katmanı üzerinden de kontrol etmek istersen type adını verip aç:
+ app.MapGet("/db-health", async (AppDbContext db) =>
+ {
+     try { return Results.Ok(new { canConnect = await db.Database.CanConnectAsync() }); }
+    catch (Exception ex) { return Results.Problem("db-health failed: " + ex.Message); }
+ });
+
+// Controller'lar
 app.MapControllers();
 
-// (Opsiyonel) ilk açılışta migration
+// ===== (İsteğe bağlı) İlk açılışta migration =====
 // using (var scope = app.Services.CreateScope())
 // {
-//     var db = scope.ServiceProvider.GetRequiredService<YourDbContext>();
+//     var db = scope.ServiceProvider.GetRequiredService<YourDbContext>(); // kendi DbContext adın
 //     db.Database.Migrate();
 // }
 
