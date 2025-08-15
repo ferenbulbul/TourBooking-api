@@ -3,21 +3,27 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 # Proje dosyalarını kopyala
-COPY ["TourBooking.API.csproj", "./"]
-RUN dotnet restore "./TourBooking.API.csproj"
+COPY ["TourBooking.API/TourBooking.API.csproj", "TourBooking.API/"]
+COPY ["TourBooking.Application/TourBooking.Application.csproj", "TourBooking.Application/"]
+COPY ["TourBooking.Domain/TourBooking.Domain.csproj", "TourBooking.Domain/"]
+COPY ["TourBooking.Infrastructure/TourBooking.Infrastructure.csproj", "TourBooking.Infrastructure/"]
+COPY ["TourBooking.Shared.Localization/TourBooking.Shared.Localization.csproj", "TourBooking.Shared.Localization/"]
 
-# Tüm kodu kopyala ve publish et
+RUN dotnet restore "TourBooking.API/TourBooking.API.csproj"
+
+# Tüm kaynak dosyaları kopyala
 COPY . .
-RUN dotnet publish "./TourBooking.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
+WORKDIR "/src/TourBooking.API"
+
+# Publish
+RUN dotnet publish "TourBooking.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 # 2. Runtime aşaması
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 EXPOSE 8080
-EXPOSE 443
 
-# Yayınlanan dosyaları kopyala
 COPY --from=build /app/publish .
 
-# Prod ortamında çalıştır
-ENTRYPOINT ["dotnet", "TourBooking.API.dll"]
+# EF Core migration'ı çalıştırıp API'yi başlatan script
+CMD ["sh", "-c", "dotnet TourBooking.API.dll"]
