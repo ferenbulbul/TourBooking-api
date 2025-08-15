@@ -229,11 +229,29 @@ app.MapGet("/db-ping", async () =>
     }
 });
 
-app.MapGet("/ef-info", async (TourBooking.Infrastructure.Context.AppDbContext db) =>
+app.MapGet("/ef-info", async (AppDbContext db) =>
 {
     var pending = await db.Database.GetPendingMigrationsAsync();
     var applied = await db.Database.GetAppliedMigrationsAsync();
     return Results.Ok(new { pending, applied });
+});
+
+// Manuel migrate tetikle ve hatayı düz metin döndür
+app.MapPost("/admin/migrate-now", async (IServiceProvider sp) =>
+{
+    try
+    {
+        using var scope = sp.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var before = await db.Database.GetPendingMigrationsAsync();
+        await db.Database.MigrateAsync();
+        var after = await db.Database.GetPendingMigrationsAsync();
+        return Results.Ok(new { migrated = true, pendingBefore = before, pendingAfter = after });
+    }
+    catch (Exception ex)
+    {
+        return Results.Text(ex.ToString(), "text/plain"); // middleware'e takılmasın
+    }
 });
  app.MapGet("/db-health", async (AppDbContext db) =>
  {
