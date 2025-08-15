@@ -20,9 +20,9 @@ var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 // ===== Cloud SQL (Unix socket) için bağlantı dizesini ENV/Secret'lardan üret =====
-var dbUser   = Environment.GetEnvironmentVariable("DB_USER");
-var dbPass   = Environment.GetEnvironmentVariable("DB_PASS");
-var dbName   = Environment.GetEnvironmentVariable("DB_NAME");
+var dbUser = Environment.GetEnvironmentVariable("DB_USER");
+var dbPass = Environment.GetEnvironmentVariable("DB_PASS");
+var dbName = Environment.GetEnvironmentVariable("DB_NAME");
 var instance = Environment.GetEnvironmentVariable("INSTANCE_CONNECTION_NAME"); // project:region:instance
 
 if (!string.IsNullOrWhiteSpace(dbUser) &&
@@ -30,18 +30,15 @@ if (!string.IsNullOrWhiteSpace(dbUser) &&
     !string.IsNullOrWhiteSpace(dbName) &&
     !string.IsNullOrWhiteSpace(instance))
 {
-    var csb = new MySqlConnectionStringBuilder
-    {
-        // UnixSocket verildiğinde TCP kullanılmaz.
-        Server     = $"/cloudsql/{instance}",
-        UserID     = dbUser,
-        Password   = dbPass,
-        Database   = dbName,
-        SslMode    = MySqlSslMode.None
-    };
+    var connStr =
+    $"Server=localhost;" +
+    $"User Id={dbUser};" +
+    $"Password={dbPass};" +
+    $"Database={dbName};" +
+    $"UnixSocket=/cloudsql/{instance};" +   // <— kritik satır
+    $"SslMode=None;";
 
-    // Persistence katmanının okuduğu anahtarı override ediyoruz.
-    configuration["ConnectionStrings:Default"] = csb.ConnectionString;
+    configuration["ConnectionStrings:Default"] = connStr;
 }
 
 // ===== CORS / Controllers / Localization =====
@@ -109,27 +106,29 @@ app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
 app.MapGet("/cloudsql-debug", () =>
 {
     var instance = Environment.GetEnvironmentVariable("INSTANCE_CONNECTION_NAME");
-    var dbUser   = Environment.GetEnvironmentVariable("DB_USER");
-    var dbPass   = Environment.GetEnvironmentVariable("DB_PASS");
-    var dbName   = Environment.GetEnvironmentVariable("DB_NAME");
+    var dbUser = Environment.GetEnvironmentVariable("DB_USER");
+    var dbPass = Environment.GetEnvironmentVariable("DB_PASS");
+    var dbName = Environment.GetEnvironmentVariable("DB_NAME");
 
     var basePath = "/cloudsql";
     var dirExists = Directory.Exists(basePath);
     string[] entries = Array.Empty<string>();
     if (dirExists)
     {
-        try { entries = Directory.GetFileSystemEntries(basePath); } catch {}
+        try { entries = Directory.GetFileSystemEntries(basePath); } catch { }
     }
 
     return Results.Ok(new
     {
-        env = new {
+        env = new
+        {
             INSTANCE_CONNECTION_NAME = string.IsNullOrWhiteSpace(instance) ? null : instance,
-            DB_USER_set   = !string.IsNullOrEmpty(dbUser),
-            DB_PASS_set   = !string.IsNullOrEmpty(dbPass),
+            DB_USER_set = !string.IsNullOrEmpty(dbUser),
+            DB_PASS_set = !string.IsNullOrEmpty(dbPass),
             DB_NAME_value = dbName
         },
-        cloudsql = new {
+        cloudsql = new
+        {
             basePath,
             baseDirExists = dirExists,
             entries // burada genelde "project:region:instance" görmelisin
@@ -149,17 +148,19 @@ app.MapGet("/db-ping2", async () =>
 
         await using var cmd = new MySqlCommand("SELECT DATABASE(), USER(), VERSION()", conn);
         await using var r = await cmd.ExecuteReaderAsync();
-        string? database=null, user=null, version=null;
-        if (await r.ReadAsync()) {
+        string? database = null, user = null, version = null;
+        if (await r.ReadAsync())
+        {
             database = r.IsDBNull(0) ? null : r.GetString(0);
-            user     = r.IsDBNull(1) ? null : r.GetString(1);
-            version  = r.IsDBNull(2) ? null : r.GetString(2);
+            user = r.IsDBNull(1) ? null : r.GetString(1);
+            version = r.IsDBNull(2) ? null : r.GetString(2);
         }
-        return Results.Ok(new { ok=true, database, user, version });
+        return Results.Ok(new { ok = true, database, user, version });
     }
     catch (Exception ex)
     {
-        return Results.Problem(new {
+        return Results.Problem(new
+        {
             message = "db-ping failed",
             type = ex.GetType().FullName,
             ex.Message,
@@ -182,8 +183,8 @@ app.MapGet("/db-ping", async () =>
         if (await r.ReadAsync())
         {
             database = r.IsDBNull(0) ? null : r.GetString(0);
-            user     = r.IsDBNull(1) ? null : r.GetString(1);
-            version  = r.IsDBNull(2) ? null : r.GetString(2);
+            user = r.IsDBNull(1) ? null : r.GetString(1);
+            version = r.IsDBNull(2) ? null : r.GetString(2);
         }
 
         return Results.Ok(new { ok = true, database, user, version });
@@ -195,11 +196,11 @@ app.MapGet("/db-ping", async () =>
 });
 
 // EF Core katmanı üzerinden de kontrol etmek istersen type adını verip aç:
- app.MapGet("/db-health", async (AppDbContext db) =>
- {
-     try { return Results.Ok(new { canConnect = await db.Database.CanConnectAsync() }); }
+app.MapGet("/db-health", async (AppDbContext db) =>
+{
+    try { return Results.Ok(new { canConnect = await db.Database.CanConnectAsync() }); }
     catch (Exception ex) { return Results.Problem("db-health failed: " + ex.Message); }
- });
+});
 
 // Controller'lar
 app.MapControllers();
