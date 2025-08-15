@@ -25,7 +25,6 @@ secrets.json
 
 # Publish output
 publish/
-TourBooking.Infrastructure/Migrations/
 TourBooking.API/appsettings.Development.json
 .DS_Store
 TourBooking.API/appsettings.Development.json
