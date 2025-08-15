@@ -19,29 +19,30 @@ var configuration = builder.Configuration;
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
-
+// ===== Cloud SQL (Unix socket) için bağlantı dizesini ENV/Secret'lardan üret =====
 var dbUser   = Environment.GetEnvironmentVariable("DB_USER");
 var dbPass   = Environment.GetEnvironmentVariable("DB_PASS");
 var dbName   = Environment.GetEnvironmentVariable("DB_NAME");
-var instance = Environment.GetEnvironmentVariable("INSTANCE_CONNECTION_NAME"); // apiv1-469110:europe-west2:tourrentdb
-var dbHost   = Environment.GetEnvironmentVariable("DB_HOST"); // boş bırak (socket kullanıyoruz)
+var instance = Environment.GetEnvironmentVariable("INSTANCE_CONNECTION_NAME"); // project:region:instance
 
-string connStr;
-if (!string.IsNullOrWhiteSpace(dbHost))
+if (!string.IsNullOrWhiteSpace(dbUser) &&
+    !string.IsNullOrWhiteSpace(dbPass) &&
+    !string.IsNullOrWhiteSpace(dbName) &&
+    !string.IsNullOrWhiteSpace(instance))
 {
-    // TCP fallback (Private IP + VPC connector kullanırsan)
-    connStr = $"Server={dbHost};Port=3306;User Id={dbUser};Password={dbPass};Database={dbName};SslMode=None;";
-}
-else
-{
-    // 🔑 Unix socket yolu — Cloud SQL connection mount edildiğinde çalışır
-    connStr =
-        $"Server=localhost;" +
-        $"User Id={dbUser};Password={dbPass};Database={dbName};" +
-        $"UnixSocket=/cloudsql/{instance};SslMode=None;";
-}
+    var csb = new MySqlConnectionStringBuilder
+    {
+        // UnixSocket verildiğinde TCP kullanılmaz.
+        Server     = $"/cloudsql/{instance}",
+        UserID     = dbUser,
+        Password   = dbPass,
+        Database   = dbName,
+        SslMode    = MySqlSslMode.None
+    };
 
-builder.Configuration["ConnectionStrings:Default"] = connStr;
+    // Persistence katmanının okuduğu anahtarı override ediyoruz.
+    configuration["ConnectionStrings:Default"] = csb.ConnectionString;
+}
 
 // ===== CORS / Controllers / Localization =====
 builder.Services.AddCors(options =>
