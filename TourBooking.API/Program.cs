@@ -1,8 +1,11 @@
+using Microsoft.EntityFrameworkCore;
 using TourBooking.API.Exceptions; // ExceptionHandlingMiddleware için
-using TourBooking.API.Extensions; // Oluşturduğumuz tüm extension metotları için
+using TourBooking.API.Extensions;
+using TourBooking.Infrastructure.Context; // Oluşturduğumuz tüm extension metotları için
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(
@@ -10,7 +13,7 @@ builder.Services.AddCors(options =>
         builder =>
         {
             builder
-                .WithOrigins("http://localhost:5173","http://localhost:60729") // exact origin(s), no wildcard
+                .WithOrigins("http://localhost:5173", "http://localhost:60729") // exact origin(s), no wildcard
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();
@@ -20,6 +23,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
 
 var supportedCultures = new[] { "tr", "en" };
 
@@ -36,12 +40,17 @@ builder.Services.AddSwaggerServices();
 
 var app = builder.Build();
 app.UseRequestLocalization(localizationOptions);
-
-if (app.Environment.IsDevelopment())
+using (var scope = app.Services.CreateScope())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    var services = scope.ServiceProvider;
+    var context = services.GetRequiredService<AppDbContext>();
+    
+    // Veritabanı migration'larını uygulama
+    context.Database.Migrate();
 }
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseCors("AllowMobileApp");
