@@ -48,7 +48,7 @@ if (!string.IsNullOrWhiteSpace(dbUser) &&
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowMobileApp", p =>
-        p.WithOrigins("http://localhost:5173", "http://localhost:60729","https://app2-595877181314.europe-west1.run.app")
+        p.WithOrigins("http://localhost:5173", "http://localhost:60729","https://app2-595877181314.europe-west1.run.app","https://tourbook-backoffice-272954735037.europe-west2.run.app")
          .AllowAnyHeader()
          .AllowAnyMethod()
          .AllowCredentials());
