@@ -41,6 +41,7 @@ namespace TourBooking.Infrastructure.Context
         public DbSet<GuideUserEntity> Guides { get; set; }
         public DbSet<GuideBlock> GuideBlocks => Set<GuideBlock>();
         public DbSet<AgencyUserEntity> Agencies { get; set; }
+        public DbSet<CallCenterAgentEntity> CallCenterAgents { get; set; }
         public DbSet<AvailabilityEntity> Availabilities => Set<AvailabilityEntity>();
         public DbSet<BusyDayEntity> BusyDays => Set<BusyDayEntity>();
         public DbSet<BookingEntity> Bookings => Set<BookingEntity>();
@@ -76,16 +77,16 @@ namespace TourBooking.Infrastructure.Context
 
                 // 🔒 Aynı kombinasyon tek olsun (unique)
                 b.HasIndex(x => new
-                {
-                    x.TourPointId,
-                    x.CountryId,
-                    x.RegionId,
-                    x.CityId,
-                    x.DistrictId,
-                    x.VehicleId,
-                    x.DriverId,
-                    x.AgencyId
-                })
+                    {
+                        x.TourPointId,
+                        x.CountryId,
+                        x.RegionId,
+                        x.CityId,
+                        x.DistrictId,
+                        x.VehicleId,
+                        x.DriverId,
+                        x.AgencyId
+                    })
                     .IsUnique();
 
                 b.Property(x => x.Price).HasColumnType("decimal(18,2)");
@@ -93,28 +94,27 @@ namespace TourBooking.Infrastructure.Context
             });
 
             builder.Entity<GuideLanguageEntity>(e =>
-                {
+            {
+                // 1) Composite PK kullanacaksan 'Id'ı kaldır/ignore et
+                e.HasKey(x => new { x.GuideId, x.LanguageId });
+                e.Ignore(x => x.Id);
 
-                    // 1) Composite PK kullanacaksan 'Id'ı kaldır/ignore et
-                    e.HasKey(x => new { x.GuideId, x.LanguageId });
-                    e.Ignore(x => x.Id);
+                // 2) Guide ilişkisini AÇIKÇA tanımla => shadow FK oluşmasın
+                e.HasOne<GuideUserEntity>() // navigation yazmak zorunda değilsin
+                    .WithMany(g => g.GuideLanguages)
+                    .HasForeignKey(x => x.GuideId)
+                    .OnDelete(DeleteBehavior.Cascade);
 
-                    // 2) Guide ilişkisini AÇIKÇA tanımla => shadow FK oluşmasın
-                    e.HasOne<GuideUserEntity>()                 // navigation yazmak zorunda değilsin
-                     .WithMany(g => g.GuideLanguages)
-                     .HasForeignKey(x => x.GuideId)
-                     .OnDelete(DeleteBehavior.Cascade);
+                // 3) Language ilişkisi
+                e.HasOne(gl => gl.Language)
+                    .WithMany(l => l.GuideLanguages)
+                    .HasForeignKey(gl => gl.LanguageId)
+                    .OnDelete(DeleteBehavior.Cascade);
 
-                    // 3) Language ilişkisi
-                    e.HasOne(gl => gl.Language)
-                     .WithMany(l => l.GuideLanguages)
-                     .HasForeignKey(gl => gl.LanguageId)
-                     .OnDelete(DeleteBehavior.Cascade);
-
-                    // Eğer class'ta 'Id' property’si hala duruyorsa, tamamen kaldır
-                    // ya da:
-                    // e.Ignore(x => x.Id);
-                });
+                // Eğer class'ta 'Id' property’si hala duruyorsa, tamamen kaldır
+                // ya da:
+                // e.Ignore(x => x.Id);
+            });
 
             builder.Entity<GuideTourPriceEntity>(e =>
             {
@@ -123,12 +123,12 @@ namespace TourBooking.Infrastructure.Context
                 e.Property(x => x.Price).HasColumnType("decimal(10,2)");
                 e.Property(x => x.Currency).HasMaxLength(3);
                 e.HasIndex(x => new
-                {
-                    x.GuideId,
-                    x.CityId,
-                    x.DistrictId,
-                    x.TourPointId
-                })
+                    {
+                        x.GuideId,
+                        x.CityId,
+                        x.DistrictId,
+                        x.TourPointId
+                    })
                     .IsUnique();
             });
 
@@ -174,6 +174,11 @@ namespace TourBooking.Infrastructure.Context
                 .HasOne(c => c.AppUser)
                 .WithOne(u => u.GuideUser)
                 .HasForeignKey<GuideUserEntity>(c => c.Id);
+            builder
+                .Entity<CallCenterAgentEntity>()
+                .HasOne(c => c.AppUser)
+                .WithOne(u => u.CallCenterAgent)
+                .HasForeignKey<CallCenterAgentEntity>(c => c.Id);
 
             builder
                 .Entity<AgencyUserEntity>()
@@ -191,10 +196,11 @@ namespace TourBooking.Infrastructure.Context
             {
                 entity.HasIndex(x => new { x.AvailabilityId, x.Day }).IsUnique();
 
-                entity.HasOne(x => x.Availability)
-                     .WithMany(a => a.BusyDays)
-                     .HasForeignKey(x => x.AvailabilityId)
-                     .OnDelete(DeleteBehavior.Cascade);
+                entity
+                    .HasOne(x => x.Availability)
+                    .WithMany(a => a.BusyDays)
+                    .HasForeignKey(x => x.AvailabilityId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
             builder
                 .Entity<RegionEntity>()
@@ -213,30 +219,31 @@ namespace TourBooking.Infrastructure.Context
                 .HasOne(d => d.City)
                 .WithMany(c => c.Districts)
                 .HasForeignKey(d => d.CityId);
-            builder.Entity<LanguageEntity>().HasData(
-    new LanguageEntity
-    {
-        Id = new Guid("11111111-1111-1111-1111-111111111111"),
-        Name = "Türkçe",
-        Code = "tr",
-        IsActive = true
-    },
-    new LanguageEntity
-    {
-        Id = new Guid("22222222-2222-2222-2222-222222222222"),
-        Name = "English",
-        Code = "en",
-        IsActive = true
-    }, new LanguageEntity
-    {
-        Id = new Guid("33333333-3333-3333-3333-333333333333"),
-        Name = "العربية", // Arapça
-        Code = "ar",
-        IsActive = true
-    }
-
-);
-
+            builder
+                .Entity<LanguageEntity>()
+                .HasData(
+                    new LanguageEntity
+                    {
+                        Id = new Guid("11111111-1111-1111-1111-111111111111"),
+                        Name = "Türkçe",
+                        Code = "tr",
+                        IsActive = true
+                    },
+                    new LanguageEntity
+                    {
+                        Id = new Guid("22222222-2222-2222-2222-222222222222"),
+                        Name = "English",
+                        Code = "en",
+                        IsActive = true
+                    },
+                    new LanguageEntity
+                    {
+                        Id = new Guid("33333333-3333-3333-3333-333333333333"),
+                        Name = "العربية", // Arapça
+                        Code = "ar",
+                        IsActive = true
+                    }
+                );
         }
     }
 }

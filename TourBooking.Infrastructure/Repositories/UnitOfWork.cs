@@ -6,9 +6,9 @@ using TourBooking.Application.DTOs.Admin;
 using TourBooking.Application.DTOs.GuideCalendar;
 using TourBooking.Application.DTOs.Mobile;
 using TourBooking.Application.Features;
-using TourBooking.Application.Features.Mobile.Query.TourPointDetails;
 using TourBooking.Application.Features.Admin.Query.AgenciesToConfirm;
 using TourBooking.Application.Features.Authentication.Queries.IsApproved;
+using TourBooking.Application.Features.Mobile.Query.TourPointDetails;
 using TourBooking.Application.Features.Settings;
 using TourBooking.Application.Features.Settings.Queries;
 using TourBooking.Application.Interfaces.Repositories;
@@ -20,7 +20,6 @@ namespace TourBooking.Infrastructure.Repositories
 {
     public class UnitOfWork : IUnitOfWork
     {
-
         private readonly AppDbContext _context;
         private readonly Dictionary<Type, object> _repositories = new();
 
@@ -28,10 +27,12 @@ namespace TourBooking.Infrastructure.Repositories
         {
             _context = context;
         }
+
         public async Task<IDbContextTransaction> BeginTransactionAsync()
         {
             return await _context.Database.BeginTransactionAsync();
         }
+
         public async Task<int> CommitAsync()
         {
             return await _context.SaveChangesAsync();
@@ -773,66 +774,69 @@ namespace TourBooking.Infrastructure.Repositories
         }
 
         public async Task<IEnumerable<MobileDetailedSearchResultDto>> MobileTourPointsByDeparture(
-                Guid? regionId, Guid? cityId, Guid? districtId, string culture)
+            Guid? regionId,
+            Guid? cityId,
+            Guid? districtId,
+            string culture
+        )
         {
             // 1) Uygun route’lar: kalkış (region/city/district) filtreleri
-            var baseRoutes = _context.TourRoutePrices
-               .AsNoTracking()
-               .Where(rp => (!regionId.HasValue || rp.RegionId == regionId.Value)
-              && (!cityId.HasValue || rp.CityId == cityId.Value)
-              && (!districtId.HasValue || rp.DistrictId == districtId.Value));
-
+            var baseRoutes = _context
+                .TourRoutePrices.AsNoTracking()
+                .Where(rp =>
+                    (!regionId.HasValue || rp.RegionId == regionId.Value)
+                    && (!cityId.HasValue || rp.CityId == cityId.Value)
+                    && (!districtId.HasValue || rp.DistrictId == districtId.Value)
+                );
 
             // 2) Tekil TourPointId seti
-            var tourPointIds = baseRoutes
-                .Select(rp => rp.TourPointId)
-                .Distinct();
+            var tourPointIds = baseRoutes.Select(rp => rp.TourPointId).Distinct();
 
             // 3) TourPoint detaylarını projekte et (dil çevirileri dahil)
-            var list = await _context.TourPoints
-                .AsNoTracking()
+            var list = await _context
+                .TourPoints.AsNoTracking()
                 .Where(tp => tourPointIds.Contains(tp.Id))
                 .Select(tp => new MobileDetailedSearchResultDto
                 {
                     Id = tp.Id,
-                    Name = tp.Translations
-                        .Where(tr => tr.Language.Code == culture)
+                    Name = tp
+                        .Translations.Where(tr => tr.Language.Code == culture)
                         .Select(tr => tr.Title)
                         .FirstOrDefault(),
 
                     TourTypeId = tp.TourTypeId,
-                    TourTypeName = tp.TourType.Translations
-                        .Where(tr => tr.Language.Code == culture)
+                    TourTypeName = tp
+                        .TourType.Translations.Where(tr => tr.Language.Code == culture)
                         .Select(tr => tr.Title)
                         .FirstOrDefault(),
 
                     TourDifficultyId = tp.TourDifficultyId,
-                    TourDifficultyName = tp.TourDifficulty.Translations
-                        .Where(tr => tr.Language.Code == culture)
+                    TourDifficultyName = tp
+                        .TourDifficulty.Translations.Where(tr => tr.Language.Code == culture)
                         .Select(tr => tr.Title)
                         .FirstOrDefault(),
 
                     CountryId = tp.CountryId,
-                    CountryName = tp.Country.Translations
-                        .Where(tr => tr.Language.Code == culture)
+                    CountryName = tp
+                        .Country.Translations.Where(tr => tr.Language.Code == culture)
                         .Select(tr => tr.Title)
                         .FirstOrDefault(),
 
                     RegionId = tp.RegionId,
-                    RegionName = tp.Region.Translations
-                        .Where(tr => tr.Language.Code == culture)
+                    RegionName = tp
+                        .Region.Translations.Where(tr => tr.Language.Code == culture)
                         .Select(tr => tr.Title)
                         .FirstOrDefault(),
 
                     CityId = tp.CityId,
-                    CityName = tp.City.Translations
-                        .Where(tr => tr.Language.Code == culture)
+                    CityName = tp
+                        .City.Translations.Where(tr => tr.Language.Code == culture)
                         .Select(tr => tr.Title)
                         .FirstOrDefault(),
 
                     DistrictId = tp.DistrictId,
-                    DistrictName = tp.District.Translations
-                        .Where(tr => tr.Language.Code == culture)
+                    DistrictName = tp
+                        .District.Translations.Where(tr => tr.Language.Code == culture)
                         .Select(tr => tr.Title)
                         .FirstOrDefault(),
 
@@ -842,7 +846,6 @@ namespace TourBooking.Infrastructure.Repositories
                 .ToListAsync();
             return list;
         }
-
 
         public async Task<MobileTourPointDetailDto> MobileTourPointDetail(
             Guid tourPointId,
@@ -907,8 +910,7 @@ namespace TourBooking.Infrastructure.Repositories
                                 .City.Translations.Where(tr => tr.Language.Code == culture)
                                 .Select(tr => tr.Title)
                                 .FirstOrDefault()
-                        })
-,
+                        }),
 
                     PricingDistricts = tp
                         .RoutePrices.Where(pe => pe.District != null)
@@ -1014,26 +1016,27 @@ namespace TourBooking.Infrastructure.Repositories
         {
             var culture = CultureInfo.CurrentUICulture.Name;
 
-            var result = await _context.GuideTourPrices.AsNoTracking()
-                   .Where(tp =>
-                       tp.CityId == request.CityId
-                       && tp.DistrictId == request.DistrictId
-                       && tp.TourPointId == request.TourPointId
-                       && !tp.Guide.Blocks.Any(a =>
-                           a.StartDate == request.Date && a.EndDate == request.Date
-                       ))
-                   .Select(tp => new MobileSearchGuidesDto
-                   {
-                       GuideId = tp.GuideId,
-                       Price = tp.Price,
-                       FirstName = tp.Guide.FirstName,
-                       LastName = tp.Guide.LastName,
-                       Image = tp.Guide.PhotoUrl,
-                       Languages = tp.Guide.GuideLanguages.Select(c => c.Language.Name).ToList()
-
-                   })
-                   .AsNoTracking()
-                   .ToListAsync();
+            var result = await _context
+                .GuideTourPrices.AsNoTracking()
+                .Where(tp =>
+                    tp.CityId == request.CityId
+                    && tp.DistrictId == request.DistrictId
+                    && tp.TourPointId == request.TourPointId
+                    && !tp.Guide.Blocks.Any(a =>
+                        a.StartDate == request.Date && a.EndDate == request.Date
+                    )
+                )
+                .Select(tp => new MobileSearchGuidesDto
+                {
+                    GuideId = tp.GuideId,
+                    Price = tp.Price,
+                    FirstName = tp.Guide.FirstName,
+                    LastName = tp.Guide.LastName,
+                    Image = tp.Guide.PhotoUrl,
+                    Languages = tp.Guide.GuideLanguages.Select(c => c.Language.Name).ToList()
+                })
+                .AsNoTracking()
+                .ToListAsync();
 
             return result;
         }
@@ -1079,39 +1082,43 @@ namespace TourBooking.Infrastructure.Repositories
         }
 
         public async Task<MobileTourBookingSummaryVehicleTourDto> TourBookingVehicleTourSummary(
-    Guid tourPointId, Guid districtId, Guid vehicleId, DateOnly? date)
+            Guid tourPointId,
+            Guid districtId,
+            Guid vehicleId,
+            DateOnly? date
+        )
         {
             var culture = CultureInfo.CurrentUICulture.Name; // Tercihen parametre olarak gelmeli
 
-            var result = await _context.TourRoutePrices
-                .AsNoTracking()
-                .Where(tp => tp.TourPointId == tourPointId
-                          && tp.VehicleId == vehicleId
-                          && tp.DistrictId == districtId
-                          && !tp.Vehicle.AvailabilityList.Any(a =>
-                        a.BusyDays.Any(bd => bd.Day == date)
-                          ))
+            var result = await _context
+                .TourRoutePrices.AsNoTracking()
+                .Where(tp =>
+                    tp.TourPointId == tourPointId
+                    && tp.VehicleId == vehicleId
+                    && tp.DistrictId == districtId
+                    && !tp.Vehicle.AvailabilityList.Any(a => a.BusyDays.Any(bd => bd.Day == date))
+                )
                 .Select(tp => new MobileTourBookingSummaryVehicleTourDto
                 {
-                    TourPointTitle = tp.TourPoint.Translations
-                        .Where(x => x.Language.Code == culture)
-                        .Select(x => x.Title)
-                        .FirstOrDefault() ?? string.Empty,
+                    TourPointTitle =
+                        tp.TourPoint.Translations.Where(x => x.Language.Code == culture)
+                            .Select(x => x.Title)
+                            .FirstOrDefault() ?? string.Empty,
 
-                    TourPointCity = tp.TourPoint.City.Translations
-                        .Where(x => x.Language.Code == culture)
-                        .Select(x => x.Title)
-                        .FirstOrDefault() ?? string.Empty,
+                    TourPointCity =
+                        tp.TourPoint.City.Translations.Where(x => x.Language.Code == culture)
+                            .Select(x => x.Title)
+                            .FirstOrDefault() ?? string.Empty,
 
-                    TourPointDistrict = tp.TourPoint.District.Translations
-                        .Where(x => x.Language.Code == culture)
-                        .Select(x => x.Title)
-                        .FirstOrDefault() ?? string.Empty,
+                    TourPointDistrict =
+                        tp.TourPoint.District.Translations.Where(x => x.Language.Code == culture)
+                            .Select(x => x.Title)
+                            .FirstOrDefault() ?? string.Empty,
 
-                    CarBrand = tp.Vehicle.VehicleBrand.Translations
-                        .Where(x => x.Language.Code == culture)
-                        .Select(x => x.Title)
-                        .FirstOrDefault() ?? string.Empty,
+                    CarBrand =
+                        tp.Vehicle.VehicleBrand.Translations.Where(x => x.Language.Code == culture)
+                            .Select(x => x.Title)
+                            .FirstOrDefault() ?? string.Empty,
 
                     DriverName = tp.Driver.NameSurname ?? string.Empty,
                     TourPrice = tp.Price
@@ -1122,18 +1129,21 @@ namespace TourBooking.Infrastructure.Repositories
         }
 
         public async Task<MobileTourBookingSummaryGuideDto> TourBookingGuideSummary(
-           Guid guideId, Guid districtId, Guid tourPointId, DateOnly? date
+            Guid guideId,
+            Guid districtId,
+            Guid tourPointId,
+            DateOnly? date
         )
         {
             var culture = CultureInfo.CurrentUICulture.Name;
             var result = await _context
                 .GuideTourPrices.AsNoTracking()
-                .Where(tp => tp.GuideId == guideId
-                        && tp.TourPointId == tourPointId
-                        && tp.DistrictId == districtId
-                        && tp.Guide.Blocks.Any(a =>
-                           a.StartDate == date && a.EndDate == date
-                       ))
+                .Where(tp =>
+                    tp.GuideId == guideId
+                    && tp.TourPointId == tourPointId
+                    && tp.DistrictId == districtId
+                    && tp.Guide.Blocks.Any(a => a.StartDate == date && a.EndDate == date)
+                )
                 .Select(tp => new MobileTourBookingSummaryGuideDto
                 {
                     GuidName = tp.Guide.FirstName,
@@ -1143,45 +1153,58 @@ namespace TourBooking.Infrastructure.Repositories
                 .FirstOrDefaultAsync();
             return result;
         }
+
         public async Task<TourRoutePriceEntity> ControlTourRoute(
-   Guid tourPointId, Guid cityId, Guid districtId, Guid vehicleId, decimal price)
+            Guid tourPointId,
+            Guid cityId,
+            Guid districtId,
+            Guid vehicleId,
+            decimal price
+        )
         {
-
-            return await _context.TourRoutePrices
-               .AsNoTracking()
-               .Where(tp => tp.TourPointId == tourPointId
-                         && tp.VehicleId == vehicleId
-                         && tp.CityId == cityId
-                         && tp.DistrictId == districtId
-                         && tp.Price == price
-                         ).FirstOrDefaultAsync();
-
+            return await _context
+                .TourRoutePrices.AsNoTracking()
+                .Where(tp =>
+                    tp.TourPointId == tourPointId
+                    && tp.VehicleId == vehicleId
+                    && tp.CityId == cityId
+                    && tp.DistrictId == districtId
+                    && tp.Price == price
+                )
+                .FirstOrDefaultAsync();
         }
+
         public async Task<VehicleBlockEntity> ControlVehicleAvalibity(Guid vehicleId, DateOnly date)
         {
-            return await _context.VehicleBlocks
-               .AsNoTracking()
-               .Where(tp => tp.VehicleId == vehicleId
-                         && tp.StartDate ==date
-                         && tp.EndDate ==date
-                         ).FirstOrDefaultAsync();
+            return await _context
+                .VehicleBlocks.AsNoTracking()
+                .Where(tp =>
+                    tp.VehicleId == vehicleId && tp.StartDate == date && tp.EndDate == date
+                )
+                .FirstOrDefaultAsync();
         }
 
-        public async Task<GuideTourPriceEntity> ControlGuideAvalibity(Guid guideId, decimal price, DateOnly date, Guid tourPointId, Guid districtId, Guid cityId)
+        public async Task<GuideTourPriceEntity> ControlGuideAvalibity(
+            Guid guideId,
+            decimal price,
+            DateOnly date,
+            Guid tourPointId,
+            Guid districtId,
+            Guid cityId
+        )
         {
             return await _context
                 .GuideTourPrices.AsNoTracking()
-                .Where(tp => tp.GuideId == guideId
-                        && tp.TourPointId == tourPointId
-                        && tp.CityId == cityId
-                        && tp.DistrictId == districtId
-                        && tp.Price == price
-                        && !tp.Guide.Blocks.Any(a =>
-                           a.StartDate == date && a.EndDate == date
-                       )).FirstOrDefaultAsync();
+                .Where(tp =>
+                    tp.GuideId == guideId
+                    && tp.TourPointId == tourPointId
+                    && tp.CityId == cityId
+                    && tp.DistrictId == districtId
+                    && tp.Price == price
+                    && !tp.Guide.Blocks.Any(a => a.StartDate == date && a.EndDate == date)
+                )
+                .FirstOrDefaultAsync();
         }
-
-
 
         public async Task<IEnumerable<CalendarEventDto2>> GuideEvents(FetchEventsQuery request)
         {
@@ -1222,7 +1245,10 @@ namespace TourBooking.Infrastructure.Repositories
 
             return bookings.Concat(blocks).ToList();
         }
-        public async Task<IEnumerable<CalendarEventDto2>> VehicleEvents(FetchVehicleEventsQuery request)
+
+        public async Task<IEnumerable<CalendarEventDto2>> VehicleEvents(
+            FetchVehicleEventsQuery request
+        )
         {
             // Bookings (read-only)
             var bookings = await _context
@@ -1294,7 +1320,8 @@ namespace TourBooking.Infrastructure.Repositories
             );
             await _context.SaveChangesAsync();
         }
-         public async Task CreateVehicleBlock(CreateVehicleBlockCommand request)
+
+        public async Task CreateVehicleBlock(CreateVehicleBlockCommand request)
         {
             bool overlapsBooking = await _context.Bookings.AnyAsync(b =>
                 b.VehicleId == request.VehicleId
@@ -1337,6 +1364,7 @@ namespace TourBooking.Infrastructure.Repositories
             _context.GuideBlocks.Remove(block);
             await _context.SaveChangesAsync();
         }
+
         public async Task RemoveVehicleBlock(RemoveVehicleBlockCommand request)
         {
             var block = await _context.VehicleBlocks.FirstOrDefaultAsync(x =>
@@ -1353,7 +1381,8 @@ namespace TourBooking.Infrastructure.Repositories
             var entity = new BookingEntity();
             entity.CreatedDate = DateTime.Now;
             entity.CreatedAt = DateTime.Now;
-            entity.CustomerId = request.CustomerId ?? throw new InvalidOperationException("CustomerId boş");
+            entity.CustomerId =
+                request.CustomerId ?? throw new InvalidOperationException("CustomerId boş");
             entity.VehicleId = request.VehicleId;
             entity.EndDate = request.Date;
             entity.StartDate = request.Date;
@@ -1363,8 +1392,6 @@ namespace TourBooking.Infrastructure.Repositories
             entity.TourPointId = request.TourPointId;
             entity.TotalPrice = request.TourPrice + (request.GuidePrice ?? 0);
 
-
-
             await _context.Bookings.AddAsync(entity);
             await _context.SaveChangesAsync();
             return entity.Id;
@@ -1372,8 +1399,8 @@ namespace TourBooking.Infrastructure.Repositories
 
         public async Task CreateVehicleBlock(Guid vehicleId, DateOnly date)
         {
-            var availability = await _context.Availabilities
-                .Include(a => a.BusyDays)
+            var availability = await _context
+                .Availabilities.Include(a => a.BusyDays)
                 .FirstOrDefaultAsync(a => a.VehicleId == vehicleId);
 
             if (availability == null)
@@ -1389,16 +1416,11 @@ namespace TourBooking.Infrastructure.Repositories
             // Aynı gün eklenmiş mi kontrol et
             if (!availability.BusyDays.Any(b => b.Day == date))
             {
-                availability.BusyDays.Add(new BusyDayEntity
-                {
-                    Day = date
-                });
+                availability.BusyDays.Add(new BusyDayEntity { Day = date });
             }
 
             await _context.SaveChangesAsync();
         }
-
-
 
         public async Task<bool> IsUserApproved(IsApprovedQuery request)
         {
@@ -1480,6 +1502,23 @@ namespace TourBooking.Infrastructure.Repositories
                 agency.IsConfirmed = true;
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<IEnumerable<CallCenterAgentDto>> GetCallCenterAgents()
+        {
+            return await _context
+                .CallCenterAgents.AsNoTracking()
+                .Where(x => x.IsConfirmed == false)
+                .Select(tt => new CallCenterAgentDto(tt.Id, tt.Email, tt.CreatedDate, tt.Firm))
+                .ToListAsync();
+        }
+
+        public async Task<CallCenterAgentEntity> CallCenterAgent(
+            Guid Id,
+            CancellationToken cancellationToken = default
+        )
+        {
+            return await _context.CallCenterAgents.FirstOrDefaultAsync(x => x.Id == Id);
         }
     }
 }

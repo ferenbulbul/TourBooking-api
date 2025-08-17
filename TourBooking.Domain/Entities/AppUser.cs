@@ -13,5 +13,6 @@ namespace TourBooking.Domain.Entities
         public CustomerUser CustomerUser { get; set; }
         public AgencyUserEntity AgencyUser { get; set; }
         public GuideUserEntity GuideUser { get; set; }
+        public CallCenterAgentEntity CallCenterAgent { get; set; }
     }
 }

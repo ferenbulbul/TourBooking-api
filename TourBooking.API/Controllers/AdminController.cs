@@ -6,6 +6,7 @@ using TourBooking.Application.Features;
 using TourBooking.Application.Features.Admin.Command.ConfirmAgency;
 using TourBooking.Application.Features.Admin.Command.ConfirmGuide;
 using TourBooking.Application.Features.Admin.Query.AgenciesToConfirm;
+using TourBooking.Application.Features.Settings.Commands;
 
 namespace TourBooking.API.Controllers
 {
@@ -54,6 +55,26 @@ namespace TourBooking.API.Controllers
         {
             await _mediator.Send(new ConfirmAgencyCommand { Id = id });
             return Ok(ApiResponse<ConfirmAgencyCommandResponse>.SuccessResponse(null, null));
+        }
+
+        [HttpGet("call-center-agents")]
+        public async Task<IActionResult> CallCenterAgents()
+        {
+            var agencies = await _mediator.Send(new AgenciesToConfirmQuery());
+            if (agencies == null || !agencies.Agencies.Any())
+            {
+                return Ok(ApiResponse<AgenciesToConfirmQueryResponse>.SuccessResponse(null, null));
+            }
+            return Ok(ApiResponse<AgenciesToConfirmQueryResponse>.SuccessResponse(agencies, null));
+        }
+
+        [HttpPost("upsert-call-center-agent")]
+        public async Task<IActionResult> UpsertCallCenterAgent()
+        {
+            await _mediator.Send(new UpsertCallCenterAgentCommand());
+            return Ok(
+                ApiResponse<UpsertCallCenterAgentCommandResponse>.SuccessResponse(null, null)
+            );
         }
     }
 }

@@ -129,18 +129,35 @@ namespace TourBooking.Application.Interfaces.Repositories
         Task CreateGuideBlock(CreateBlockCommand request);
 
         Task RemoveGuideBlock(RemoveBlockCommand request);
-        Task<MobileDetailVehicleDto> MobileDetailVehicle(
-            Guid vehicleId
-        );
+        Task<MobileDetailVehicleDto> MobileDetailVehicle(Guid vehicleId);
         Task<MobileTourBookingSummaryVehicleTourDto> TourBookingVehicleTourSummary(
-           Guid tourPointId, Guid DistrictId, Guid VehicleId, DateOnly? date
-       );
+            Guid tourPointId,
+            Guid DistrictId,
+            Guid VehicleId,
+            DateOnly? date
+        );
         Task<MobileTourBookingSummaryGuideDto> TourBookingGuideSummary(
-            Guid guideId, Guid districtId, Guid tourPointId, DateOnly? date
-         );
-        Task<TourRoutePriceEntity> ControlTourRoute(Guid tourPointId, Guid cityId, Guid districtId, Guid vehicleId, decimal price);
+            Guid guideId,
+            Guid districtId,
+            Guid tourPointId,
+            DateOnly? date
+        );
+        Task<TourRoutePriceEntity> ControlTourRoute(
+            Guid tourPointId,
+            Guid cityId,
+            Guid districtId,
+            Guid vehicleId,
+            decimal price
+        );
         Task<VehicleBlockEntity> ControlVehicleAvalibity(Guid vehicleId, DateOnly date);
-        Task<GuideTourPriceEntity> ControlGuideAvalibity(Guid guideId, decimal price, DateOnly date, Guid tourPointId, Guid districtId, Guid cityId);
+        Task<GuideTourPriceEntity> ControlGuideAvalibity(
+            Guid guideId,
+            decimal price,
+            DateOnly date,
+            Guid tourPointId,
+            Guid districtId,
+            Guid cityId
+        );
         Task<Guid> FinishBooking(CreateBookingCommand request);
         Task CreateVehicleBlock(Guid vehicleId, DateOnly date);
         Task<bool> IsUserApproved(IsApprovedQuery request);
@@ -151,5 +168,10 @@ namespace TourBooking.Application.Interfaces.Repositories
         Task CreateVehicleBlock(CreateVehicleBlockCommand request);
         Task RemoveVehicleBlock(RemoveVehicleBlockCommand request);
         Task<IEnumerable<CalendarEventDto2>> VehicleEvents(FetchVehicleEventsQuery request);
+        Task<IEnumerable<CallCenterAgentDto>> GetCallCenterAgents();
+        Task<CallCenterAgentEntity> CallCenterAgent(
+            Guid Id,
+            CancellationToken cancellationToken = default
+        );
     }
 }
