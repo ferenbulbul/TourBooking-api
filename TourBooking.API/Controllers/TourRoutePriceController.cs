@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TourBooking.API;
@@ -61,6 +62,7 @@ public class TourRoutePriceController : BaseController
     }
 
     // UPSERT: aynı kombinasyon varsa GÜNCELLE, yoksa EKLE.
+    [Authorize]
     [HttpPost("upsert")]
     public async Task<ActionResult<TourRoutePriceDto>> Upsert(
         [FromBody] UpsertTourRoutePriceRequest req
