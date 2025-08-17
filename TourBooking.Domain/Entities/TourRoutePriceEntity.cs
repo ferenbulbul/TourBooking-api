@@ -24,12 +24,9 @@ namespace TourBooking.Domain.Entities
         public Guid RegionId { get; set; }
         public RegionEntity Region { get; set; }
 
-         public Guid DistrictId { get; set; }
+        public Guid DistrictId { get; set; }
         public DistrictEntity District { get; set; }
 
-
-        public Guid TourId { get; set; }
-        public TourEntity Tour { get; set; }
         
         public Guid VehicleId { get; set; }
         public VehicleEntity Vehicle { get; set; }
