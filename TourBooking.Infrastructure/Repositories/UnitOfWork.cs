@@ -1398,23 +1398,18 @@ namespace TourBooking.Infrastructure.Repositories
         public async Task CreateVehicleBlock(Guid vehicleId, DateOnly date)
         {
             var availability = await _context
-                .Availabilities.Include(a => a.BusyDays)
+                .VehicleBlocks
                 .FirstOrDefaultAsync(a => a.VehicleId == vehicleId);
 
             if (availability == null)
             {
-                availability = new AvailabilityEntity
+                availability = new VehicleBlockEntity
                 {
+                    StartDate=date,
+                    EndDate=date,
                     VehicleId = vehicleId,
-                    BusyDays = new List<BusyDayEntity>()
                 };
-                _context.Availabilities.Add(availability);
-            }
-
-            // Aynı gün eklenmiş mi kontrol et
-            if (!availability.BusyDays.Any(b => b.Day == date))
-            {
-                availability.BusyDays.Add(new BusyDayEntity { Day = date });
+                _context.VehicleBlocks.Add(availability);
             }
 
             await _context.SaveChangesAsync();
