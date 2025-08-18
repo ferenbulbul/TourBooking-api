@@ -54,7 +54,7 @@ public class CreateBookingCommandHandler
                 await _unitOfWork.CreateGuideBlock(new CreateBlockCommand { GuideId = request.GuideId.Value, Start = request.Date, End = request.Date, Note = bookingId.ToString() });
             }
 
-            await _unitOfWork.CreateVehicleBlock(request.VehicleId, request.Date);
+            await _unitOfWork.CreateVehicleBlock(new CreateVehicleBlockCommand{VehicleId=request.VehicleId,Start=request.Date,End=request.Date,Note=bookingId.ToString()});
 
 
             await _unitOfWork.CommitAsync();

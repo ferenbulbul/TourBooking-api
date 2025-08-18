@@ -1395,25 +1395,25 @@ namespace TourBooking.Infrastructure.Repositories
             return entity.Id;
         }
 
-        public async Task CreateVehicleBlock(Guid vehicleId, DateOnly date)
-        {
-            var availability = await _context
-                .VehicleBlocks
-                .FirstOrDefaultAsync(a => a.VehicleId == vehicleId);
+        // public async Task CreateVehicleBlock(Guid vehicleId, DateOnly date)
+        // {
+        //     var availability = await _context
+        //         .VehicleBlocks
+        //         .FirstOrDefaultAsync(a => a.VehicleId == vehicleId);
 
-            if (availability == null)
-            {
-                availability = new VehicleBlockEntity
-                {
-                    StartDate=date,
-                    EndDate=date,
-                    VehicleId = vehicleId,
-                };
-                _context.VehicleBlocks.Add(availability);
-            }
+        //     if (availability == null)
+        //     {
+        //         availability = new VehicleBlockEntity
+        //         {
+        //             StartDate=date,
+        //             EndDate=date,
+        //             VehicleId = vehicleId,
+        //         };
+        //         _context.VehicleBlocks.Add(availability);
+        //     }
 
-            await _context.SaveChangesAsync();
-        }
+        //     await _context.SaveChangesAsync();
+        // }
 
         public async Task<bool> IsUserApproved(IsApprovedQuery request)
         {
