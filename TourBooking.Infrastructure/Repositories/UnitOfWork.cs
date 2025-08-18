@@ -981,9 +981,7 @@ namespace TourBooking.Infrastructure.Repositories
                     tp.CityId == request.CityId
                     && tp.DistrictId == request.DistrictId
                     && tp.TourPointId == request.TourPointId
-                    && !tp.Vehicle.AvailabilityList.Any(a =>
-                        a.BusyDays.Any(bd => bd.Day == request.Date)
-                    )
+                    && !tp.Vehicle.Blocks.Any(a => a.StartDate == request.Date)
                 )
                 .Select(tp => new MobileSearchVehicleDto
                 {
@@ -1096,7 +1094,7 @@ namespace TourBooking.Infrastructure.Repositories
                     tp.TourPointId == tourPointId
                     && tp.VehicleId == vehicleId
                     && tp.DistrictId == districtId
-                    && !tp.Vehicle.AvailabilityList.Any(a => a.BusyDays.Any(bd => bd.Day == date))
+                    && !tp.Vehicle.Blocks.Any(a => a.StartDate==date)
                 )
                 .Select(tp => new MobileTourBookingSummaryVehicleTourDto
                 {
