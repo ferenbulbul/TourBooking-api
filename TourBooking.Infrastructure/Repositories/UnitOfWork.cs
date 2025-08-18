@@ -1508,7 +1508,6 @@ namespace TourBooking.Infrastructure.Repositories
         {
             return await _context
                 .CallCenterAgents.AsNoTracking()
-                .Where(x => x.IsConfirmed == false)
                 .Select(tt => new CallCenterAgentDto(tt.Id, tt.Email, tt.CreatedDate, tt.Firm))
                 .ToListAsync();
         }
