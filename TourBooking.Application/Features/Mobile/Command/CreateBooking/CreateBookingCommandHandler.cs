@@ -26,7 +26,7 @@ public class CreateBookingCommandHandler
     {
         
         var tourControl = await _unitOfWork.ControlTourRoute(request.TourPointId, request.CityId, request.DistrictId, request.VehicleId,request.TourPrice);
-        if (tourControl == null)
+        if (tourControl != null)
         {
             throw new BusinessRuleValidationException("tur kontrol fayil");
         }
