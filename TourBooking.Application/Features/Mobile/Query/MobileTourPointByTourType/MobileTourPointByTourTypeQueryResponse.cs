@@ -1,8 +1,10 @@
+using System;
 using TourBooking.Application.DTOs.Mobile;
 
-namespace TourBooking.Application.Features;
-
-public class MobileTourPointByTourTypeQueryResponse
+namespace TourBooking.Application.Features
 {
-    public IEnumerable<MobileTourPointDto> TourPoints { get; set; }
+    public class MobileTourPointByTourTypeQueryResponse
+    {
+        public IEnumerable<MobileDetailedSearchResultDto> TourPoints { get; set; }
+    }
 }

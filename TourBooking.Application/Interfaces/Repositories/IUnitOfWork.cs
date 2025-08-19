@@ -23,10 +23,6 @@ namespace TourBooking.Application.Interfaces.Repositories
         Task<IEnumerable<TourPointEntity>> HighlightedTourPoints(
             CancellationToken cancellationToken = default
         );
-        Task<IEnumerable<TourPointEntity>> MobileTourPointByTourTypeId(
-            Guid TourTypeId,
-            CancellationToken cancellationToken = default
-        );
         Task<IEnumerable<MobileTourPointsBySearchDto>> MobileTourPointBySearch(
             string searchQuery,
             string culture,
@@ -173,5 +169,6 @@ namespace TourBooking.Application.Interfaces.Repositories
             Guid Id,
             CancellationToken cancellationToken = default
         );
+        Task<IEnumerable<MobileDetailedSearchResultDto>> MobileTourPointByTourTypeId(Guid? tourType, string culture);
     }
 }

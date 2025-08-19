@@ -567,30 +567,6 @@ namespace TourBooking.Infrastructure.Repositories
                 .ToListAsync(cancellationToken);
         }
 
-        public async Task<IEnumerable<TourPointEntity>> MobileTourPointByTourTypeId(
-            Guid TourTypeId,
-            CancellationToken cancellationToken = default
-        )
-        {
-            return await _context
-                .TourPoints.Include(t => t.Translations)
-                .ThenInclude(tt => tt.Language)
-                .Include(t => t.Country)
-                .ThenInclude(tt => tt.Translations)
-                .ThenInclude(tt => tt.Language)
-                .Include(t => t.Region)
-                .ThenInclude(tt => tt.Translations)
-                .ThenInclude(tt => tt.Language)
-                .Include(t => t.City)
-                .ThenInclude(tt => tt.Translations)
-                .ThenInclude(tt => tt.Language)
-                .Include(t => t.TourType)
-                .ThenInclude(tt => tt.Translations)
-                .ThenInclude(tt => tt.Language)
-                .Where(t => t.TourTypeId == TourTypeId)
-                .ToListAsync();
-        }
-
         public async Task<IEnumerable<MobileTourPointsBySearchDto>> MobileTourPointBySearch(
             string searchQuery,
             string culture,
@@ -842,6 +818,74 @@ namespace TourBooking.Infrastructure.Repositories
 
                     MainImage = tp.MainImage,
                     OtherImages = tp.OtherImages
+                })
+                .ToListAsync();
+            return list;
+        }
+         public async Task<IEnumerable<MobileDetailedSearchResultDto>> MobileTourPointByTourTypeId(
+            Guid? tourType,
+            string culture
+        )
+        {
+            // 1) Uygun route’lar: kalkış (region/city/district) filtreleri
+            var baseRoutes = _context
+                .TourRoutePrices.AsNoTracking()
+                .Where(rp =>rp.TourPoint.TourType.Id==tourType
+                );
+
+            // 2) Tekil TourPointId seti
+            var tourPointIds = baseRoutes.Select(rp => rp.TourPointId).Distinct();
+
+            // 3) TourPoint detaylarını projekte et (dil çevirileri dahil)
+            var list = await _context
+                .TourPoints.AsNoTracking()
+                .Where(tp => tourPointIds.Contains(tp.Id))
+                .Select(tp => new MobileDetailedSearchResultDto
+                {
+                    Id = tp.Id,
+                    Name = tp
+                        .Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+
+                    TourTypeId = tp.TourTypeId,
+                    TourTypeName = tp
+                        .TourType.Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+
+                    TourDifficultyId = tp.TourDifficultyId,
+                    TourDifficultyName = tp
+                        .TourDifficulty.Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+
+                    CountryId = tp.CountryId,
+                    CountryName = tp
+                        .Country.Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+
+                    RegionId = tp.RegionId,
+                    RegionName = tp
+                        .Region.Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+
+                    CityId = tp.CityId,
+                    CityName = tp
+                        .City.Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+
+                    DistrictId = tp.DistrictId,
+                    DistrictName = tp
+                        .District.Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault(),
+
+                    MainImage = tp.MainImage,
+                    OtherImages=new List<string>(),
                 })
                 .ToListAsync();
             return list;
@@ -1389,7 +1433,9 @@ namespace TourBooking.Infrastructure.Repositories
             entity.GuideId = request.GuideId;
             entity.TourPointId = request.TourPointId;
             entity.TotalPrice = request.TourPrice + (request.GuidePrice ?? 0);
-
+            entity.LocationDescription = request.LocationDescription;
+            entity.Latitude = request.Latitude;
+            entity.Longitude = request.Longitude;
             await _context.Bookings.AddAsync(entity);
             await _context.SaveChangesAsync();
             return entity.Id;

@@ -14,5 +14,9 @@ namespace TourBooking.Application.Features
         public DateOnly Date { get; set; }
         public decimal TourPrice { get; set; }
         public decimal? GuidePrice { get; set; }
+        public string? LocationDescription { get; set; }
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
+
     }
 }

@@ -37,19 +37,6 @@ namespace TourBooking.API.Controllers
             );
         }
 
-        [HttpGet("tour-points-by-tour-type")]
-        public async Task<IActionResult> TourPointByTourTypeId([FromQuery] Guid request)
-        {
-            var tourPoints = await _mediator.Send(
-                new MobileTourPointByTourTypeQuery() { CagetoryId = request }
-            );
-            return Ok(
-                ApiResponse<MobileTourPointByTourTypeQueryResponse>.SuccessResponse(
-                    tourPoints,
-                    null
-                )
-            );
-        }
 
         [HttpGet("tour-points-by-query")]
         public async Task<IActionResult> TourPointBySearch([FromQuery] string query)
@@ -134,8 +121,19 @@ namespace TourBooking.API.Controllers
         {
             var userIdString = GetUserIdFromToken();
             request.CustomerId = userIdString;
-            var valid=await _mediator.Send(request);
+            var valid = await _mediator.Send(request);
             return Ok(ApiResponse<CreateBookingCommandResponse>.SuccessResponse(valid, "Oldu"));
+        }
+        
+        [HttpGet("tour-points-by-tour-type")]
+        public async Task<IActionResult> TourPointByTourTypeId([FromQuery] Guid tourTypeId)
+        {
+            var tourPoint = await _mediator.Send(
+                new MobileTourPointByTourTypeQuery { TourType = tourTypeId }
+            );
+            return Ok(
+                ApiResponse<MobileTourPointByTourTypeQueryResponse>.SuccessResponse(tourPoint, null)
+            );
         }
     }
 }

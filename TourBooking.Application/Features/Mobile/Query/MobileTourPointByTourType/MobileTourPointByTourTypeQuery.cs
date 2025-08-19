@@ -1,8 +1,11 @@
+using System;
 using MediatR;
 
-namespace TourBooking.Application.Features;
-
-public class MobileTourPointByTourTypeQuery : IRequest<MobileTourPointByTourTypeQueryResponse>
+namespace TourBooking.Application.Features
 {
-    public Guid CagetoryId { get; set; }
- }
+    public class MobileTourPointByTourTypeQuery : IRequest<MobileTourPointByTourTypeQueryResponse>
+    {
+        public Guid TourType { get; set; }
+      
+    }
+}

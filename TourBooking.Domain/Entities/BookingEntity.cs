@@ -23,5 +23,8 @@ namespace TourBooking.Domain.Entities
         public Guid CustomerId { get; set; }
         public DateTime CreatedAt { get; set; }
         public BookingStatus Status { get; set; } = BookingStatus.Pending;
+        public string? LocationDescription { get; set; }
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
     }
 }
