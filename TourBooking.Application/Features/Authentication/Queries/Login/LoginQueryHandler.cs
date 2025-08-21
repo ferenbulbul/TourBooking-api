@@ -58,6 +58,7 @@ namespace TourBooking.Application.Features.Queries.Login
 
             var tokens = await _tokenService.CreateTokenAsync(user);
             user.RefreshToken = tokens.RefreshToken;
+            user.RefreshTokenExpireDate = DateTime.UtcNow.AddDays(7);
             await _userManager.UpdateAsync(user);
             var response = new LoginQueryResponse
             {

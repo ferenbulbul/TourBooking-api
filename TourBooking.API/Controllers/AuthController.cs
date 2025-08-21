@@ -1,3 +1,5 @@
+using FirebaseAdmin.Auth;
+using Humanizer;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -139,5 +141,39 @@ namespace TourBooking.API.Controllers
                 ApiResponse<object>.SuccessResponse(null, _localizer["VerificationCodeValid"])
             );
         }
+
+        [HttpPost("signin-with-google")] 
+        public async Task<IActionResult> SignInWithGoogle([FromBody] FirebaseTokenRequest request)
+        {
+
+            
+            if (string.IsNullOrEmpty(request.Token))
+            {
+                return BadRequest("Token cannot be empty.");
+            }
+
+            try
+            {
+
+                FirebaseToken decodedToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(request.Token);
+                string uid = decodedToken.Uid; 
+                string email = (string)decodedToken.Claims.GetValueOrDefault("email", "N/A");
+                string name = (string)decodedToken.Claims.GetValueOrDefault("name", "N/A");
+                
+                var response=await _mediator.Send(new GoogleSignCommand{Uid=uid,Email=email,Name=name});
+                Console.WriteLine($"✅ Token Validated. UID: {uid}, Email: {email}, Name: {name}");
+
+                
+                return Ok(ApiResponse<GoogleSignCommandResponse>.SuccessResponse(response, "google giriş başarılı"));
+
+               ;
+            }
+            catch (FirebaseAuthException ex)
+            {
+                // Token geçersiz, süresi dolmuş veya başka bir Firebase hatası var.
+                return Unauthorized(new { Message = "Authentication failed. Invalid token.", Details = ex.Message });
+            }
+        }
+    
     }
 }
