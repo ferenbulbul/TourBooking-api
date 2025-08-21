@@ -10,7 +10,9 @@ using MySqlConnector;
 
 using TourBooking.API.Exceptions;  // ExceptionHandlingMiddleware
 using TourBooking.API.Extensions;
-using TourBooking.Infrastructure.Context;  // Add*Services extension'ların (Application/Persistence/Identity/Infrastructure/Swagger)
+using TourBooking.Infrastructure.Context;
+using Google.Apis.Auth.OAuth2;
+using FirebaseAdmin;  // Add*Services extension'ların (Application/Persistence/Identity/Infrastructure/Swagger)
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -71,7 +73,16 @@ builder.Services.AddInfrastructureServices(configuration);
 builder.Services.AddSwaggerServices();
 
 var app = builder.Build();
-
+try
+{
+    var credential = GoogleCredential.FromFile("/secrets/firebase-key.json");
+    FirebaseApp.Create(new AppOptions { Credential = credential });
+    Console.WriteLine("✅ Firebase init OK");
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"⚠️ Firebase init failed: {ex.Message}");
+}
 
 
 // ... app.Build() ve pipeline kurulumundan sonra, app.Run'dan ÖNCE:
