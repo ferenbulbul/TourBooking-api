@@ -61,18 +61,24 @@ if (string.IsNullOrEmpty(firebaseSettingsPath))
     throw new Exception("Firebase Service Account Key Path is not configured in appsettings.json");
 }
 
-// 2. Firebase Admin SDK'yı başlat
-// FirebaseApp.Create(new AppOptions()
+// // 2. Firebase Admin SDK'yı başlat
+// // FirebaseApp.Create(new AppOptions()
+// // {
+// //     Credential = GoogleCredential.FromFile(firebaseSettingsPath),
+// // });
+// try
 // {
-//     Credential = GoogleCredential.FromFile(firebaseSettingsPath),
-// });
-var credential = GoogleCredential.FromFile("/secrets/firebase-key.json");
-
-FirebaseApp.Create(new AppOptions()
-{
-    Credential = credential
-});
-Console.WriteLine("✅ Firebase Admin SDK successfully initialized.");
+//     var credential = GoogleCredential.FromFile("/secrets/firebase-key.json");
+//     FirebaseApp.Create(new AppOptions()
+//     {
+//         Credential = credential
+//     });
+//     Console.WriteLine("✅ Firebase Admin SDK successfully initialized.");
+// }
+// catch (Exception ex)
+// {
+//     Console.WriteLine($"⚠️ Firebase init failed: {ex.Message}");
+// }
 
 
 builder.Services.AddControllers();
