@@ -22,10 +22,11 @@ secrets.json
 *.swp
 *.bak
 *.tmp
-
+FirebaseAdmin.json
 # Publish output
 publish/
-TourBooking.API/appsettings.Development.json
+appsettings.Development.json
 .DS_Store
-TourBooking.API/appsettings.Development.json
-TourBooking.API/appsettings.Development.json
+
+
+TourBooking.API/appsettings.json
