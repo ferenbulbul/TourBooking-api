@@ -6,6 +6,7 @@ using TourBooking.Domain.Entities;
 // Localization için kullandığın namespace'i ekle
 using Microsoft.Extensions.Localization;
 using TourBooking.Shared.Localization;
+using TourBooking.Domain.Enums;
 
 
 namespace TourBooking.Application.Features.Authentication.Commands.Register
@@ -61,7 +62,8 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
                         Email = request.Email,
                         UserName = request.Email,
                         FirstName = request.Name, // veya FullName, modelinize göre
-                        EmailConfirmed = true
+                        EmailConfirmed = true,
+                        UserType=UserType.Customer
                     };
 
                     var createResult = await _userManager.CreateAsync(newUser);

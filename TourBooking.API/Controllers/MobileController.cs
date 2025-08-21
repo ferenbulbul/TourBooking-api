@@ -1,9 +1,12 @@
+using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TourBooking.Application.DTOs.Comman;
+using TourBooking.Application.DTOs.Mobile;
 using TourBooking.Application.Features;
 using TourBooking.Application.Features.Mobile.Query.TourPointDetails;
+using TourBooking.Domain.Enums;
 
 namespace TourBooking.API.Controllers
 {
@@ -124,7 +127,7 @@ namespace TourBooking.API.Controllers
             var valid = await _mediator.Send(request);
             return Ok(ApiResponse<CreateBookingCommandResponse>.SuccessResponse(valid, "Oldu"));
         }
-        
+
         [HttpGet("tour-points-by-tour-type")]
         public async Task<IActionResult> TourPointByTourTypeId([FromQuery] Guid tourTypeId)
         {
@@ -133,6 +136,19 @@ namespace TourBooking.API.Controllers
             );
             return Ok(
                 ApiResponse<MobileTourPointByTourTypeQueryResponse>.SuccessResponse(tourPoint, null)
+            );
+        }
+        [HttpPost("location-update")]
+        public async Task<IActionResult> LocationUpdate(LocationDto request)
+        {
+            var userId = GetUserIdFromToken();
+            var roleStr = User.FindFirstValue(ClaimTypes.Role);
+            Enum.TryParse<UserType>(roleStr, true, out var userType);
+            await _mediator.Send(
+                new LocationUpdateCommand { UserId = userId, Latitude = request.Latitude, Longitude = request.Longitude }
+            );
+            return Ok(
+                ApiResponse<object>.SuccessResponse(null, "başarılı")
             );
         }
     }
