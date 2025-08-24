@@ -1,4 +1,5 @@
 using System;
+using TourBooking.Domain.Enums;
 
 namespace TourBooking.Application.DTOs.Admin
 {
@@ -7,6 +8,7 @@ namespace TourBooking.Application.DTOs.Admin
         string Name,
         string Surname,
         string? Email,
-        string PhoneNumber
+        string PhoneNumber,
+        UserType UserType
         );
 }

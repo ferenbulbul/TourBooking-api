@@ -32,7 +32,8 @@ namespace TourBooking.Application.Features.Admin.Query.AgenciesToConfirm
         x.FirstName,
         x.LastName,
         x.Email,
-        x.PhoneNumber
+        x.PhoneNumber,
+        x.UserType
     ))
     .ToListAsync();
 
