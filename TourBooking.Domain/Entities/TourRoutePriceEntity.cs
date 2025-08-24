@@ -36,6 +36,7 @@ namespace TourBooking.Domain.Entities
         public DriverEntity Driver { get; set; }
 
         public decimal Price { get; set; }
+        public decimal Commission { get; set; }
         public string Currency { get; set; } = "TRY";
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

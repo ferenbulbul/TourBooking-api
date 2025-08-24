@@ -1,17 +1,8 @@
-using System;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using TourBooking.Application.DTOs;
-using TourBooking.Application.DTOs.Comman;
-using TourBooking.Application.DTOs.GuideCalendar;
 using TourBooking.Application.DTOs.Mobile;
-using TourBooking.Application.Features.Settings;
-using TourBooking.Application.Features.Settings.Queries;
 using TourBooking.Domain.Entities;
-using TourBooking.Domain.Enums;
 using TourBooking.Infrastructure.Context;
-using TourBooking.Infrastructure.Services;
 
 namespace TourBooking.API.Controllers
 {
@@ -51,7 +42,8 @@ namespace TourBooking.API.Controllers
                     x.DistrictId,
                     x.TourPointId,
                     x.Price,
-                    x.Currency
+                    x.Currency,
+                    x.Commission
                 ))
                 .ToListAsync();
 
@@ -84,7 +76,8 @@ namespace TourBooking.API.Controllers
                     DistrictId = req.DistrictId,
                     TourPointId = req.TourPointId,
                     Price = req.Price,
-                    Currency = req.Currency ?? "TRY"
+                    Currency = req.Currency ?? "TRY",
+                    Commission=req.Commission
                 };
                 _db.GuideTourPrices.Add(entity);
                 await _db.SaveChangesAsync();
@@ -99,7 +92,8 @@ namespace TourBooking.API.Controllers
                         entity.DistrictId,
                         entity.TourPointId,
                         entity.Price,
-                        entity.Currency
+                        entity.Currency,
+                        entity.Commission
                     )
                 );
             }
@@ -118,7 +112,8 @@ namespace TourBooking.API.Controllers
                         existing.DistrictId,
                         existing.TourPointId,
                         existing.Price,
-                        existing.Currency
+                        existing.Currency,
+                        existing.Commission
                     )
                 );
             }
@@ -140,7 +135,8 @@ namespace TourBooking.API.Controllers
                 x.DistrictId,
                 x.TourPointId,
                 x.Price,
-                x.Currency
+                x.Currency,
+                x.Commission
             );
         }
 

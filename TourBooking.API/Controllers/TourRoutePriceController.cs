@@ -33,7 +33,8 @@ public class TourRoutePriceController : BaseController
                 x.VehicleId,
                 x.DriverId,
                 x.Price,
-                x.Currency
+                x.Currency,
+                x.Commission
             ))
             .ToListAsync();
 
@@ -57,7 +58,8 @@ public class TourRoutePriceController : BaseController
             x.VehicleId,
             x.DriverId,
             x.Price,
-            x.Currency
+            x.Currency,
+            x.Commission
         );
     }
 
@@ -127,7 +129,8 @@ public class TourRoutePriceController : BaseController
                     entity.VehicleId,
                     entity.DriverId,
                     entity.Price,
-                    entity.Currency
+                    entity.Currency,
+                    entity.Commission
                 )
             );
         }
@@ -153,7 +156,8 @@ public class TourRoutePriceController : BaseController
                     existing.VehicleId,
                     existing.DriverId,
                     existing.Price,
-                    existing.Currency
+                    existing.Currency,
+                    existing.Commission
                 )
             );
         }

@@ -10,7 +10,8 @@ namespace TourBooking.Application.DTOs
         Guid VehicleId,
         Guid DriverId,
         decimal Price,
-        string? Currency
+        string? Currency,
+        decimal Commission
     );
 
     public record TourRoutePriceDto(
@@ -23,7 +24,8 @@ namespace TourBooking.Application.DTOs
         Guid? VehicleId,
         Guid? DriverId,
         decimal Price,
-        string Currency
+        string Currency,
+        decimal Commission
     );
 
     public class PricingDto
@@ -42,5 +44,6 @@ namespace TourBooking.Application.DTOs
         public string? VehicleName { get; set; }
         public string? DriverName { get; set; }
         public decimal Price { get; set; }
+         public decimal Commission { get; set; }
     }
 }

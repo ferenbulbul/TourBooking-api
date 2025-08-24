@@ -9,7 +9,8 @@ namespace TourBooking.Application.DTOs.Mobile
         Guid? DistrictId,
         Guid? TourPointId,
         decimal Price,
-        string Currency
+        string Currency,
+        decimal Commission
     );
 
     public record UpsertGuideTourPriceRequest(
@@ -17,7 +18,8 @@ namespace TourBooking.Application.DTOs.Mobile
         Guid? DistrictId,
         Guid? TourPointId,
         decimal Price,
-        string? Currency // null ise TRY
+        string? Currency,
+        decimal Commission // null ise TRY
     );
 
     public record GuideLanguageUpdateRequest(List<Guid> LanguageIds);

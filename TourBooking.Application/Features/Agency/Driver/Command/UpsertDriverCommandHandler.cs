@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;
 using TourBooking.Application.Expactions;
 using TourBooking.Application.Interfaces.Repositories;
+using TourBooking.Application.Interfaces.Services;
 using TourBooking.Domain.Entities;
 using TourBooking.Domain.Enums;
 
@@ -13,13 +14,14 @@ namespace TourBooking.Application.Features
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<AppUser> _userManager;
         IStringLocalizer<UpsertDriverCommandHandler> _localizer;
+        private readonly IEmailService _emailService;
 
-
-        public UpsertDriverCommandHandler(IUnitOfWork unitOfWork, UserManager<AppUser> userManager, IStringLocalizer<UpsertDriverCommandHandler> localizer)
+        public UpsertDriverCommandHandler(IUnitOfWork unitOfWork, UserManager<AppUser> userManager, IStringLocalizer<UpsertDriverCommandHandler> localizer, IEmailService emailService)
         {
             _unitOfWork = unitOfWork;
             _userManager = userManager;
             _localizer = localizer;
+            _emailService = emailService;
         }
 
         public async Task Handle(UpsertDriverCommand request, CancellationToken cancellationToken)
@@ -98,6 +100,27 @@ namespace TourBooking.Application.Features
 
                     };
                     await _unitOfWork.GetRepository<DriverEntity>().AddAsync(driver);
+                    var emailTitle = "Hoş Geldiniz! İlk Giriş Bilgileriniz";
+
+                    var emailBody = @"
+                                        Merhaba,
+
+                                        Sistemimize sürücü olarak kaydınız başarıyla oluşturuldu. 
+                                        İlk girişiniz için tanımlanan geçici şifreniz aşağıdadır:
+
+                                        <strong>Kullanıcı Adı (Email):</strong> " + newUser.Email + @"<br/>
+                                        <strong>Geçici Şifre:</strong> Driver.123 <br/><br/>
+
+                                        ℹ️ Güvenliğiniz için ilk girişinizde sizden şifrenizi değiştirmeniz istenecektir. 
+
+                                        📲 Uygulamayı indirmek için aşağıdaki bağlantıyı kullanabilirsiniz:<br/>
+                                        <a href='https://play.google.com/...' target='_blank'>Android için indirin</a><br/>
+                                        <a href='https://apps.apple.com/...' target='_blank'>iOS için indirin</a><br/><br/>
+
+                                        Teşekkürler,<br/>
+                                        Tourrent.ai Ekibi
+                                        ";
+                    await _emailService.SendEmailAsync(newUser.Email!, $"Email ", emailBody);
                 }
             }
             catch (System.Exception ex)
