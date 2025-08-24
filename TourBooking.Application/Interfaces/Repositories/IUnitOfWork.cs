@@ -164,7 +164,7 @@ namespace TourBooking.Application.Interfaces.Repositories
         Task CreateVehicleBlock(CreateVehicleBlockCommand request);
         Task RemoveVehicleBlock(RemoveVehicleBlockCommand request);
         Task<IEnumerable<CalendarEventDto2>> VehicleEvents(FetchVehicleEventsQuery request);
-        Task<IEnumerable<CallCenterAgentDto>> GetCallCenterAgents();
+        Task<IEnumerable<AdminManagementUserDto>> GetCallCenterAgents();
         Task<CallCenterAgentEntity> CallCenterAgent(
             Guid Id,
             CancellationToken cancellationToken = default

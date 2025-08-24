@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TourBooking.Application.DTOs.Comman;
 using TourBooking.Application.Features;
+using TourBooking.Application.Features.Admin;
 using TourBooking.Application.Features.Admin.Command.ConfirmAgency;
 using TourBooking.Application.Features.Admin.Command.ConfirmGuide;
 using TourBooking.Application.Features.Admin.Query.AgenciesToConfirm;
@@ -57,24 +58,26 @@ namespace TourBooking.API.Controllers
             return Ok(ApiResponse<ConfirmAgencyCommandResponse>.SuccessResponse(null, null));
         }
 
-        [HttpGet("call-center-agents")]
-        public async Task<IActionResult> CallCenterAgents()
+        [HttpGet("admin-management-user")]
+        public async Task<IActionResult> AdminManagementUser()
         {
-            var agencies = await _mediator.Send(new AgenciesToConfirmQuery());
-            if (agencies == null || !agencies.Agencies.Any())
+            var response = await _mediator.Send(new AdminManagementUserQuery());
+            if (response == null || !response.Users.Any())
             {
-                return Ok(ApiResponse<AgenciesToConfirmQueryResponse>.SuccessResponse(null, null));
+                return Ok(ApiResponse<AdminManagementUserQueryResponse>.SuccessResponse(null, null));
             }
-            return Ok(ApiResponse<AgenciesToConfirmQueryResponse>.SuccessResponse(agencies, null));
+            return Ok(ApiResponse<AdminManagementUserQueryResponse>.SuccessResponse(response, null));
         }
 
-        [HttpPost("upsert-call-center-agent")]
-        public async Task<IActionResult> UpsertCallCenterAgent()
+        [HttpPost("admin-management-user")]
+        public async Task<IActionResult> UpsertAdminManagementUser(AdminManagementUserCommand request)
         {
-            await _mediator.Send(new UpsertCallCenterAgentCommand());
+            await _mediator.Send(request);
             return Ok(
-                ApiResponse<UpsertCallCenterAgentCommandResponse>.SuccessResponse(null, null)
+                ApiResponse<object>.SuccessResponse(null, null)
             );
         }
+
+
     }
 }
