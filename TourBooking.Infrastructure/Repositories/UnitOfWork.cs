@@ -1543,14 +1543,6 @@ namespace TourBooking.Infrastructure.Repositories
             }
         }
 
-        public async Task<IEnumerable<CallCenterAgentDto>> GetCallCenterAgents()
-        {
-            return await _context
-                .CallCenterAgents.AsNoTracking()
-                .Select(tt => new CallCenterAgentDto(tt.Id, tt.Email, tt.CreatedDate, tt.Firm))
-                .ToListAsync();
-        }
-
         public async Task<CallCenterAgentEntity> CallCenterAgent(
             Guid Id,
             CancellationToken cancellationToken = default

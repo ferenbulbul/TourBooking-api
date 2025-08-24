@@ -163,12 +163,7 @@ namespace TourBooking.Application.Interfaces.Repositories
         Task ConfirmAgency(Guid ıd);
         Task CreateVehicleBlock(CreateVehicleBlockCommand request);
         Task RemoveVehicleBlock(RemoveVehicleBlockCommand request);
-        Task<IEnumerable<CalendarEventDto2>> VehicleEvents(FetchVehicleEventsQuery request);
-        Task<IEnumerable<AdminManagementUserDto>> GetCallCenterAgents();
-        Task<CallCenterAgentEntity> CallCenterAgent(
-            Guid Id,
-            CancellationToken cancellationToken = default
-        );
+        Task<IEnumerable<CalendarEventDto2>> VehicleEvents(FetchVehicleEventsQuery request);        
         Task<IEnumerable<MobileDetailedSearchResultDto>> MobileTourPointByTourTypeId(Guid? tourType, string culture);
     }
 }
