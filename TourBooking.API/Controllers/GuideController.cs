@@ -100,6 +100,7 @@ namespace TourBooking.API.Controllers
             else
             {
                 existing.Price = req.Price;
+                existing.Commission = req.Commission;
                 if (!string.IsNullOrWhiteSpace(req.Currency))
                     existing.Currency = req.Currency!;
                 await _db.SaveChangesAsync();
