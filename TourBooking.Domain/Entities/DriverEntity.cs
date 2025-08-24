@@ -1,8 +1,12 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace TourBooking.Domain.Entities
 {
     public class DriverEntity : IBaseEntity
     {
         public Guid Id { get; set; }
+        [ForeignKey(nameof(Id))]
+        public virtual AppUser AppUser { get; set; }
         public Guid AgencyId { get; set; }
         public AgencyUserEntity Agency { get; set; }
         public DateTime CreatedDate { get; set; }

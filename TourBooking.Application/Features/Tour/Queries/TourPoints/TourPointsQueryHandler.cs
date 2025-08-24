@@ -27,7 +27,7 @@ public class TourPointsQueryHandler : IRequestHandler<TourPointsQuery, TourPoint
         {
             throw new NotFoundException("Tur noktası bulunamadı.");
         }
-        var dtos = tourPoints.Select(tt => new TourPointDto
+        var dtos = tourPoints.Where(x => !x.IsDeleted).Select(tt => new TourPointDto
         {
             Id = tt.Id,
             MainImage = tt.MainImage,

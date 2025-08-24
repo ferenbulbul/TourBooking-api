@@ -14,6 +14,7 @@ namespace TourBooking.Domain.Entities
         public AgencyUserEntity AgencyUser { get; set; }
         public GuideUserEntity GuideUser { get; set; }
         public CallCenterAgentEntity CallCenterAgent { get; set; }
+        public DriverEntity DriverUser { get; set; }
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
 

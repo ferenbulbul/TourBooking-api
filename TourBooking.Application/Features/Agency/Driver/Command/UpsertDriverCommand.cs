@@ -13,6 +13,8 @@ namespace TourBooking.Application.Features
         public bool IsActive { get; set; }
         public List<string> LanguagesSpoken { get; set; }
         public string NameSurname { get; set; }
+        public string PhoneNumber { get; set; }
+        public string Email { get; set; }
         public string ProfilePhoto { get; set; }
         public List<string> ServiceCities { get; set; }
         public string? SrcDocument { get; set; }
