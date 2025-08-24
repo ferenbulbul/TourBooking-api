@@ -49,6 +49,8 @@ public class TourPointsQueryHandler : IRequestHandler<TourPointsQuery, TourPoint
             TourTypeId = tt.TourTypeId,
             IsActive = tt.IsActive,
             IsHighlighted = tt.IsHighlighted,
+            Latitude=tt.Lat,
+            Longitude=tt.Long,
 
             CountryName = tt
                 .Country.Translations.FirstOrDefault(x => x.Language.Code == languageCode)
@@ -67,7 +69,8 @@ public class TourPointsQueryHandler : IRequestHandler<TourPointsQuery, TourPoint
                 .Title,
             TourTypeName = tt
                 .TourType.Translations.FirstOrDefault(x => x.Language.Code == languageCode)
-                .Title
+                .Title,
+        
         });
         var response = new TourPointsQueryResponse { TourPoints = dtos };
         return response;

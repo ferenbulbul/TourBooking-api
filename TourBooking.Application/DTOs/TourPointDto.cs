@@ -20,5 +20,7 @@ namespace TourBooking.Application.DTOs
         public string DistrictName { get; set; }
         public string DifficultyName { get; set; }
         public string TourTypeName { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
     }
 }

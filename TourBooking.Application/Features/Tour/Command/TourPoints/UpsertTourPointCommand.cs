@@ -17,5 +17,7 @@ namespace TourBooking.Application.Features
         public bool IsHighlighted { get; set; }
         public List<string> OtherImages { get; set; }
         public List<TranslationDto> Translations { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
     }
 }

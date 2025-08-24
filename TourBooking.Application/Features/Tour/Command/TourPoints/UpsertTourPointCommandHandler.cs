@@ -65,6 +65,8 @@ namespace TourBooking.Application.Features
                         existing.DistrictId = request.DistrictId;
                         existing.TourDifficultyId = request.DifficultyId;
                         existing.TourTypeId = request.TourTypeId;
+                        existing.Lat = request.Latitude;
+                        existing.Long = request.Longitude;
 
 
                         await _unitOfWork.GetRepository<TourPointEntity>().UpdateAsync(existing);
@@ -84,6 +86,8 @@ namespace TourBooking.Application.Features
                         DistrictId = request.DistrictId,
                         TourDifficultyId = request.DifficultyId,
                         TourTypeId = request.TourTypeId,
+                        Lat=request.Latitude,
+                        Long=request.Longitude,
 
                         Translations = request
                             .Translations.Select(t => new TourPointTranslation

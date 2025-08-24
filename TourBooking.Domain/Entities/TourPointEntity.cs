@@ -25,5 +25,7 @@ namespace TourBooking.Domain.Entities
         public ICollection<TourPointTranslation> Translations { get; set; }
         public virtual ICollection<TourEntity> Tours { get; set; }
         public ICollection<TourRoutePriceEntity> RoutePrices { get; set; }
+        public double Lat  { get; set; }
+        public double Long { get; set; }
     }
 }
