@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TourBooking.Application.DTOs.Admin;
+using TourBooking.Application.Expactions;
 using TourBooking.Application.Interfaces.Repositories;
 using TourBooking.Application.Interfaces.Services;
 using TourBooking.Domain.Entities;
@@ -32,7 +33,7 @@ namespace TourBooking.Application.Features.Admin
                 // UPDATE
                 var user = await _userManager.FindByIdAsync(request.Id.Value.ToString());
                 if (user == null)
-                    throw new InvalidOperationException("Kullanıcı bulunamadı.");
+                    throw new BusinessRuleValidationException("Kullanıcı bulunamadı.");
 
                 // Benzersizlik kontrolleri (yalnızca değişiyorsa)
                 if (!string.IsNullOrWhiteSpace(request.Email) &&
@@ -43,7 +44,7 @@ namespace TourBooking.Application.Features.Admin
                                        u.Email.ToLower() == request.Email!.ToLower() &&
                                        u.Id != user.Id, cancellationToken);
                     if (emailExists)
-                        throw new InvalidOperationException("Bu e-posta başka bir kullanıcıda kayıtlı.");
+                        throw new BusinessRuleValidationException("Bu e-posta başka bir kullanıcıda kayıtlı.");
                 }
 
                 if (!string.IsNullOrWhiteSpace(request.PhoneNumber) &&
@@ -52,7 +53,7 @@ namespace TourBooking.Application.Features.Admin
                     var phoneExists = await _userManager.Users
                         .AnyAsync(u => u.PhoneNumber == request.PhoneNumber && u.Id != user.Id, cancellationToken);
                     if (phoneExists)
-                        throw new InvalidOperationException("Bu telefon numarası başka bir kullanıcıda kayıtlı.");
+                        throw new BusinessRuleValidationException("Bu telefon numarası başka bir kullanıcıda kayıtlı.");
                 }
 
                 // Patch (yalnızca dolu gelenleri yaz)
@@ -71,7 +72,7 @@ namespace TourBooking.Application.Features.Admin
 
                 var updateRes = await _userManager.UpdateAsync(user);
                 if (!updateRes.Succeeded)
-                    throw new InvalidOperationException(string.Join("; ", updateRes.Errors.Select(e => e.Description)));
+                    throw new BusinessRuleValidationException(string.Join("; ", updateRes.Errors.Select(e => e.Description)));
             }
             else
             {
@@ -83,7 +84,7 @@ namespace TourBooking.Application.Features.Admin
                         .AnyAsync(u => u.Email != null &&
                                        u.Email.ToLower() == request.Email!.ToLower(), cancellationToken);
                     if (emailExists)
-                        throw new InvalidOperationException("Bu e-posta zaten kayıtlı.");
+                        throw new BusinessRuleValidationException("Bu e-posta zaten kayıtlı.");
                 }
 
                 if (!string.IsNullOrWhiteSpace(request.PhoneNumber))
@@ -91,7 +92,7 @@ namespace TourBooking.Application.Features.Admin
                     var phoneExists = await _userManager.Users
                         .AnyAsync(u => u.PhoneNumber == request.PhoneNumber, cancellationToken);
                     if (phoneExists)
-                        throw new InvalidOperationException("Bu telefon numarası zaten kayıtlı.");
+                        throw new BusinessRuleValidationException("Bu telefon numarası zaten kayıtlı.");
                 }
 
                 var userName = request.Email
@@ -140,7 +141,7 @@ namespace TourBooking.Application.Features.Admin
                                         ";
 
                 if (!createRes.Succeeded)
-                    throw new InvalidOperationException(string.Join("; ", createRes.Errors.Select(e => e.Description)));
+                    throw new BusinessRuleValidationException(string.Join("; ", createRes.Errors.Select(e => e.Description)));
                 await _emailService.SendEmailAsync(newUser.Email, emailTitle, emailBody);
 
             }
