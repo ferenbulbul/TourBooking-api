@@ -157,6 +157,7 @@ namespace TourBooking.API.Controllers
             x.DistrictId = req.DistrictId;
             x.TourPointId = req.TourPointId;
             x.Price = req.Price;
+            x.Commission = req.Commission;
             if (!string.IsNullOrWhiteSpace(req.Currency))
                 x.Currency = req.Currency!;
             try
