@@ -102,7 +102,8 @@ public class TourRoutePriceController : BaseController
                 DriverId = req.DriverId,
                 Price = req.Price,
                 Currency = string.IsNullOrWhiteSpace(req.Currency) ? "TRY" : req.Currency!,
-                AgencyId = agencyId
+                AgencyId = agencyId,
+                Commission=req.Commission
             };
 
             _db.TourRoutePrices.Add(entity);
