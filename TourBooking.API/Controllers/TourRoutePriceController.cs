@@ -86,6 +86,7 @@ public class TourRoutePriceController : BaseController
             && x.VehicleId == req.VehicleId
             && x.DriverId == req.DriverId
             && x.AgencyId == agencyId
+
         );
 
         if (existing is null)
@@ -143,6 +144,7 @@ public class TourRoutePriceController : BaseController
             existing.UpdatedAt = DateTime.UtcNow;
             existing.VehicleId = req.VehicleId;
             existing.DriverId = req.DriverId;
+            existing.Commission = req.Commission;
 
             await _db.SaveChangesAsync();
 
