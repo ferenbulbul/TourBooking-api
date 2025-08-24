@@ -112,6 +112,7 @@ namespace TourBooking.Application.Features.Admin
                     LastName = request.Surname,
                     EmailConfirmed = true,
                     PhoneNumberConfirmed = true,
+                    IsFirstLogin = true
                 };
 
                 // Şifresiz oluşturmak istersen:

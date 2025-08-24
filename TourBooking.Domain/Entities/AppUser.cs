@@ -17,6 +17,7 @@ namespace TourBooking.Domain.Entities
         public DriverEntity DriverUser { get; set; }
         public double? Latitude { get; set; }
         public double? Longitude { get; set; }
+        public bool? IsFirstLogin { get; set; }
 
     }
 }

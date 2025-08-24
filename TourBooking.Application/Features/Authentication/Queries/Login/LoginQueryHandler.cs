@@ -66,7 +66,8 @@ namespace TourBooking.Application.Features.Queries.Login
                 RefreshToken = tokens.RefreshToken,
                 UserFullName = $"{user.FirstName} {user.LastName}",
                 Role = user.UserType.ToString(),
-                EmailConfirmed = user.EmailConfirmed
+                EmailConfirmed = user.EmailConfirmed,
+                IsFirstLogin = user.IsFirstLogin ?? false
             };
             return response;
         }
