@@ -65,6 +65,8 @@ namespace TourBooking.Application.Features.Admin
                     user.Email = request.Email;
                 if (request.PhoneNumber != null)
                     user.PhoneNumber = request.PhoneNumber;
+                
+                
 
                 // UserName stratejisi: e-posta değiştiyse UserName’i de eşitlemek isteyebilirsin
                 if (!string.IsNullOrWhiteSpace(request.Email))

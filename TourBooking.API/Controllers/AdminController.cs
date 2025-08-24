@@ -77,6 +77,14 @@ namespace TourBooking.API.Controllers
                 ApiResponse<object>.SuccessResponse(null, null)
             );
         }
+        [HttpDelete("admin-management-user")]
+        public async Task<IActionResult> DeleteAdminManagementUser([FromQuery] string userId)
+        {
+            await _mediator.Send(new DeleteAdminUserCommand{ UserId = userId});
+            return Ok(
+                ApiResponse<object>.SuccessResponse(null, null)
+            );
+        }
 
 
     }
