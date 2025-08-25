@@ -1,54 +1,91 @@
-// TourBooking.Application/Features/LocationUpdate/LocationUpdateCommandHandler.cs
+// Application/Features/Location/Commands/UpsertUserLocationCommandHandler.cs
 using MediatR;
-using Microsoft.AspNetCore.Identity;
-using TourBooking.Application.Expactions;
-using TourBooking.Domain.Entities; // AppUser burada
-using System.Linq;
+using TourBooking.Application.Features;
+using TourBooking.Application.Interfaces.Repositories;
+using TourBooking.Domain.Entities;
+using TourBooking.Domain.Enums;
 
-namespace TourBooking.Application.Features;
-
-public sealed class LocationUpdateCommandHandler
-    : IRequestHandler<LocationUpdateCommand>
+public class UpsertUserLocationCommandHandler : IRequestHandler<LocationUpdateCommand>
 {
-    private readonly UserManager<AppUser> _userManager;
+    private readonly IUnitOfWork _uow;
 
-    public LocationUpdateCommandHandler(UserManager<AppUser> userManager)
-        => _userManager = userManager;
-
-    public async Task Handle(LocationUpdateCommand request, CancellationToken cancellationToken)
+    public UpsertUserLocationCommandHandler(IUnitOfWork uow)
     {
-        if (request is null)
-            throw new BusinessRuleValidationException("Geçersiz istek.");
+        _uow = uow;
+    }
 
-        // Aralık validasyonu
-        if (request.Latitude is < -90 or > 90)
-            throw new BusinessRuleValidationException("Latitude -90 ile 90 arasında olmalı.");
-        if (request.Longitude is < -180 or > 180)
-            throw new BusinessRuleValidationException("Longitude -180 ile 180 arasında olmalı.");
+    public async Task Handle(LocationUpdateCommand request, CancellationToken ct)
+    {
+        // (Opsiyonel) hızlı validasyon
+        if (request.Latitude is < -90 or > 90 || request.Longitude is < -180 or > 180)
+            throw new ArgumentOutOfRangeException(nameof(request), "Geçersiz koordinat.");
 
-        // Kullanıcıyı getir
-        var user = await _userManager.FindByIdAsync(request.UserId.ToString());
-        if (user is null)
-            throw new BusinessRuleValidationException("Kullanıcı bulunamadı.");
+        try
+        {
+            switch (request.Role)
+            {
+                case UserType.Driver:
+                {
+                    var repo = _uow.GetRepository<DriverLocationEntity>();
 
-        // 6 hane yuvarla + clamp
-        var lat = Math.Clamp(
-            Math.Round(request.Latitude, 6, MidpointRounding.AwayFromZero),
-            -90d, 90d);
-        var lon = Math.Clamp(
-            Math.Round(request.Longitude, 6, MidpointRounding.AwayFromZero),
-            -180d, 180d);
+                    // Shared PK = DriverId
+                    var existing = await repo.GetByIdAsync(request.UserId);
+                    if (existing is not null)
+                    {
+                        existing.Latitude  = request.Latitude;
+                        existing.Longitude = request.Longitude;
+                        existing.UpdatedAt = DateTime.UtcNow;
+                        await repo.UpdateAsync(existing);
+                    }
+                    else
+                    {
+                        var entity = new DriverLocationEntity
+                        {
+                            Id  = request.UserId,
+                            Latitude  = request.Latitude,
+                            Longitude = request.Longitude,
+                            UpdatedAt = DateTime.UtcNow
+                        };
+                        await repo.AddAsync(entity);
+                    }
+                    break;
+                }
 
-        // Değişiklik yoksa çık
-        if (user.Latitude == lat && user.Longitude == lon)
-            return;
+                case UserType.Customer:
+                {
+                    var repo = _uow.GetRepository<CustomerLocationEntity>();
 
-        user.Latitude  = lat;   
-        user.Longitude = lon;   
+                    // Shared PK = CustomerId
+                    var existing = await repo.GetByIdAsync(request.UserId);
+                    if (existing is not null)
+                    {
+                        existing.Latitude  = request.Latitude;
+                        existing.Longitude = request.Longitude;
+                        existing.UpdatedAt = DateTime.UtcNow;
+                        await repo.UpdateAsync(existing);
+                    }
+                    else
+                    {
+                        var entity = new CustomerLocationEntity
+                        {
+                            Id = request.UserId,
+                            Latitude   = request.Latitude,
+                            Longitude  = request.Longitude,
+                            UpdatedAt  = DateTime.UtcNow
+                        };
+                        await repo.AddAsync(entity);
+                    }
+                    break;
+                }
 
-        var result = await _userManager.UpdateAsync(user);
-        if (!result.Succeeded)
-            throw new BusinessRuleValidationException(
-                "Konum güncellenemedi: " + string.Join("; ", result.Errors.Select(e => e.Description)));
+                default:
+                    throw new NotSupportedException($"Desteklenmeyen rol: {request.Role}");
+            }
+
+        }
+        catch
+        {
+            throw;
+        }
     }
 }

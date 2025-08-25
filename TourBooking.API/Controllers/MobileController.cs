@@ -138,6 +138,7 @@ namespace TourBooking.API.Controllers
                 ApiResponse<MobileTourPointByTourTypeQueryResponse>.SuccessResponse(tourPoint, null)
             );
         }
+        [Authorize]
         [HttpPost("location-update")]
         public async Task<IActionResult> LocationUpdate(LocationDto request)
         {
@@ -145,7 +146,7 @@ namespace TourBooking.API.Controllers
             var roleStr = User.FindFirstValue(ClaimTypes.Role);
             Enum.TryParse<UserType>(roleStr, true, out var userType);
             await _mediator.Send(
-                new LocationUpdateCommand { UserId = userId, Latitude = request.Latitude, Longitude = request.Longitude }
+                new LocationUpdateCommand { UserId = userId,Role=userType, Latitude = request.Latitude, Longitude = request.Longitude }
             );
             return Ok(
                 ApiResponse<object>.SuccessResponse(null, "başarılı")

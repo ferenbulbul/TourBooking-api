@@ -58,7 +58,8 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
                 UserName = request.Email,
                 EmailConfirmed = false,
                 UserType = UserType.Customer,
-                PhoneNumber = request.PhoneNumber
+                PhoneNumber = request.PhoneNumber,
+                IsFirstLogin=false,
             };
             var result = await _userManager.CreateAsync(newUser, request.Password);
             if (!result.Succeeded)

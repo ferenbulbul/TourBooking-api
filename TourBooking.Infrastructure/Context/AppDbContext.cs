@@ -49,6 +49,8 @@ namespace TourBooking.Infrastructure.Context
         public DbSet<GuideLanguageEntity> GuideLanguages => Set<GuideLanguageEntity>();
         public DbSet<TourRoutePriceEntity> TourRoutePrices => Set<TourRoutePriceEntity>();
         public DbSet<VehicleBlockEntity> VehicleBlocks => Set<VehicleBlockEntity>();
+        public DbSet<DriverLocationEntity> DriverLocationEntities => Set<DriverLocationEntity>();
+        public DbSet<CustomerLocationEntity> CustomerLocationEntities => Set<CustomerLocationEntity>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -77,16 +79,16 @@ namespace TourBooking.Infrastructure.Context
 
                 // 🔒 Aynı kombinasyon tek olsun (unique)
                 b.HasIndex(x => new
-                    {
-                        x.TourPointId,
-                        x.CountryId,
-                        x.RegionId,
-                        x.CityId,
-                        x.DistrictId,
-                        x.VehicleId,
-                        x.DriverId,
-                        x.AgencyId
-                    })
+                {
+                    x.TourPointId,
+                    x.CountryId,
+                    x.RegionId,
+                    x.CityId,
+                    x.DistrictId,
+                    x.VehicleId,
+                    x.DriverId,
+                    x.AgencyId
+                })
                     .IsUnique();
 
                 b.Property(x => x.Price).HasColumnType("decimal(18,2)");
@@ -123,12 +125,12 @@ namespace TourBooking.Infrastructure.Context
                 e.Property(x => x.Price).HasColumnType("decimal(10,2)");
                 e.Property(x => x.Currency).HasMaxLength(3);
                 e.HasIndex(x => new
-                    {
-                        x.GuideId,
-                        x.CityId,
-                        x.DistrictId,
-                        x.TourPointId
-                    })
+                {
+                    x.GuideId,
+                    x.CityId,
+                    x.DistrictId,
+                    x.TourPointId
+                })
                     .IsUnique();
             });
 
@@ -219,6 +221,32 @@ namespace TourBooking.Infrastructure.Context
                 .HasOne(d => d.City)
                 .WithMany(c => c.Districts)
                 .HasForeignKey(d => d.CityId);
+
+            builder.Entity<DriverLocationEntity>(e =>
+                {
+                    e.ToTable("DriverLocation");
+                    e.HasKey(x => x.Id);
+
+                    // Driver tablosuna 1–1 (shared PK) bağla (inverse navigation olmadan)
+                    e.HasOne<DriverEntity>()       // principal tip
+                     .WithOne()              // inverse yok
+                     .HasForeignKey<DriverLocationEntity>(x => x.Id)
+                     .OnDelete(DeleteBehavior.Cascade);
+
+                    e.Property(x => x.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                });
+            builder.Entity<CustomerLocationEntity>(e =>
+                {
+                    e.ToTable("CustomerLocation");
+                    e.HasKey(x => x.Id);
+
+                    e.HasOne<CustomerUser>()
+                     .WithOne()
+                     .HasForeignKey<CustomerLocationEntity>(x => x.Id)
+                     .OnDelete(DeleteBehavior.Cascade);
+
+                    e.Property(x => x.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
+                });
             builder
                 .Entity<LanguageEntity>()
                 .HasData(
