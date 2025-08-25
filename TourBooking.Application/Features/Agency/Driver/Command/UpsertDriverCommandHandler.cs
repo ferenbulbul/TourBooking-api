@@ -72,7 +72,8 @@ namespace TourBooking.Application.Features
                         UserName = request.Email,
                         EmailConfirmed = true,
                         UserType = UserType.Driver,
-                        PhoneNumber = request.PhoneNumber
+                        PhoneNumber = request.PhoneNumber,
+                        IsFirstLogin = true
                     };
                     var result = await _userManager.CreateAsync(newUser, "Driver.123");
                     if (!result.Succeeded)
