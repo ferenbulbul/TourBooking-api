@@ -233,7 +233,6 @@ namespace TourBooking.Infrastructure.Context
                      .HasForeignKey<DriverLocationEntity>(x => x.Id)
                      .OnDelete(DeleteBehavior.Cascade);
 
-                    e.Property(x => x.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
                 });
             builder.Entity<CustomerLocationEntity>(e =>
                 {
@@ -245,7 +244,6 @@ namespace TourBooking.Infrastructure.Context
                      .HasForeignKey<CustomerLocationEntity>(x => x.Id)
                      .OnDelete(DeleteBehavior.Cascade);
 
-                    e.Property(x => x.UpdatedAt).HasDefaultValueSql("CURRENT_TIMESTAMP");
                 });
             builder
                 .Entity<LanguageEntity>()
