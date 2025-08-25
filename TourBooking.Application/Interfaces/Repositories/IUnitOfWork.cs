@@ -154,7 +154,7 @@ namespace TourBooking.Application.Interfaces.Repositories
             Guid districtId,
             Guid cityId
         );
-        Task<Guid> FinishBooking(CreateBookingCommand request);
+        Task<Guid> FinishBooking(CreateBookingCommand request,Guid driverId, Guid agencyId);
         //Task CreateVehicleBlock(Guid vehicleId, DateOnly date);
         Task<bool> IsUserApproved(IsApprovedQuery request);
         Task<IEnumerable<AgencyToConfirmDto>> GetAgenciesToConfirm();

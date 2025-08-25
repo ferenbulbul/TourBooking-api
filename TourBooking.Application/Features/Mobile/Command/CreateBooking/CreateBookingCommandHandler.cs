@@ -24,8 +24,8 @@ public class CreateBookingCommandHandler
         CancellationToken cancellationToken
     )
     {
-        
-        var tourControl = await _unitOfWork.ControlTourRoute(request.TourPointId, request.CityId, request.DistrictId, request.VehicleId,request.TourPrice);
+
+        var tourControl = await _unitOfWork.ControlTourRoute(request.TourPointId, request.CityId, request.DistrictId, request.VehicleId, request.TourPrice);
         if (tourControl == null)
         {
             throw new BusinessRuleValidationException("tur kontrol fayil");
@@ -37,30 +37,30 @@ public class CreateBookingCommandHandler
         }
         if (request.GuideId is not null && request.GuidePrice is not null)
         {
-            var guideControl = await _unitOfWork.ControlGuideAvalibity(request.GuideId.Value,request.GuidePrice.Value, request.Date, request.TourPointId, request.DistrictId, request.CityId);
+            var guideControl = await _unitOfWork.ControlGuideAvalibity(request.GuideId.Value, request.GuidePrice.Value, request.Date, request.TourPointId, request.DistrictId, request.CityId);
             if (guideControl == null)
             {
                 throw new BusinessRuleValidationException("rehberss kontrol fayil");
             }
         }
-         using var transaction = await _unitOfWork.BeginTransactionAsync();
+        using var transaction = await _unitOfWork.BeginTransactionAsync();
 
         try
         {
             // 1️⃣ Booking ekle
-            var bookingId = await _unitOfWork.FinishBooking(request);
+            var bookingId = await _unitOfWork.FinishBooking(request, tourControl.DriverId, tourControl.AgencyId);
             if (request.GuideId.HasValue)
             {
                 await _unitOfWork.CreateGuideBlock(new CreateBlockCommand { GuideId = request.GuideId.Value, Start = request.Date, End = request.Date, Note = bookingId.ToString() });
             }
 
-            await _unitOfWork.CreateVehicleBlock(new CreateVehicleBlockCommand{VehicleId=request.VehicleId,Start=request.Date,End=request.Date,Note=bookingId.ToString()});
+            await _unitOfWork.CreateVehicleBlock(new CreateVehicleBlockCommand { VehicleId = request.VehicleId, Start = request.Date, End = request.Date, Note = bookingId.ToString() });
 
 
             await _unitOfWork.CommitAsync();
             await transaction.CommitAsync();
 
-            return new CreateBookingCommandResponse{BookingId = bookingId, IsValid=true};
+            return new CreateBookingCommandResponse { BookingId = bookingId, IsValid = true };
         }
         catch
         {

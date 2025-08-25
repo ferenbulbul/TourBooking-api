@@ -1419,13 +1419,15 @@ namespace TourBooking.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Guid> FinishBooking(CreateBookingCommand request)
+        public async Task<Guid> FinishBooking(CreateBookingCommand request, Guid driverId, Guid agencyId)
         {
             var entity = new BookingEntity();
+
+            entity.AgencyId = agencyId;
+            entity.DriverId = driverId;
             entity.CreatedDate = DateTime.Now;
             entity.CreatedAt = DateTime.Now;
-            entity.CustomerId =
-                request.CustomerId ?? throw new InvalidOperationException("CustomerId boş");
+            entity.CustomerId =request.CustomerId ?? throw new InvalidOperationException("CustomerId boş");
             entity.VehicleId = request.VehicleId;
             entity.EndDate = request.Date;
             entity.StartDate = request.Date;
