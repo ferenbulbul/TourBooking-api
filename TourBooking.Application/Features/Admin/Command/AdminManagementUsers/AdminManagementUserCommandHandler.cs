@@ -118,7 +118,7 @@ namespace TourBooking.Application.Features.Admin
                 // Şifresiz oluşturmak istersen:
                 // var createRes = await _userManager.CreateAsync(newUser);
                 // Geçici şifre ile oluşturmak istersen:
-                var tempPassword = "Temp.123";
+                var tempPassword = "Temp.1234";
                 var createRes = await _userManager.CreateAsync(newUser, tempPassword);
 
                 var emailTitle = "Hoş Geldiniz! İlk Giriş Bilgileriniz";
