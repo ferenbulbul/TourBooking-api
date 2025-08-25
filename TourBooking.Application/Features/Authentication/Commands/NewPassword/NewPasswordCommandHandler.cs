@@ -21,14 +21,21 @@ namespace TourBooking.Application.Features.Authentication.Commands
             _localizer = localizer;
         }
 
-        public async Task Handle(NewPasswordCommand request, CancellationToken cancellationToken)
+        public async Task Handle(NewPasswordCommand request, CancellationToken ct)
         {
             var user = await _userManager.FindByIdAsync(request.UserId);
-            if (user == null)
-            {
+            if (user is null)
                 throw new BusinessRuleValidationException(_localizer["ResetCodeUserNotFound"]);
-            }
-            await _userManager.ChangePasswordAsync(user, user.PasswordHash, request.Password);
+
+            // Sunucuda token üret, e-posta göndermeden direkt kullan
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userManager.ResetPasswordAsync(user, token, request.Password);
+            if (!result.Succeeded)
+                throw new BusinessRuleValidationException(string.Join("; ", result.Errors.Select(e => e.Description)));
+
+            user.IsFirstLogin = false;
+            await _userManager.UpdateAsync(user);
+
         }
     }
 }
