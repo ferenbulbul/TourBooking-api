@@ -50,7 +50,8 @@ namespace TourBooking.Infrastructure.Context
         public DbSet<TourRoutePriceEntity> TourRoutePrices => Set<TourRoutePriceEntity>();
         public DbSet<VehicleBlockEntity> VehicleBlocks => Set<VehicleBlockEntity>();
         public DbSet<DriverLocationEntity> DriverLocationEntities => Set<DriverLocationEntity>();
-        public DbSet<CustomerLocationEntity> CustomerLocationEntities => Set<CustomerLocationEntity>();
+        public DbSet<CustomerLocationEntity> CustomerLocationEntities =>
+            Set<CustomerLocationEntity>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -78,16 +79,16 @@ namespace TourBooking.Infrastructure.Context
 
                 // 🔒 Aynı kombinasyon tek olsun (unique)
                 b.HasIndex(x => new
-                {
-                    x.TourPointId,
-                    x.CountryId,
-                    x.RegionId,
-                    x.CityId,
-                    x.DistrictId,
-                    x.VehicleId,
-                    x.DriverId,
-                    x.AgencyId
-                })
+                    {
+                        x.TourPointId,
+                        x.CountryId,
+                        x.RegionId,
+                        x.CityId,
+                        x.DistrictId,
+                        x.VehicleId,
+                        x.DriverId,
+                        x.AgencyId
+                    })
                     .IsUnique();
 
                 b.Property(x => x.Price).HasColumnType("decimal(18,2)");
@@ -124,12 +125,12 @@ namespace TourBooking.Infrastructure.Context
                 e.Property(x => x.Price).HasColumnType("decimal(10,2)");
                 e.Property(x => x.Currency).HasMaxLength(3);
                 e.HasIndex(x => new
-                {
-                    x.GuideId,
-                    x.CityId,
-                    x.DistrictId,
-                    x.TourPointId
-                })
+                    {
+                        x.GuideId,
+                        x.CityId,
+                        x.DistrictId,
+                        x.TourPointId
+                    })
                     .IsUnique();
             });
 
@@ -137,6 +138,9 @@ namespace TourBooking.Infrastructure.Context
             {
                 e.HasKey(x => x.Id);
                 e.HasOne(x => x.Guide).WithMany(g => g.Bookings).HasForeignKey(x => x.GuideId);
+                e.HasOne(x => x.Vehicle).WithMany(g => g.Bookings).HasForeignKey(x => x.VehicleId);
+                e.HasOne(x => x.Driver).WithMany(g => g.Bookings).HasForeignKey(x => x.DriverId);
+                e.HasOne(x => x.Agency).WithMany(g => g.Bookings).HasForeignKey(x => x.AgencyId);
                 e.Property(x => x.Status).HasConversion<int>();
                 e.HasIndex(x => new
                 {
@@ -222,28 +226,26 @@ namespace TourBooking.Infrastructure.Context
                 .HasForeignKey(d => d.CityId);
 
             builder.Entity<DriverLocationEntity>(e =>
-                {
-                    e.ToTable("DriverLocation");
-                    e.HasKey(x => x.Id);
+            {
+                e.ToTable("DriverLocation");
+                e.HasKey(x => x.Id);
 
-                    // Driver tablosuna 1–1 (shared PK) bağla (inverse navigation olmadan)
-                    e.HasOne<DriverEntity>()       // principal tip
-                     .WithOne()              // inverse yok
-                     .HasForeignKey<DriverLocationEntity>(x => x.Id)
-                     .OnDelete(DeleteBehavior.Cascade);
-
-                });
+                // Driver tablosuna 1–1 (shared PK) bağla (inverse navigation olmadan)
+                e.HasOne<DriverEntity>() // principal tip
+                    .WithOne() // inverse yok
+                    .HasForeignKey<DriverLocationEntity>(x => x.Id)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
             builder.Entity<CustomerLocationEntity>(e =>
-                {
-                    e.ToTable("CustomerLocation");
-                    e.HasKey(x => x.Id);
+            {
+                e.ToTable("CustomerLocation");
+                e.HasKey(x => x.Id);
 
-                    e.HasOne<CustomerUser>()
-                     .WithOne()
-                     .HasForeignKey<CustomerLocationEntity>(x => x.Id)
-                     .OnDelete(DeleteBehavior.Cascade);
-
-                });
+                e.HasOne<CustomerUser>()
+                    .WithOne()
+                    .HasForeignKey<CustomerLocationEntity>(x => x.Id)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
             builder
                 .Entity<LanguageEntity>()
                 .HasData(

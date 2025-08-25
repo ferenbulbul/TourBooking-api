@@ -64,28 +64,37 @@ namespace TourBooking.API.Controllers
             var response = await _mediator.Send(new AdminManagementUserQuery());
             if (response == null || !response.Users.Any())
             {
-                return Ok(ApiResponse<AdminManagementUserQueryResponse>.SuccessResponse(null, null));
+                return Ok(
+                    ApiResponse<AdminManagementUserQueryResponse>.SuccessResponse(null, null)
+                );
             }
-            return Ok(ApiResponse<AdminManagementUserQueryResponse>.SuccessResponse(response, null));
+            return Ok(
+                ApiResponse<AdminManagementUserQueryResponse>.SuccessResponse(response, null)
+            );
         }
 
         [HttpPost("admin-management-user")]
-        public async Task<IActionResult> UpsertAdminManagementUser(AdminManagementUserCommand request)
+        public async Task<IActionResult> UpsertAdminManagementUser(
+            AdminManagementUserCommand request
+        )
         {
             await _mediator.Send(request);
-            return Ok(
-                ApiResponse<object>.SuccessResponse(null, null)
-            );
+            return Ok(ApiResponse<object>.SuccessResponse(null, null));
         }
+
         [HttpDelete("admin-management-user")]
         public async Task<IActionResult> DeleteAdminManagementUser([FromQuery] string userId)
         {
-            await _mediator.Send(new DeleteAdminUserCommand{ UserId = userId});
-            return Ok(
-                ApiResponse<object>.SuccessResponse(null, null)
-            );
+            await _mediator.Send(new DeleteAdminUserCommand { UserId = userId });
+            return Ok(ApiResponse<object>.SuccessResponse(null, null));
         }
 
-
+        [Authorize]
+        [HttpGet("driver-locations")]
+        public async Task<IActionResult> DriverLocations()
+        {
+            var locations = await _mediator.Send(new DriverLocationsQuery());
+            return Ok(ApiResponse<DriverLocationsQueryResponse>.SuccessResponse(locations, null));
+        }
     }
 }

@@ -14,4 +14,13 @@ namespace TourBooking.Application.DTOs
     public record AvailabilityResponse(Guid id, Guid vehicleId, List<string> busyDays);
 
     public record PatchAvailabilityRequest(List<CalendarEventDto> events);
+
+    public record DriverLocationDto(
+        Guid DriverId,
+        string NameSurname,
+        string LicensePlate,
+        double Latitude,
+        double Longitude,
+        string CompanyName
+    );
 }

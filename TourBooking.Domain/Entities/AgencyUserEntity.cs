@@ -7,7 +7,7 @@ namespace TourBooking.Domain.Entities
     {
         [Key]
         public Guid Id { get; set; }
-        
+
         [ForeignKey(nameof(Id))]
         public AppUser AppUser { get; set; }
         public string? AuthorizedUserFirstName { get; set; }
@@ -26,7 +26,9 @@ namespace TourBooking.Domain.Entities
         public bool IsDeleted { get; set; }
         public bool IsConfirmed { get; set; }
         public virtual ICollection<DriverEntity> Drivers { get; set; } = new List<DriverEntity>();
-        public virtual ICollection<VehicleEntity> Vehicles { get; set; } = new List<VehicleEntity>();
+        public virtual ICollection<VehicleEntity> Vehicles { get; set; } =
+            new List<VehicleEntity>();
         public virtual ICollection<TourEntity> Tours { get; set; } = new List<TourEntity>();
+        public ICollection<BookingEntity> Bookings { get; set; } = new List<BookingEntity>();
     }
 }

@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using TourBooking.Application.DTOs;
 using TourBooking.Application.DTOs.Admin;
 using TourBooking.Application.DTOs.GuideCalendar;
 using TourBooking.Application.DTOs.Mobile;
@@ -822,7 +823,8 @@ namespace TourBooking.Infrastructure.Repositories
                 .ToListAsync();
             return list;
         }
-         public async Task<IEnumerable<MobileDetailedSearchResultDto>> MobileTourPointByTourTypeId(
+
+        public async Task<IEnumerable<MobileDetailedSearchResultDto>> MobileTourPointByTourTypeId(
             Guid? tourType,
             string culture
         )
@@ -830,8 +832,7 @@ namespace TourBooking.Infrastructure.Repositories
             // 1) Uygun route’lar: kalkış (region/city/district) filtreleri
             var baseRoutes = _context
                 .TourRoutePrices.AsNoTracking()
-                .Where(rp =>rp.TourPoint.TourType.Id==tourType
-                );
+                .Where(rp => rp.TourPoint.TourType.Id == tourType);
 
             // 2) Tekil TourPointId seti
             var tourPointIds = baseRoutes.Select(rp => rp.TourPointId).Distinct();
@@ -885,7 +886,7 @@ namespace TourBooking.Infrastructure.Repositories
                         .FirstOrDefault(),
 
                     MainImage = tp.MainImage,
-                    OtherImages=new List<string>(),
+                    OtherImages = new List<string>(),
                 })
                 .ToListAsync();
             return list;
@@ -1138,7 +1139,7 @@ namespace TourBooking.Infrastructure.Repositories
                     tp.TourPointId == tourPointId
                     && tp.VehicleId == vehicleId
                     && tp.DistrictId == districtId
-                    && !tp.Vehicle.Blocks.Any(a => a.StartDate==date)
+                    && !tp.Vehicle.Blocks.Any(a => a.StartDate == date)
                 )
                 .Select(tp => new MobileTourBookingSummaryVehicleTourDto
                 {
@@ -1549,6 +1550,24 @@ namespace TourBooking.Infrastructure.Repositories
         )
         {
             return await _context.CallCenterAgents.FirstOrDefaultAsync(x => x.Id == Id);
+        }
+
+        public async Task<List<DriverLocationDto>> DriverLocations()
+        {
+            var today = DateOnly.FromDateTime(DateTime.Now);
+
+            return await _context
+                .Bookings.AsNoTracking()
+                .Where(x => x.StartDate == today)
+                .Select(yy => new DriverLocationDto(
+                    yy.DriverId,
+                    yy.Driver.NameSurname,
+                    yy.Vehicle.LicensePlate,
+                    yy.Driver.DriverLocation.Latitude,
+                    yy.Driver.DriverLocation.Longitude,
+                    yy.Agency.CompanyName
+                ))
+                .ToListAsync();
         }
     }
 }

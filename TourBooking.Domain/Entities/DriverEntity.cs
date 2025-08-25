@@ -23,5 +23,7 @@ namespace TourBooking.Domain.Entities
         public List<string> ServiceCities { get; set; }
         public string? SrcDocument { get; set; }
         public string? PsikoDocument { get; set; }
+        public ICollection<BookingEntity> Bookings { get; set; } = new List<BookingEntity>();
+        public DriverLocationEntity DriverLocation { get; set; }
     }
 }

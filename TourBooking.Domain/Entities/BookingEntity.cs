@@ -11,8 +11,11 @@ namespace TourBooking.Domain.Entities
         public Guid Id { get; set; }
         public Guid? GuideId { get; set; }
         public Guid AgencyId { get; set; }
+        public AgencyUserEntity? Agency { get; set; } = null!;
         public Guid VehicleId { get; set; }
+        public VehicleEntity? Vehicle { get; set; } = null!;
         public Guid DriverId { get; set; }
+        public DriverEntity? Driver { get; set; } = null!;
         public decimal TotalPrice { get; set; }
         public Guid FromCityId { get; set; }
         public Guid FromDistrictId { get; set; }
