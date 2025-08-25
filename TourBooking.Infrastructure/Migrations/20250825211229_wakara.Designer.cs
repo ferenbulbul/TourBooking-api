@@ -11,8 +11,8 @@ using TourBooking.Infrastructure.Context;
 namespace TourBooking.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250825205149_waqd")]
-    partial class waqd
+    [Migration("20250825211229_wakara")]
+    partial class wakara
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
