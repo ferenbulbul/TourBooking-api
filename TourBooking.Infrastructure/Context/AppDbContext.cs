@@ -79,16 +79,16 @@ namespace TourBooking.Infrastructure.Context
 
                 // 🔒 Aynı kombinasyon tek olsun (unique)
                 b.HasIndex(x => new
-                    {
-                        x.TourPointId,
-                        x.CountryId,
-                        x.RegionId,
-                        x.CityId,
-                        x.DistrictId,
-                        x.VehicleId,
-                        x.DriverId,
-                        x.AgencyId
-                    })
+                {
+                    x.TourPointId,
+                    x.CountryId,
+                    x.RegionId,
+                    x.CityId,
+                    x.DistrictId,
+                    x.VehicleId,
+                    x.DriverId,
+                    x.AgencyId
+                })
                     .IsUnique();
 
                 b.Property(x => x.Price).HasColumnType("decimal(18,2)");
@@ -125,12 +125,12 @@ namespace TourBooking.Infrastructure.Context
                 e.Property(x => x.Price).HasColumnType("decimal(10,2)");
                 e.Property(x => x.Currency).HasMaxLength(3);
                 e.HasIndex(x => new
-                    {
-                        x.GuideId,
-                        x.CityId,
-                        x.DistrictId,
-                        x.TourPointId
-                    })
+                {
+                    x.GuideId,
+                    x.CityId,
+                    x.DistrictId,
+                    x.TourPointId
+                })
                     .IsUnique();
             });
 
@@ -226,16 +226,16 @@ namespace TourBooking.Infrastructure.Context
                 .HasForeignKey(d => d.CityId);
 
             builder.Entity<DriverLocationEntity>(e =>
-            {
-                e.ToTable("DriverLocation");
-                e.HasKey(x => x.Id);
+                {
+                    e.ToTable("DriverLocation");
 
-                // Driver tablosuna 1–1 (shared PK) bağla (inverse navigation olmadan)
-                e.HasOne<DriverEntity>() // principal tip
-                    .WithOne() // inverse yok
-                    .HasForeignKey<DriverLocationEntity>(x => x.Id)
-                    .OnDelete(DeleteBehavior.Cascade);
-            });
+                    e.HasKey(x => x.Id);
+
+                    e.HasOne(x => x.Driver)
+                        .WithOne(x => x.DriverLocation)
+                        .HasForeignKey<DriverLocationEntity>(x => x.Id) // Shared PK!
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
             builder.Entity<CustomerLocationEntity>(e =>
             {
                 e.ToTable("CustomerLocation");
