@@ -68,7 +68,6 @@ namespace TourBooking.Infrastructure.Context
             builder.Entity<VehicleClassTranslation>().ToTable("VehicleClassTranslations");
             builder.Entity<SeatTypeTranslation>().ToTable("SeatTypeTranslations");
             builder.Entity<LegroomSpaceTranslation>().ToTable("LegroomSpaceTranslations");
-
             builder.Entity<AvailabilityEntity>().HasIndex(x => x.VehicleId).IsUnique();
 
             // Infrastructure/Context/AppDbContext.cs  (OnModelCreating)
