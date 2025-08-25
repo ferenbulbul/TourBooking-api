@@ -1558,7 +1558,7 @@ namespace TourBooking.Infrastructure.Repositories
 
             return await _context
                 .Bookings.AsNoTracking()
-                .Where(x => x.StartDate == today)
+                .Where(x => x.StartDate == today && x.Status==BookingStatus.Confirmed)
                 .Select(yy => new DriverLocationDto(
                     yy.DriverId,
                     yy.Driver.NameSurname,
