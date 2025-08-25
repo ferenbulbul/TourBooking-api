@@ -4,9 +4,11 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using Org.BouncyCastle.Crypto;
 using TourBooking.Application.DTOs;
 using TourBooking.Application.DTOs.Comman;
 using TourBooking.Application.Features;
+using TourBooking.Application.Features.Authentication.Commands;
 using TourBooking.Application.Features.Authentication.Commands.Register;
 using TourBooking.Application.Features.Authentication.Commands.ResetPassword;
 using TourBooking.Application.Features.Authentication.Commands.SendEmailVerificationCode;
@@ -142,11 +144,11 @@ namespace TourBooking.API.Controllers
             );
         }
 
-        [HttpPost("signin-with-google")] 
+        [HttpPost("signin-with-google")]
         public async Task<IActionResult> SignInWithGoogle([FromBody] FirebaseTokenRequest request)
         {
 
-            
+
             if (string.IsNullOrEmpty(request.Token))
             {
                 return BadRequest("Token cannot be empty.");
@@ -156,17 +158,17 @@ namespace TourBooking.API.Controllers
             {
 
                 FirebaseToken decodedToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(request.Token);
-                string uid = decodedToken.Uid; 
+                string uid = decodedToken.Uid;
                 string email = (string)decodedToken.Claims.GetValueOrDefault("email", "N/A");
                 string name = (string)decodedToken.Claims.GetValueOrDefault("name", "N/A");
-                
-                var response=await _mediator.Send(new GoogleSignCommand{Uid=uid,Email=email,Name=name});
+
+                var response = await _mediator.Send(new GoogleSignCommand { Uid = uid, Email = email, Name = name });
                 Console.WriteLine($"✅ Token Validated. UID: {uid}, Email: {email}, Name: {name}");
 
-                
+
                 return Ok(ApiResponse<GoogleSignCommandResponse>.SuccessResponse(response, "google giriş başarılı"));
 
-               ;
+                ;
             }
             catch (FirebaseAuthException ex)
             {
@@ -174,6 +176,18 @@ namespace TourBooking.API.Controllers
                 return Unauthorized(new { Message = "Authentication failed. Invalid token.", Details = ex.Message });
             }
         }
-    
+
+        [Authorize]
+        [HttpPost("new-password")]
+        public async Task<IActionResult> NewPassword([FromBody] NewPasswordDto request)
+        {
+            var userId = GetUserIdFromToken();
+
+            await _mediator.Send(new NewPasswordCommand { UserId = userId.ToString(), Password = request.Password });
+            return Ok(
+                ApiResponse<object>.SuccessResponse(null, null)
+            );
+        }
+
     }
 }
