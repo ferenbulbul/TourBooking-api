@@ -15,6 +15,6 @@ namespace TourBooking.Domain.Entities
         public GuideUserEntity GuideUser { get; set; }
         public CallCenterAgentEntity CallCenterAgent { get; set; }
         public bool? IsFirstLogin { get; set; }
-
+        public DateTime? CreateDate { get; set; } = DateTime.Now;
     }
 }

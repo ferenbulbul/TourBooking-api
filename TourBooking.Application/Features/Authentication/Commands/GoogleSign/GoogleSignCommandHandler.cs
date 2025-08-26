@@ -7,6 +7,7 @@ using TourBooking.Domain.Entities;
 using Microsoft.Extensions.Localization;
 using TourBooking.Shared.Localization;
 using TourBooking.Domain.Enums;
+using TourBooking.Application.Interfaces.Repositories;
 
 
 namespace TourBooking.Application.Features.Authentication.Commands.Register
@@ -14,17 +15,20 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
     public class GoogleSignCommandHandler : IRequestHandler<GoogleSignCommand, GoogleSignCommandResponse>
     {
         private readonly UserManager<AppUser> _userManager;
+        private readonly IUnitOfWork _uow;
         private readonly ITokenService _tokenService;
         private readonly IStringLocalizer<SharedResource> _localizer;
 
         public GoogleSignCommandHandler(
             UserManager<AppUser> userManager,
             ITokenService tokenService,
-            IStringLocalizer<SharedResource> localizer)
+            IStringLocalizer<SharedResource> localizer,
+            IUnitOfWork uow)
         {
             _userManager = userManager;
             _tokenService = tokenService;
             _localizer = localizer;
+            _uow = uow;
         }
 
         public async Task<GoogleSignCommandResponse> Handle(
@@ -73,7 +77,14 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
                         var errors = createResult.Errors.Select(e => e.Description).ToList();
                         throw new ValidationException(errors);
                     }
-
+                    var customerUser=new CustomerUser
+                    {
+                        Id = newUser.Id,
+                        BirthDate = default,
+                        PhoneNumber = "",
+                        CreatedDate=DateTime.Now
+                    };
+                    await _uow.GetRepository<CustomerUser>().AddAsync(customerUser);
                     // Şimdi yeni oluşturulan kullanıcıya Google girişini bağlayalım.
                     var info = new UserLoginInfo(loginProvider, request.Uid, "Google");
                     var addLoginResult = await _userManager.AddLoginAsync(newUser, info);
