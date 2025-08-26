@@ -99,7 +99,8 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
                 AccessToken = tokenDto.AccessToken,
                 RefreshToken = tokenDto.RefreshToken,
                 EmailConfirmed = user.EmailConfirmed,
-                UserFullName = user.FirstName
+                UserFullName = user.FirstName,
+                IsFirstLogin=false,
             };
         }
     }

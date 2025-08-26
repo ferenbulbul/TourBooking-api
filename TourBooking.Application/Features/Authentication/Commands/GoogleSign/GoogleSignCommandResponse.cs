@@ -7,5 +7,6 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
         public string UserFullName { get; set; }
         public string Role { get; set; }
         public bool EmailConfirmed { get; set; }
+        public bool IsFirstLogin { get; set; }
     }
 }
