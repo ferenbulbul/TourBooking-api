@@ -1427,7 +1427,7 @@ namespace TourBooking.Infrastructure.Repositories
             entity.DriverId = driverId;
             entity.CreatedDate = DateTime.Now;
             entity.CreatedAt = DateTime.Now;
-            entity.CustomerId =request.CustomerId ?? throw new InvalidOperationException("CustomerId boş");
+            entity.CustomerId = request.CustomerId ?? throw new InvalidOperationException("CustomerId boş");
             entity.VehicleId = request.VehicleId;
             entity.EndDate = request.Date;
             entity.StartDate = request.Date;
@@ -1556,10 +1556,14 @@ namespace TourBooking.Infrastructure.Repositories
 
         public async Task<List<DriverLocationDto>> DriverLocations()
         {
-            var today = DateOnly.FromDateTime(DateTime.Now);
+            var tz = TimeZoneInfo.FindSystemTimeZoneById("Europe/Istanbul"); // Linux için
+                                                                             // Windows'ta "Turkey Standard Time" kullan
+            var nowTr = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, tz);
+            var today = DateOnly.FromDateTime(nowTr);
 
-            return await _context
-                .Bookings.AsNoTracking()
+            var list = await _context.Bookings
+                .AsNoTracking()
+                .Where(x => x.StartDate == today && x.Status == BookingStatus.Confirmed)
                 .Select(yy => new DriverLocationDto(
                     yy.DriverId,
                     yy.Driver.NameSurname,
@@ -1569,6 +1573,7 @@ namespace TourBooking.Infrastructure.Repositories
                     yy.Agency.CompanyName
                 ))
                 .ToListAsync();
+            return list;
         }
     }
 }
