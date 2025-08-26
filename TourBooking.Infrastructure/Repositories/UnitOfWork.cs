@@ -1294,39 +1294,45 @@ namespace TourBooking.Infrastructure.Repositories
         )
         {
             // Bookings (read-only)
-            var bookings = await _context
-                .Bookings.Where(x =>
-                    x.VehicleId == request.VehicleId
-                    && x.StartDate <= request.To
-                    && request.From <= x.EndDate
-                    && x.Status == BookingStatus.Confirmed
-                )
-                .Select(x => new CalendarEventDto2(
-                    null,
-                    "Rezerve",
-                    x.StartDate,
-                    x.EndDate,
-                    false,
-                    "#dc2626" // kırmızı
-                ))
-                .ToListAsync();
+            var bookings = await _context.Bookings
+    .Where(x =>
+        x.VehicleId == request.VehicleId &&
+        x.StartDate <= request.To &&
+        request.From <= x.EndDate &&
+        x.Status == BookingStatus.Confirmed)
+    .Select(x => new CalendarEventDto2(
+        null,
+        "Rezerve",
+        x.StartDate,
+        x.EndDate,
+        false,
+        "#dc2626" // kırmızı
+    ))
+    .ToListAsync();
 
-            // Guide Blocks (editable)
-            var blocks = await _context
-                .VehicleBlocks.Where(x =>
-                    x.VehicleId == request.VehicleId
-                    && x.StartDate <= request.To
-                    && request.From <= x.EndDate
+            // Blocks: confirmed booking ile ÖRTÜŞENLERİ ELEMEl
+            var blocks = await _context.VehicleBlocks
+                .Where(x =>
+                    x.VehicleId == request.VehicleId &&
+                    x.StartDate <= request.To &&
+                    request.From <= x.EndDate &&
+                    !_context.Bookings.Any(b =>
+                        b.VehicleId == x.VehicleId &&
+                        b.Status == BookingStatus.Confirmed &&
+                        // interval overlap: [b.Start,b.End] ∩ [x.Start,x.End] ≠ ∅
+                        b.StartDate <= x.EndDate &&
+                        x.StartDate <= b.EndDate
+                    )
                 )
-                .Select(x => new CalendarEventDto2(
-                    x.Id,
-                    "Meşgul",
-                    x.StartDate,
-                    x.EndDate,
-                    true,
-                    "#6b7280" // gri
-                ))
-                .ToListAsync();
+                 .Select(x => new CalendarEventDto2(
+                                x.Id,
+                            "Meşgul",
+                            x.StartDate,
+                            x.EndDate,
+                            true,
+                            "#6b7280" // gri
+                        ))
+                        .ToListAsync();
 
             return bookings.Concat(blocks).ToList();
         }
