@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TourBooking.Application.DTOs;
 using TourBooking.Application.DTOs.Comman;
 using TourBooking.Application.Features;
 using TourBooking.Application.Features.Admin;
@@ -8,6 +9,7 @@ using TourBooking.Application.Features.Admin.Command.ConfirmAgency;
 using TourBooking.Application.Features.Admin.Command.ConfirmGuide;
 using TourBooking.Application.Features.Admin.Query.AgenciesToConfirm;
 using TourBooking.Application.Features.Settings.Commands;
+using TourBooking.Application.Interfaces.Services;
 
 namespace TourBooking.API.Controllers
 {
@@ -16,10 +18,11 @@ namespace TourBooking.API.Controllers
     public class AdminController : BaseController
     {
         private readonly IMediator _mediator;
-
-        public AdminController(IMediator mediator)
+        private readonly INetgsmSmsService _netgsm;
+        public AdminController(IMediator mediator, INetgsmSmsService netgsm)
         {
             _mediator = mediator;
+            _netgsm = netgsm;
         }
 
         [HttpGet("agencies-to-confirm")]
@@ -95,6 +98,13 @@ namespace TourBooking.API.Controllers
         {
             var locations = await _mediator.Send(new DriverLocationsQuery());
             return Ok(ApiResponse<DriverLocationsQueryResponse>.SuccessResponse(locations, null));
+        }
+
+        [HttpPost("sms")]
+        public async Task<IActionResult> Sms(IEnumerable<SmsMessageDto> req)
+        {
+            await _netgsm.SendBatchAsync(req);
+            return Ok(ApiResponse<DriverLocationsQueryResponse>.SuccessResponse(null, null));
         }
     }
 }
