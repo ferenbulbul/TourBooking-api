@@ -166,7 +166,7 @@ namespace TourBooking.API.Controllers
         }
 
         [Authorize]
-        [HttpGet("edit-phone-number")]
+        [HttpPost("edit-phone-number")]
         public async Task<IActionResult> EditPhoneNumber(string phoneNumber)
         {
             var userId = GetUserIdFromToken();
@@ -177,7 +177,7 @@ namespace TourBooking.API.Controllers
         }
 
         [Authorize]
-        [HttpGet("send-phone-number")]
+        [HttpPost("send-phone-number")]
         public async Task<IActionResult> SendPhoneNumber()
         {
             var userId = GetUserIdFromToken();

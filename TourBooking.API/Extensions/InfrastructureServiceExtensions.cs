@@ -21,7 +21,9 @@ namespace TourBooking.API.Extensions
                 Password = Environment.GetEnvironmentVariable("NETGSM_PASSWORD"),
                 MsgHeader = Environment.GetEnvironmentVariable("NETGSM_MSGHEADER"),
             };
-            services.Configure<NetgsmOptions>(configuration.GetSection("Netgsm"));
+            services.AddSingleton(netgsmOptions);
+
+            //services.Configure<NetgsmOptions>(configuration.GetSection("Netgsm"));
 
             services.AddHttpClient<INetgsmSmsService, NetgsmSmsService>();
             services.AddScoped<IEmailService, EmailService>();
