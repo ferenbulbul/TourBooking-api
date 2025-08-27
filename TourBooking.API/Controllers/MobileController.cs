@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using TourBooking.Application.DTOs.Comman;
 using TourBooking.Application.DTOs.Mobile;
 using TourBooking.Application.Features;
+using TourBooking.Application.Features.Authentication.Commands.SendEmailVerificationCode;
+using TourBooking.Application.Features.Authentication.Queries.IsApproved;
 using TourBooking.Application.Features.Mobile.Query.TourPointDetails;
 using TourBooking.Domain.Enums;
 
@@ -146,10 +148,42 @@ namespace TourBooking.API.Controllers
             var roleStr = User.FindFirstValue(ClaimTypes.Role);
             Enum.TryParse<UserType>(roleStr, true, out var userType);
             await _mediator.Send(
-                new LocationUpdateCommand { UserId = userId,Role=userType, Latitude = request.Latitude, Longitude = request.Longitude }
+                new LocationUpdateCommand { UserId = userId, Role = userType, Latitude = request.Latitude, Longitude = request.Longitude }
             );
             return Ok(
                 ApiResponse<object>.SuccessResponse(null, "başarılı")
+            );
+        }
+        [Authorize]
+        [HttpGet("get-profile")]
+        public async Task<IActionResult> Profile()
+        {
+            var userId = GetUserIdFromToken();
+            var profile = await _mediator.Send(new CustomerProfileQuery { UserId = userId });
+            return Ok(
+                ApiResponse<CustomerProfileQueryResponse>.SuccessResponse(profile, null)
+            );
+        }
+
+        [Authorize]
+        [HttpGet("edit-phone-number")]
+        public async Task<IActionResult> EditPhoneNumber(string phoneNumber)
+        {
+            var userId = GetUserIdFromToken();
+            await _mediator.Send(new EditPhoneCommand { UserId = userId, PhoneNumber = phoneNumber });
+            return Ok(
+                ApiResponse<object>.SuccessResponse(null, "başarılı")
+            );
+        }
+
+        [Authorize]
+        [HttpGet("send-phone-number")]
+        public async Task<IActionResult> SendPhoneNumber()
+        {
+            var userId = GetUserIdFromToken();
+             await _mediator.Send(new SendPhoneNumberCodeCommand {UserId=userId });
+            return Ok(
+                ApiResponse<object>.SuccessResponse(null,"başarılı")
             );
         }
     }

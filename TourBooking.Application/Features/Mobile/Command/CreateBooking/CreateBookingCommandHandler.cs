@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using MediatR;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TourBooking.Application.DTOs.Comman;
 using TourBooking.Application.DTOs.Mobile;
@@ -10,6 +11,7 @@ using TourBooking.Application.Expactions;
 using TourBooking.Application.Features.Mobile.Query.TourPointDetails;
 using TourBooking.Application.Features.Settings;
 using TourBooking.Application.Interfaces.Repositories;
+using TourBooking.Domain.Entities;
 
 namespace TourBooking.Application.Features;
 
@@ -17,10 +19,12 @@ public class CreateBookingCommandHandler
     : IRequestHandler<CreateBookingCommand, CreateBookingCommandResponse>
 {
     private readonly IUnitOfWork _unitOfWork;
+    private readonly UserManager<AppUser> _usermanager;
 
-    public CreateBookingCommandHandler(IUnitOfWork unitOfWork)
+    public CreateBookingCommandHandler(IUnitOfWork unitOfWork, UserManager<AppUser> usermanager)
     {
         _unitOfWork = unitOfWork;
+        _usermanager = usermanager;
     }
 
     public async Task<CreateBookingCommandResponse> Handle(
@@ -28,7 +32,11 @@ public class CreateBookingCommandHandler
         CancellationToken cancellationToken
     )
     {
-
+        var user = await _usermanager.FindByIdAsync(request.CustomerId.ToString());
+        if (user!=null && user.PhoneNumberConfirmed==false)
+        {
+            throw new BusinessRuleValidationException("Lütfen Profile sayfasından telefonunuzu doğrulayın");
+        }
         var tourControl = await _unitOfWork.ControlTourRoute(request.TourPointId, request.CityId, request.DistrictId, request.VehicleId, request.TourPrice);
         if (tourControl == null)
         {
