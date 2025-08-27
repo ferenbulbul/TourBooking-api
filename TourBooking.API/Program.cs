@@ -7,12 +7,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using MySqlConnector;
-
 using TourBooking.API.Exceptions;  // ExceptionHandlingMiddleware
 using TourBooking.API.Extensions;
 using TourBooking.Infrastructure.Context;
 using FirebaseAdmin;
-using Google.Apis.Auth.OAuth2;  // Add*Services extension'ların (Application/Persistence/Identity/Infrastructure/Swagger)
+using Google.Apis.Auth.OAuth2;
 
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
@@ -22,10 +21,25 @@ var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 // ===== Cloud SQL (Unix socket) için bağlantı dizesini ENV/Secret'lardan üret =====
-var dbUser   = Environment.GetEnvironmentVariable("DB_USER");
-var dbPass   = Environment.GetEnvironmentVariable("DB_PASS");
-var dbName   = Environment.GetEnvironmentVariable("DB_NAME");
+var dbUser = Environment.GetEnvironmentVariable("DB_USER");
+var dbPass = Environment.GetEnvironmentVariable("DB_PASS");
+var dbName = Environment.GetEnvironmentVariable("DB_NAME");
 var instance = Environment.GetEnvironmentVariable("INSTANCE_CONNECTION_NAME"); // project:region:instance
+
+
+var Username = Environment.GetEnvironmentVariable("NETGSM_USERNAME");
+var Password = Environment.GetEnvironmentVariable("NETGSM_PASSWORD");
+var MsgHeader = Environment.GetEnvironmentVariable("NETGSM_MSGHEADER");
+
+
+if (!string.IsNullOrWhiteSpace(Username) &&
+    !string.IsNullOrWhiteSpace(Password) &&
+    !string.IsNullOrWhiteSpace(MsgHeader))
+{
+    configuration["Netgsm:Username"] = Username;
+    configuration["Netgsm:Password"] = Password;
+    configuration["Netgsm:MsgHeader"] = MsgHeader;
+}
 
 if (!string.IsNullOrWhiteSpace(dbUser) &&
     !string.IsNullOrWhiteSpace(dbPass) &&
@@ -35,11 +49,11 @@ if (!string.IsNullOrWhiteSpace(dbUser) &&
     var csb = new MySqlConnectionStringBuilder
     {
         // UnixSocket verildiğinde TCP kullanılmaz.
-        Server     = $"/cloudsql/{instance}",
-        UserID     = dbUser,
-        Password   = dbPass,
-        Database   = dbName,
-        SslMode    = MySqlSslMode.None
+        Server = $"/cloudsql/{instance}",
+        UserID = dbUser,
+        Password = dbPass,
+        Database = dbName,
+        SslMode = MySqlSslMode.None
     };
 
     // Persistence katmanının okuduğu anahtarı override ediyoruz.
@@ -50,7 +64,7 @@ if (!string.IsNullOrWhiteSpace(dbUser) &&
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowMobileApp", p =>
-        p.WithOrigins("http://localhost:5173", "http://localhost:60729","https://app2-595877181314.europe-west1.run.app","https://tourbook-backoffice-272954735037.europe-west2.run.app")
+        p.WithOrigins("http://localhost:5173", "http://localhost:60729", "https://app2-595877181314.europe-west1.run.app", "https://tourbook-backoffice-272954735037.europe-west2.run.app")
          .AllowAnyHeader()
          .AllowAnyMethod()
          .AllowCredentials());
@@ -61,11 +75,7 @@ if (string.IsNullOrEmpty(firebaseSettingsPath))
     throw new Exception("Firebase Service Account Key Path is not configured in appsettings.json");
 }
 
-// 2. Firebase Admin SDK'yı başlat
-// FirebaseApp.Create(new AppOptions()
-// {
-//     Credential = GoogleCredential.FromFile(firebaseSettingsPath),
-// });
+
 var credential = GoogleCredential.FromFile("/secrets/firebase-key.json");
 
 FirebaseApp.Create(new AppOptions()
@@ -165,27 +175,29 @@ app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
 app.MapGet("/cloudsql-debug", () =>
 {
     var instance = Environment.GetEnvironmentVariable("INSTANCE_CONNECTION_NAME");
-    var dbUser   = Environment.GetEnvironmentVariable("DB_USER");
-    var dbPass   = Environment.GetEnvironmentVariable("DB_PASS");
-    var dbName   = Environment.GetEnvironmentVariable("DB_NAME");
+    var dbUser = Environment.GetEnvironmentVariable("DB_USER");
+    var dbPass = Environment.GetEnvironmentVariable("DB_PASS");
+    var dbName = Environment.GetEnvironmentVariable("DB_NAME");
 
     var basePath = "/cloudsql";
     var dirExists = Directory.Exists(basePath);
     string[] entries = Array.Empty<string>();
     if (dirExists)
     {
-        try { entries = Directory.GetFileSystemEntries(basePath); } catch {}
+        try { entries = Directory.GetFileSystemEntries(basePath); } catch { }
     }
 
     return Results.Ok(new
     {
-        env = new {
+        env = new
+        {
             INSTANCE_CONNECTION_NAME = string.IsNullOrWhiteSpace(instance) ? null : instance,
-            DB_USER_set   = !string.IsNullOrEmpty(dbUser),
-            DB_PASS_set   = !string.IsNullOrEmpty(dbPass),
+            DB_USER_set = !string.IsNullOrEmpty(dbUser),
+            DB_PASS_set = !string.IsNullOrEmpty(dbPass),
             DB_NAME_value = dbName
         },
-        cloudsql = new {
+        cloudsql = new
+        {
             basePath,
             baseDirExists = dirExists,
             entries // burada genelde "project:region:instance" görmelisin
@@ -205,17 +217,19 @@ app.MapGet("/db-ping2", async () =>
 
         await using var cmd = new MySqlCommand("SELECT DATABASE(), USER(), VERSION()", conn);
         await using var r = await cmd.ExecuteReaderAsync();
-        string? database=null, user=null, version=null;
-        if (await r.ReadAsync()) {
+        string? database = null, user = null, version = null;
+        if (await r.ReadAsync())
+        {
             database = r.IsDBNull(0) ? null : r.GetString(0);
-            user     = r.IsDBNull(1) ? null : r.GetString(1);
-            version  = r.IsDBNull(2) ? null : r.GetString(2);
+            user = r.IsDBNull(1) ? null : r.GetString(1);
+            version = r.IsDBNull(2) ? null : r.GetString(2);
         }
-        return Results.Ok(new { ok=true, database, user, version });
+        return Results.Ok(new { ok = true, database, user, version });
     }
     catch (Exception ex)
     {
-        return Results.Problem(new {
+        return Results.Problem(new
+        {
             message = "db-ping failed",
             type = ex.GetType().FullName,
             ex.Message,
@@ -238,8 +252,8 @@ app.MapGet("/db-ping", async () =>
         if (await r.ReadAsync())
         {
             database = r.IsDBNull(0) ? null : r.GetString(0);
-            user     = r.IsDBNull(1) ? null : r.GetString(1);
-            version  = r.IsDBNull(2) ? null : r.GetString(2);
+            user = r.IsDBNull(1) ? null : r.GetString(1);
+            version = r.IsDBNull(2) ? null : r.GetString(2);
         }
 
         return Results.Ok(new { ok = true, database, user, version });
@@ -274,11 +288,11 @@ app.MapPost("/admin/migrate-now", async (IServiceProvider sp) =>
         return Results.Text(ex.ToString(), "text/plain"); // middleware'e takılmasın
     }
 });
- app.MapGet("/db-health", async (AppDbContext db) =>
- {
-     try { return Results.Ok(new { canConnect = await db.Database.CanConnectAsync() }); }
+app.MapGet("/db-health", async (AppDbContext db) =>
+{
+    try { return Results.Ok(new { canConnect = await db.Database.CanConnectAsync() }); }
     catch (Exception ex) { return Results.Problem("db-health failed: " + ex.Message); }
- });
+});
 
 app.MapControllers();
 app.Run();

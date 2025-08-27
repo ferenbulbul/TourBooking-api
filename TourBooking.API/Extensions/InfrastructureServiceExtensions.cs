@@ -13,17 +13,7 @@ namespace TourBooking.API.Extensions
         {
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
-
-
-            var netgsmOptions = new NetgsmOptions
-            {
-                Username = Environment.GetEnvironmentVariable("NETGSM_USERNAME"),
-                Password = Environment.GetEnvironmentVariable("NETGSM_PASSWORD"),
-                MsgHeader = Environment.GetEnvironmentVariable("NETGSM_MSGHEADER"),
-            };
-            services.AddSingleton(netgsmOptions);
-
-            //services.Configure<NetgsmOptions>(configuration.GetSection("Netgsm"));
+            services.Configure<NetgsmOptions>(configuration.GetSection("Netgsm"));
 
             services.AddHttpClient<INetgsmSmsService, NetgsmSmsService>();
             services.AddScoped<IEmailService, EmailService>();

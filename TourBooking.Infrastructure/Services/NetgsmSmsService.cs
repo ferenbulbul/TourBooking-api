@@ -7,6 +7,9 @@ using TourBooking.Application.Interfaces.Services;
 using TourBooking.Domain.Entities;
 using Newtonsoft.Json;
 using TourBooking.Application.DTOs;
+using Microsoft.Extensions.Configuration;
+using System.Net;
+using TourBooking.Application.Expactions;
 
 
 public sealed class NetgsmSmsService : INetgsmSmsService
@@ -85,14 +88,21 @@ public sealed class NetgsmSmsService : INetgsmSmsService
             try
             {
                 HttpResponseMessage response = await client.PostAsync(url, jsonContent);
-                string responseString = await response.Content.ReadAsStringAsync();
-                Console.WriteLine("Yanıt: " + responseString);
-                Console.WriteLine("bilgiler" + _opt.Username + _opt.MsgHeader + _opt.Password);
+                if (response != null && response.StatusCode != HttpStatusCode.OK)
+                {
+                    throw new BusinessRuleValidationException(await response.Content.ReadAsStringAsync());
+                }
+                else
+                {
+                    string responseString = await response.Content.ReadAsStringAsync();
+                    // job id yakala ve DB insert
+                    Console.WriteLine("bilgiler" + _opt.Username + _opt.MsgHeader + _opt.Password);
+                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Hata: " + ex.Message);
+                throw ex;
             }
-        }  
+        }
     }
 }
