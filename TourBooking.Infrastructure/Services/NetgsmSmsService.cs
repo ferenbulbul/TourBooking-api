@@ -87,6 +87,7 @@ public sealed class NetgsmSmsService : INetgsmSmsService
                 HttpResponseMessage response = await client.PostAsync(url, jsonContent);
                 string responseString = await response.Content.ReadAsStringAsync();
                 Console.WriteLine("Yanıt: " + responseString);
+                Console.WriteLine("bilgiler" + _opt.Username + _opt.MsgHeader + _opt.Password);
             }
             catch (Exception ex)
             {
