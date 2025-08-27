@@ -111,7 +111,8 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
                 RefreshToken = tokenDto.RefreshToken,
                 EmailConfirmed = user.EmailConfirmed,
                 UserFullName = user.FirstName,
-                IsFirstLogin=false,
+                IsFirstLogin = false,
+                IsProfileComplete = user.PhoneNumberConfirmed
             };
         }
     }

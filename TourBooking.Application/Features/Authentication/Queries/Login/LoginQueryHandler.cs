@@ -67,7 +67,8 @@ namespace TourBooking.Application.Features.Queries.Login
                 UserFullName = $"{user.FirstName} {user.LastName}",
                 Role = user.UserType.ToString(),
                 EmailConfirmed = user.EmailConfirmed,
-                IsFirstLogin = user.IsFirstLogin ?? false
+                IsFirstLogin = user.IsFirstLogin ?? false,
+                IsProfileComplete = user.PhoneNumberConfirmed
             };
             return response;
         }
