@@ -34,6 +34,7 @@ public class EditPhoneCommandHandler
         {
             throw new BusinessRuleValidationException("");
         }
+        existingUser.PhoneNumberConfirmed = false;
         existingUser.PhoneNumber = request.PhoneNumber;
         await _userManager.UpdateAsync(existingUser);
 
