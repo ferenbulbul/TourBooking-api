@@ -1466,6 +1466,7 @@ namespace TourBooking.Infrastructure.Repositories
             entity.LocationDescription = request.LocationDescription;
             entity.Latitude = request.Latitude;
             entity.Longitude = request.Longitude;
+            entity.DepartureTime = request.DepartureTime;
             await _context.Bookings.AddAsync(entity);
             await _context.SaveChangesAsync();
             return entity.Id;
