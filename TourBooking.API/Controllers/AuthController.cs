@@ -106,7 +106,7 @@ namespace TourBooking.API.Controllers
         [Authorize]
         public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailRequestDto request)
         {
-            var userIdString = GetUserIdFromToken();
+            var userIdString = GetUserIdFromToken(); 
 
             var command = new VerifyEmailCommand { UserId = userIdString, Code = request.Code };
             var result = await _mediator.Send(command);

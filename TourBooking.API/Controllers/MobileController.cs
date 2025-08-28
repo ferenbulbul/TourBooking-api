@@ -2,10 +2,12 @@ using System.Security.Claims;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TourBooking.Application.DTOs;
 using TourBooking.Application.DTOs.Comman;
 using TourBooking.Application.DTOs.Mobile;
 using TourBooking.Application.Features;
 using TourBooking.Application.Features.Authentication.Commands.SendEmailVerificationCode;
+using TourBooking.Application.Features.Authentication.Commands.VerifyEmail;
 using TourBooking.Application.Features.Authentication.Queries.IsApproved;
 using TourBooking.Application.Features.Mobile.Query.TourPointDetails;
 using TourBooking.Domain.Enums;
@@ -181,9 +183,25 @@ namespace TourBooking.API.Controllers
         public async Task<IActionResult> SendPhoneNumber()
         {
             var userId = GetUserIdFromToken();
-             await _mediator.Send(new SendPhoneNumberCodeCommand {UserId=userId });
+            await _mediator.Send(new SendPhoneNumberCodeCommand { UserId = userId });
             return Ok(
-                ApiResponse<object>.SuccessResponse(null,"başarılı")
+                ApiResponse<object>.SuccessResponse(null, "kod gönderildi")
+            );
+        }
+        [HttpPost("verify-phone")]
+        [Authorize]
+        public async Task<IActionResult> VerifyPhone([FromBody] VerifyEmailRequestDto request)
+        {
+            var userIdString = GetUserIdFromToken(); 
+
+            var command = new VerifyEmailCommand { UserId = userIdString, Code = request.Code };
+            var result = await _mediator.Send(command);
+
+            return Ok(
+                ApiResponse<VerifyEmailCommandResponse>.SuccessResponse(
+                    result,
+                    "Başarılı"
+                )
             );
         }
     }
