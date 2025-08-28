@@ -20,7 +20,7 @@ namespace TourBooking.Application.Interfaces.Repositories
         Task RollbackAsync();
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
         Task<IEnumerable<TourTypeEnitity>> TourTypes(CancellationToken cancellationToken = default);
-        Task<IEnumerable<TourPointEntity>> HighlightedTourPoints(
+        Task<IEnumerable<MobileHighlightedTourPointDto>> HighlightedTourPoints(
             CancellationToken cancellationToken = default
         );
         Task<IEnumerable<MobileTourPointsBySearchDto>> MobileTourPointBySearch(

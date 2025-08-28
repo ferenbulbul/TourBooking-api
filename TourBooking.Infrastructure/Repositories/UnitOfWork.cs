@@ -482,27 +482,48 @@ namespace TourBooking.Infrastructure.Repositories
             return await _context.Availabilities.AsNoTracking().ToListAsync();
         }
 
-        public async Task<IEnumerable<TourPointEntity>> HighlightedTourPoints(
+        public async Task<IEnumerable<MobileHighlightedTourPointDto>> HighlightedTourPoints(
             CancellationToken cancellationToken = default
         )
         {
-            return await _context
-                .TourPoints.Include(t => t.Translations)
-                .ThenInclude(tt => tt.Language)
-                .Include(t => t.Country)
-                .ThenInclude(tt => tt.Translations)
-                .ThenInclude(tt => tt.Language)
-                .Include(t => t.Region)
-                .ThenInclude(tt => tt.Translations)
-                .ThenInclude(tt => tt.Language)
-                .Include(t => t.City)
-                .ThenInclude(tt => tt.Translations)
-                .ThenInclude(tt => tt.Language)
-                .Include(t => t.TourType)
-                .ThenInclude(tt => tt.Translations)
-                .ThenInclude(tt => tt.Language)
-                .Where(t => t.IsHighlighted)
-                .ToListAsync();
+            var culture = CultureInfo.CurrentUICulture.Name;
+            var dtos2 =
+            await _context.TourPoints.AsNoTracking().Where(t => t.IsHighlighted)
+            .Select(x => new MobileHighlightedTourPointDto
+            {
+                Id = x.Id,
+                CityId = x.CityId,
+                CityName = x.City
+                        .Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault() ?? "",
+                CountryId = x.CountryId,
+                CountryName = x.Country
+                        .Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault() ?? "",
+                RegionId = x.RegionId,
+                RegionName = x.Region
+                        .Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault() ?? "",
+                TourTypeId = x.TourTypeId,
+                TourTypeName = x.TourType
+                        .Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault() ?? "",
+                MainImage = x.MainImage,
+                Title = x.Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault() ?? "",
+                Description = x.Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Description)
+                        .FirstOrDefault() ?? "",
+            }).ToListAsync();
+
+            return dtos2;
+
+
         }
 
         public async Task<IEnumerable<DriverEntity>> DriversForAgency(
