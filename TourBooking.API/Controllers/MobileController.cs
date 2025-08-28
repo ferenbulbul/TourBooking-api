@@ -194,11 +194,11 @@ namespace TourBooking.API.Controllers
         {
             var userIdString = GetUserIdFromToken(); 
 
-            var command = new VerifyEmailCommand { UserId = userIdString, Code = request.Code };
+            var command = new VerifyPhoneCommand { UserId = userIdString, Code = request.Code };
             var result = await _mediator.Send(command);
 
             return Ok(
-                ApiResponse<VerifyEmailCommandResponse>.SuccessResponse(
+                ApiResponse<VerifyPhoneCommandResponse>.SuccessResponse(
                     result,
                     "Başarılı"
                 )
