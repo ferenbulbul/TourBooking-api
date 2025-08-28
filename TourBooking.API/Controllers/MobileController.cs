@@ -167,10 +167,10 @@ namespace TourBooking.API.Controllers
 
         [Authorize]
         [HttpPost("edit-phone-number")]
-        public async Task<IActionResult> EditPhoneNumber(string phoneNumber)
+        public async Task<IActionResult> EditPhoneNumber([FromBody] UpdatePhoneRequestDto request)
         {
             var userId = GetUserIdFromToken();
-            await _mediator.Send(new EditPhoneCommand { UserId = userId, PhoneNumber = phoneNumber });
+            await _mediator.Send(new EditPhoneCommand { UserId = userId, PhoneNumber = request.PhoneNumber });
             return Ok(
                 ApiResponse<object>.SuccessResponse(null, "başarılı")
             );
