@@ -1612,10 +1612,12 @@ namespace TourBooking.Infrastructure.Repositories
             VehicleCount: await _context.Vehicles.AsNoTracking().Where(x => x.IsActive).CountAsync(),
             TourPointCount: await _context.TourPoints.AsNoTracking().Where(x => x.IsActive).CountAsync(),
             BookingCount: await _context.Bookings.AsNoTracking().Where(x => x.Status == BookingStatus.Confirmed).CountAsync(),
-            CustomerCount: await _context.CustomerUsers.AsNoTracking().Where(x =>!x.IsDeleted).CountAsync()
+            CustomerCount: await _context.CustomerUsers.AsNoTracking().Where(x => !x.IsDeleted).CountAsync(),
+            TourRouteCount: await _context.TourRoutePrices.AsNoTracking().Where(x => !x.IsDeleted).CountAsync(),
+            GuideRouteCount: await _context.GuideTourPrices.AsNoTracking().CountAsync()
             );
 
-            return  dto ;
+            return dto;
         }
     }
 }
