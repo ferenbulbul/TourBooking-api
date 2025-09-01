@@ -166,6 +166,6 @@ namespace TourBooking.Application.Interfaces.Repositories
         Task<IEnumerable<CalendarEventDto2>> VehicleEvents(FetchVehicleEventsQuery request);
         Task<IEnumerable<MobileDetailedSearchResultDto>> MobileTourPointByTourTypeId(Guid? tourType, string culture);
         Task<List<DriverLocationDto>> DriverLocations();
-        Task<List<SystemCountDto>> SystemCounts();
+        Task<SystemCountDto> SystemCounts();
     }
 }

@@ -1604,7 +1604,7 @@ namespace TourBooking.Infrastructure.Repositories
             return list;
         }
 
-        public async Task<List<SystemCountDto>> SystemCounts()
+        public async Task<SystemCountDto> SystemCounts()
         {
             var dto = new SystemCountDto(
             AgencyCount: await _context.Agencies.AsNoTracking().Where(x => x.IsConfirmed).CountAsync(),
@@ -1615,7 +1615,7 @@ namespace TourBooking.Infrastructure.Repositories
             CustomerCount: await _context.CustomerUsers.AsNoTracking().Where(x =>!x.IsDeleted).CountAsync()
             );
 
-            return new List<SystemCountDto> { dto };
+            return  dto ;
         }
     }
 }
