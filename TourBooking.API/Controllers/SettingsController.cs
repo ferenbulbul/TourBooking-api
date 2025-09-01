@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using TourBooking.Application.DTOs.Comman;
@@ -161,7 +162,7 @@ namespace TourBooking.API.Controllers
 
         #endregion
 
-
+        [Authorize]
         [HttpGet("maps-key")]
         public async Task<IActionResult> MapsKey()
         {
