@@ -77,12 +77,12 @@ if (string.IsNullOrEmpty(firebaseSettingsPath))
 }
 
 
-// var credential = GoogleCredential.FromFile("/secrets/firebase-key.json");
+var credential = GoogleCredential.FromFile("/secrets/firebase-key.json");
 
-// FirebaseApp.Create(new AppOptions()
-// {
-//     Credential = credential
-// });
+FirebaseApp.Create(new AppOptions()
+{
+    Credential = credential
+});
 Console.WriteLine("✅ Firebase Admin SDK successfully initialized.");
 
 

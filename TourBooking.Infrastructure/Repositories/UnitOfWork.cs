@@ -1603,5 +1603,18 @@ namespace TourBooking.Infrastructure.Repositories
                 .ToListAsync();
             return list;
         }
+
+        public async Task<List<SystemCountDto>> SystemCounts()
+        {
+            var dto = new SystemCountDto(
+            AgencyCount: await _context.Agencies.AsNoTracking().Where(x => x.IsConfirmed).CountAsync(),
+            GuideCount: await _context.Guides.AsNoTracking().Where(x => x.IsConfirmed).CountAsync(),
+            VehicleCount: await _context.Vehicles.AsNoTracking().Where(x => x.IsActive).CountAsync(),
+            TourPointCount: await _context.TourPoints.AsNoTracking().Where(x => x.IsActive).CountAsync(),
+            BookingCount: await _context.Bookings.AsNoTracking().Where(x => x.Status == BookingStatus.Confirmed).CountAsync()
+            );
+
+            return new List<SystemCountDto> { dto };
+        }
     }
 }

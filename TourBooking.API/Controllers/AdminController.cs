@@ -106,5 +106,14 @@ namespace TourBooking.API.Controllers
             await _netgsm.SendBatchAsync(req);
             return Ok(ApiResponse<DriverLocationsQueryResponse>.SuccessResponse(null, null));
         }
+        
+        [HttpGet("counts")]
+        public async Task<IActionResult> SystemCounts()
+        {
+            var counts = await _mediator.Send(new SystemCountsQuery());
+            return Ok(
+                ApiResponse<SystemCountsQueryResponse>.SuccessResponse(counts, null)
+            );
+        }
     }
 }

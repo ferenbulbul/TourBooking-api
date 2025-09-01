@@ -23,4 +23,11 @@ namespace TourBooking.Application.DTOs
         double Longitude,
         string CompanyName
     );
+    public record SystemCountDto(        
+        int AgencyCount,
+        int GuideCount,
+        int VehicleCount,
+        int TourPointCount,
+        int BookingCount        
+    );
 }
