@@ -1611,7 +1611,8 @@ namespace TourBooking.Infrastructure.Repositories
             GuideCount: await _context.Guides.AsNoTracking().Where(x => x.IsConfirmed).CountAsync(),
             VehicleCount: await _context.Vehicles.AsNoTracking().Where(x => x.IsActive).CountAsync(),
             TourPointCount: await _context.TourPoints.AsNoTracking().Where(x => x.IsActive).CountAsync(),
-            BookingCount: await _context.Bookings.AsNoTracking().Where(x => x.Status == BookingStatus.Confirmed).CountAsync()
+            BookingCount: await _context.Bookings.AsNoTracking().Where(x => x.Status == BookingStatus.Confirmed).CountAsync(),
+            CustomerCount: await _context.CustomerUsers.AsNoTracking().Where(x =>!x.IsDeleted).CountAsync()
             );
 
             return new List<SystemCountDto> { dto };

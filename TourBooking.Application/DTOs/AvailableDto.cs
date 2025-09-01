@@ -28,6 +28,7 @@ namespace TourBooking.Application.DTOs
         int GuideCount,
         int VehicleCount,
         int TourPointCount,
-        int BookingCount        
+        int BookingCount,
+        int CustomerCount    
     );
 }
