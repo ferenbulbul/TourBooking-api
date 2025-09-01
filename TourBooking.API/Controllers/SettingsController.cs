@@ -1,9 +1,11 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using TourBooking.Application.DTOs.Comman;
 using TourBooking.Application.Features;
 using TourBooking.Application.Features.Settings.Commands;
 using TourBooking.Application.Features.Settings.Queries;
+using TourBooking.Domain.Entities;
 
 namespace TourBooking.API.Controllers
 {
@@ -12,10 +14,12 @@ namespace TourBooking.API.Controllers
     public class SettingsController : BaseController
     {
         private readonly IMediator _mediator;
+        private readonly SettingsOptions _opt;
 
-        public SettingsController(IMediator mediator)
+        public SettingsController(IMediator mediator, IOptions<SettingsOptions> opt)
         {
             _mediator = mediator;
+            _opt = opt.Value;
         }
 
         #region Vehicle Types
@@ -156,5 +160,15 @@ namespace TourBooking.API.Controllers
         }
 
         #endregion
+
+
+        [HttpGet("maps-key")]
+        public async Task<IActionResult> MapsKey()
+        {
+            var key = _opt.MapsKey;
+            return Ok(
+                ApiResponse<string>.SuccessResponse(key, null)
+            );
+        }
     }
 }

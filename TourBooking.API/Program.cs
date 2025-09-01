@@ -30,7 +30,8 @@ var instance = Environment.GetEnvironmentVariable("INSTANCE_CONNECTION_NAME"); /
 var Username = Environment.GetEnvironmentVariable("NETGSM_USERNAME");
 var Password = Environment.GetEnvironmentVariable("NETGSM_PASSWORD");
 var MsgHeader = Environment.GetEnvironmentVariable("NETGSM_MSGHEADER");
-
+var mapsKey = Environment.GetEnvironmentVariable("MAPS_KEY");
+configuration["Settings:MapsKey"] = mapsKey;
 
 if (!string.IsNullOrWhiteSpace(Username) &&
     !string.IsNullOrWhiteSpace(Password) &&
@@ -76,12 +77,12 @@ if (string.IsNullOrEmpty(firebaseSettingsPath))
 }
 
 
-var credential = GoogleCredential.FromFile("/secrets/firebase-key.json");
+// var credential = GoogleCredential.FromFile("/secrets/firebase-key.json");
 
-FirebaseApp.Create(new AppOptions()
-{
-    Credential = credential
-});
+// FirebaseApp.Create(new AppOptions()
+// {
+//     Credential = credential
+// });
 Console.WriteLine("✅ Firebase Admin SDK successfully initialized.");
 
 

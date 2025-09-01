@@ -14,6 +14,7 @@ namespace TourBooking.API.Extensions
             services.AddLocalization(options => options.ResourcesPath = "Resources");
             services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
             services.Configure<NetgsmOptions>(configuration.GetSection("Netgsm"));
+            services.Configure<SettingsOptions>(configuration.GetSection("Settings"));
 
             services.AddHttpClient<INetgsmSmsService, NetgsmSmsService>();
             services.AddScoped<IEmailService, EmailService>();
