@@ -1660,33 +1660,33 @@ namespace TourBooking.Infrastructure.Repositories
             var customerLocation = await _context.CustomerLocationEntities.Where(x => x.Id == customerId).FirstOrDefaultAsync();
             if (customerLocation != null)
             {
-
-
                 var nearestTourPoints = _context.TourPoints
-        .AsNoTracking()
-        .AsEnumerable() // buradan sonrası memory'de çalışır
-    .Select(tp => new NearbyTourPointDto
-    (
-        tp.Id,
-        tp.City
-                        .Translations.Where(tr => tr.Language.Code == culture)
+                .AsNoTracking()
+                .AsEnumerable() // distance hesaplaması memory tarafında olacak
+                .Select(tp => new NearbyTourPointDto
+                (
+                    tp.Id,
+                    tp.City?.Translations
+                        .Where(tr => tr.Language.Code == culture)
                         .Select(tr => tr.Title)
                         .FirstOrDefault() ?? "",
-        tp.TourType
-                        .Translations.Where(tr => tr.Language.Code == culture)
+                    tp.TourType?.Translations
+                        .Where(tr => tr.Language.Code == culture)
                         .Select(tr => tr.Title)
                         .FirstOrDefault() ?? "",
+                    tp.Translations?
+                        .Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault() ?? "",
+                    tp.MainImage,
+                    CalculateDistance(customerLocation.Latitude, customerLocation.Longitude, tp.Lat, tp.Long)
+                ))
+                .OrderBy(x => x.Distance)
+                .Take(5)
+                .ToList();
 
-        tp.Translations.Where(tr => tr.Language.Code == culture)
-                        .Select(tr => tr.Title)
-                        .FirstOrDefault() ?? "",
-        tp.MainImage,
-        CalculateDistance(customerLocation.Latitude, customerLocation.Longitude, tp.Lat, tp.Long)
-    ))
-    .OrderBy(x => x.Distance)
-    .Take(5)
-    .ToList();
                 return nearestTourPoints;
+
             }
             return new List<NearbyTourPointDto>();
         }
@@ -1700,7 +1700,7 @@ namespace TourBooking.Infrastructure.Repositories
                 Math.Cos(lat1 * Math.PI / 180) * Math.Cos(lat2 * Math.PI / 180) *
                 Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
             var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
-            Console.WriteLine(lat1 + lat2+lon1+lon2);
+            Console.WriteLine(lat1 + lat2 + lon1 + lon2);
             return R * c;
         }
 
