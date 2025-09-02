@@ -85,12 +85,14 @@ namespace TourBooking.API.Controllers
                 ApiResponse<MobileDetailedSearchQueryResponse>.SuccessResponse(response, null)
             );
         }
-
+        [Authorize]
         [HttpGet("tour-point-details")]
         public async Task<IActionResult> TourPointDetails([FromQuery] Guid tourPointId)
         {
+            var userId = GetUserIdFromToken();
+            Console.WriteLine("userId : " + userId);
             var tourPoint = await _mediator.Send(
-                new MobileTourPointDetailsQuery { TourPointId = tourPointId }
+                new MobileTourPointDetailsQuery { TourPointId = tourPointId ,UserId=userId}
             );
             return Ok(
                 ApiResponse<MobileTourPointDetailsQueryResponse>.SuccessResponse(tourPoint, null)
@@ -212,7 +214,7 @@ namespace TourBooking.API.Controllers
             var userId = GetUserIdFromToken();
             await _mediator.Send(new ToggleFavoriteCommand { CustomerId = userId ,TourPointId=tourPointId});
             return Ok(
-                ApiResponse<object>.SuccessResponse(null, "kod gönderildi")
+                ApiResponse<object>.SuccessResponse(null, null)
             );
         }
     }
