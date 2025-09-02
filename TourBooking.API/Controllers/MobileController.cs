@@ -230,5 +230,16 @@ namespace TourBooking.API.Controllers
                 ApiResponse<object>.SuccessResponse(null, null)
             );
         }
+        [Authorize]
+        [HttpGet("nearby")]
+        public async Task<IActionResult> NearbyTourPoints()
+        {
+            var userId = GetUserIdFromToken();
+            var nearbyList = await _mediator.Send(new NearbyTourPointsQuery { CustomerId = userId });
+            return Ok(
+                ApiResponse<NearbyTourPointsQueryResponse>.SuccessResponse(nearbyList, null)
+            );
+        }
+
     }
 }

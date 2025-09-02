@@ -1653,5 +1653,55 @@ namespace TourBooking.Infrastructure.Repositories
             }).ToListAsync();
             return dtos2;
         }
+
+        public async Task<IEnumerable<NearbyTourPointDto>> NearbyTourPoints(Guid customerId, CancellationToken cancellationToken = default)
+        {
+            var culture = CultureInfo.CurrentUICulture.Name;
+            var customerLocation = await _context.CustomerLocationEntities.Where(x => x.Id == customerId).FirstOrDefaultAsync();
+            if (customerLocation != null)
+            {
+
+
+                var nearestTourPoints = _context.TourPoints
+        .AsNoTracking()
+        .AsEnumerable() // buradan sonrası memory'de çalışır
+    .Select(tp => new NearbyTourPointDto
+    (
+        tp.Id,
+        tp.City
+                        .Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault() ?? "",
+        tp.TourType
+                        .Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault() ?? "",
+
+        tp.Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault() ?? "",
+        tp.MainImage,
+        CalculateDistance(customerLocation.Latitude, customerLocation.Longitude, tp.Lat, tp.Long)
+    ))
+    .OrderBy(x => x.Distance)
+    .Take(5)
+    .ToList();
+                return nearestTourPoints;
+            }
+            return new List<NearbyTourPointDto>();
+        }
+        private double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
+        {
+            double R = 6371; // km
+            var dLat = (lat2 - lat1) * Math.PI / 180;
+            var dLon = (lon2 - lon1) * Math.PI / 180;
+            var a =
+                Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+                Math.Cos(lat1 * Math.PI / 180) * Math.Cos(lat2 * Math.PI / 180) *
+                Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+            var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+            return R * c;
+        }
+
     }
 }

@@ -171,5 +171,8 @@ namespace TourBooking.Application.Interfaces.Repositories
         Task<IEnumerable<MobileHighlightedTourPointDto>> CustomerFavorites(Guid customerId,
             CancellationToken cancellationToken = default
         );
+        Task<IEnumerable<NearbyTourPointDto>> NearbyTourPoints(Guid customerId,
+            CancellationToken cancellationToken = default
+        );
     }
 }
