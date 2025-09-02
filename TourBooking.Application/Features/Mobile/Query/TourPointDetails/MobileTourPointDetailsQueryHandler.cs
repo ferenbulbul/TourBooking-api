@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Text.Json.Serialization;
 using MediatR;
 using TourBooking.Application.DTOs.Mobile;
 using TourBooking.Application.Expactions;
@@ -22,6 +23,7 @@ public class MobileTourPointDetailsQueryHandler
         CancellationToken cancellationToken
     )
     {
+        Console.WriteLine(request.UserId +"lalelo");
         var culture = CultureInfo.CurrentUICulture.Name;
         // Adjust the parameters below to match the required signature of GetAllAsync
         var tpDetails = await _unitOfWork.MobileTourPointDetail(request.TourPointId, culture,request.UserId);
