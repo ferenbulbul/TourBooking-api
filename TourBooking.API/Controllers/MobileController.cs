@@ -209,10 +209,10 @@ namespace TourBooking.API.Controllers
 
         [Authorize]
         [HttpPost("toggle-favorite")]
-        public async Task<IActionResult> ToggleFavorite([FromBody] Guid tourPointId)
+        public async Task<IActionResult> ToggleFavorite(FavoriteDto request)
         {
             var userId = GetUserIdFromToken();
-            await _mediator.Send(new ToggleFavoriteCommand { CustomerId = userId ,TourPointId=tourPointId});
+            await _mediator.Send(new ToggleFavoriteCommand { CustomerId = userId ,TourPointId=request.TourPointId});
             return Ok(
                 ApiResponse<object>.SuccessResponse(null, null)
             );
