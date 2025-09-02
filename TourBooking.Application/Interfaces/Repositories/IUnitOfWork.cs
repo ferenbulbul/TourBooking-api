@@ -116,7 +116,7 @@ namespace TourBooking.Application.Interfaces.Repositories
             string culture
         );
 
-        Task<MobileTourPointDetailDto> MobileTourPointDetail(Guid tourPointId, string culture);
+        Task<MobileTourPointDetailDto> MobileTourPointDetail(Guid tourPointId, string culture, Guid userId);
         Task<IEnumerable<MobileSearchVehicleDto>> MobileSearchVehicles(
             MobileSearchVehiclesQuery request
         );
