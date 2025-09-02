@@ -1633,7 +1633,7 @@ namespace TourBooking.Infrastructure.Repositories
             await _context.Favorites.AsNoTracking().Where(t => t.CustomerId == customerId)
             .Select(x => new MobileHighlightedTourPointDto
             {
-                Id = x.Id,
+                Id = x.TourPointId,
                 CityId = default,
                 CityName = x.TourPoint.City
                         .Translations.Where(tr => tr.Language.Code == culture)
