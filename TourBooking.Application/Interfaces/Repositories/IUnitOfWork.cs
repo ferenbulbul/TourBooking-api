@@ -167,5 +167,6 @@ namespace TourBooking.Application.Interfaces.Repositories
         Task<IEnumerable<MobileDetailedSearchResultDto>> MobileTourPointByTourTypeId(Guid? tourType, string culture);
         Task<List<DriverLocationDto>> DriverLocations();
         Task<SystemCountDto> SystemCounts();
+        Task<FavoriteEntity> ToggleFavoriteAsync(Guid customerId, Guid tourPointId);
     }
 }

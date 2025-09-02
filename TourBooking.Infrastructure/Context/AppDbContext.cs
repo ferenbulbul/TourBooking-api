@@ -53,6 +53,8 @@ namespace TourBooking.Infrastructure.Context
         public DbSet<CustomerLocationEntity> CustomerLocationEntities =>
             Set<CustomerLocationEntity>();
 
+        public DbSet<FavoriteEntity> Favorites =>
+            Set<FavoriteEntity>();
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -94,6 +96,16 @@ namespace TourBooking.Infrastructure.Context
                 b.Property(x => x.Price).HasColumnType("decimal(18,2)");
                 b.Property(x => x.Currency).HasMaxLength(8);
             });
+
+            builder.Entity<FavoriteEntity>()
+                .HasOne(f => f.Customer)
+                .WithMany(c => c.Favorites)
+                .HasForeignKey(f => f.CustomerId);
+
+            builder.Entity<FavoriteEntity>()
+                .HasOne(f => f.TourPoint)
+                .WithMany(tp => tp.Favorites)
+                .HasForeignKey(f => f.TourPointId);
 
             builder.Entity<GuideLanguageEntity>(e =>
             {
@@ -236,6 +248,7 @@ namespace TourBooking.Infrastructure.Context
                         .HasForeignKey<DriverLocationEntity>(x => x.Id) // Shared PK!
                         .OnDelete(DeleteBehavior.Cascade);
                 });
+
             builder.Entity<CustomerLocationEntity>(e =>
             {
                 e.ToTable("CustomerLocation");

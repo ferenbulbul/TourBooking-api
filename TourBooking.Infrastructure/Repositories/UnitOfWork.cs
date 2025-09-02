@@ -1619,5 +1619,10 @@ namespace TourBooking.Infrastructure.Repositories
 
             return dto;
         }
+
+        public async Task<FavoriteEntity> ToggleFavoriteAsync(Guid customerId, Guid tourPointId)
+        {
+            return await _context.Favorites.FirstOrDefaultAsync(x => x.CustomerId == customerId && x.TourPointId == tourPointId);
+        }
     }
 }

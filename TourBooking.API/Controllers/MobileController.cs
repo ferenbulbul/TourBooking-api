@@ -192,7 +192,7 @@ namespace TourBooking.API.Controllers
         [Authorize]
         public async Task<IActionResult> VerifyPhone([FromBody] VerifyEmailRequestDto request)
         {
-            var userIdString = GetUserIdFromToken(); 
+            var userIdString = GetUserIdFromToken();
 
             var command = new VerifyPhoneCommand { UserId = userIdString, Code = request.Code };
             var result = await _mediator.Send(command);
@@ -202,6 +202,17 @@ namespace TourBooking.API.Controllers
                     result,
                     "Başarılı"
                 )
+            );
+        }
+
+        [Authorize]
+        [HttpPost("toggle-favorite")]
+        public async Task<IActionResult> ToggleFavorite([FromBody] Guid tourPointId)
+        {
+            var userId = GetUserIdFromToken();
+            await _mediator.Send(new ToggleFavoriteCommand { CustomerId = userId ,TourPointId=tourPointId});
+            return Ok(
+                ApiResponse<object>.SuccessResponse(null, "kod gönderildi")
             );
         }
     }
