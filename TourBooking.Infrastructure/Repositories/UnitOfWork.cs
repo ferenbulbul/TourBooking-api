@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using Newtonsoft.Json;
 using TourBooking.Application.DTOs;
 using TourBooking.Application.DTOs.Admin;
 using TourBooking.Application.DTOs.GuideCalendar;
@@ -1031,6 +1032,8 @@ namespace TourBooking.Infrastructure.Repositories
             };
             bestWatch.Stop();
             Console.WriteLine(bestWatch.ElapsedMilliseconds);
+            Console.WriteLine("fazlı"+userId +t.IsFavorite+result.IsFavorites);
+            Console.WriteLine("emo"+JsonConvert.SerializeObject(t));
 
             return result;
         }
