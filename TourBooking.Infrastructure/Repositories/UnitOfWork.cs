@@ -1705,7 +1705,7 @@ namespace TourBooking.Infrastructure.Repositories
                     CalculateDistance(customerLocation.Latitude, customerLocation.Longitude, tp.Lat, tp.Long)
                 ))
                 .OrderBy(x => x.Distance)
-                .Take(5)
+                .Take(6)
                 .ToList();
 
             return nearestTourPoints;
