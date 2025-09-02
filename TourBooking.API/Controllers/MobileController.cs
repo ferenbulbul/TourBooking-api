@@ -43,6 +43,19 @@ namespace TourBooking.API.Controllers
                 )
             );
         }
+        [Authorize]
+        [HttpGet("favorites")]
+        public async Task<IActionResult> CustomerFavorites()
+        {
+            var customerId = GetUserIdFromToken();
+            var tourPoints = await _mediator.Send(new CustomerFavoritesQuery { CustomerId = customerId });
+            return Ok(
+                ApiResponse<CustomerFavoritesQueryResponse>.SuccessResponse(
+                    tourPoints,
+                    null
+                )
+            );
+        }
 
 
         [HttpGet("tour-points-by-query")]
@@ -92,7 +105,7 @@ namespace TourBooking.API.Controllers
             var userId = GetUserIdFromToken();
             Console.WriteLine("userId : " + userId);
             var tourPoint = await _mediator.Send(
-                new MobileTourPointDetailsQuery { TourPointId = tourPointId ,UserId=userId}
+                new MobileTourPointDetailsQuery { TourPointId = tourPointId, UserId = userId }
             );
             return Ok(
                 ApiResponse<MobileTourPointDetailsQueryResponse>.SuccessResponse(tourPoint, null)
@@ -212,7 +225,7 @@ namespace TourBooking.API.Controllers
         public async Task<IActionResult> ToggleFavorite(FavoriteDto request)
         {
             var userId = GetUserIdFromToken();
-            await _mediator.Send(new ToggleFavoriteCommand { CustomerId = userId ,TourPointId=request.TourPointId});
+            await _mediator.Send(new ToggleFavoriteCommand { CustomerId = userId, TourPointId = request.TourPointId });
             return Ok(
                 ApiResponse<object>.SuccessResponse(null, null)
             );

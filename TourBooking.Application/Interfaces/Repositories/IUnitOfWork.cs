@@ -168,5 +168,8 @@ namespace TourBooking.Application.Interfaces.Repositories
         Task<List<DriverLocationDto>> DriverLocations();
         Task<SystemCountDto> SystemCounts();
         Task<FavoriteEntity> ToggleFavoriteAsync(Guid customerId, Guid tourPointId);
+        Task<IEnumerable<MobileHighlightedTourPointDto>> CustomerFavorites(Guid customerId,
+            CancellationToken cancellationToken = default
+        );
     }
 }

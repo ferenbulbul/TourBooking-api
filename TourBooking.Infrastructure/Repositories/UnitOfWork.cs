@@ -521,10 +521,7 @@ namespace TourBooking.Infrastructure.Repositories
                         .Select(tr => tr.Description)
                         .FirstOrDefault() ?? "",
             }).ToListAsync();
-
             return dtos2;
-
-
         }
 
         public async Task<IEnumerable<DriverEntity>> DriversForAgency(
@@ -914,7 +911,7 @@ namespace TourBooking.Infrastructure.Repositories
             return list;
         }
 
-        public async Task<MobileTourPointDetailDto> MobileTourPointDetail(Guid tourPointId,string culture,Guid userId
+        public async Task<MobileTourPointDetailDto> MobileTourPointDetail(Guid tourPointId, string culture, Guid userId
         )
         {
             Stopwatch bestWatch = new();
@@ -1032,8 +1029,8 @@ namespace TourBooking.Infrastructure.Repositories
             };
             bestWatch.Stop();
             Console.WriteLine(bestWatch.ElapsedMilliseconds);
-            Console.WriteLine("fazlı"+userId +t.IsFavorite+result.IsFavorites);
-            Console.WriteLine("emo"+JsonConvert.SerializeObject(t));
+            Console.WriteLine("fazlı" + userId + t.IsFavorite + result.IsFavorites);
+            Console.WriteLine("emo" + JsonConvert.SerializeObject(t));
 
             return result;
         }
@@ -1625,6 +1622,36 @@ namespace TourBooking.Infrastructure.Repositories
         public async Task<FavoriteEntity> ToggleFavoriteAsync(Guid customerId, Guid tourPointId)
         {
             return await _context.Favorites.FirstOrDefaultAsync(x => x.CustomerId == customerId && x.TourPointId == tourPointId);
+        }
+
+        public async Task<IEnumerable<MobileHighlightedTourPointDto>> CustomerFavorites(Guid customerId,
+            CancellationToken cancellationToken = default
+        )
+        {
+            var culture = CultureInfo.CurrentUICulture.Name;
+            var dtos2 =
+            await _context.Favorites.AsNoTracking().Where(t => t.CustomerId == customerId)
+            .Select(x => new MobileHighlightedTourPointDto
+            {
+                Id = x.Id,
+                CityId = default,
+                CityName = x.TourPoint.City
+                        .Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault() ?? "",
+                CountryId = default,
+                CountryName = string.Empty,
+                RegionId = default,
+                RegionName = "",
+                TourTypeId = default,
+                TourTypeName = "",
+                MainImage = x.TourPoint.MainImage,
+                Title = x.TourPoint.Translations.Where(tr => tr.Language.Code == culture)
+                        .Select(tr => tr.Title)
+                        .FirstOrDefault() ?? "",
+                Description = "",
+            }).ToListAsync();
+            return dtos2;
         }
     }
 }
