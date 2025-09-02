@@ -1654,31 +1654,53 @@ namespace TourBooking.Infrastructure.Repositories
             return dtos2;
         }
 
-        public async Task<IEnumerable<NearbyTourPointDto>> NearbyTourPoints(Guid customerId, CancellationToken cancellationToken = default)
+        public async Task<IEnumerable<NearbyTourPointDto>> NearbyTourPoints(
+    Guid customerId,
+    CancellationToken cancellationToken = default)
         {
             var culture = CultureInfo.CurrentUICulture.Name;
-            var customerLocation = await _context.CustomerLocationEntities.Where(x => x.Id == customerId).FirstOrDefaultAsync();
-            if (customerLocation != null)
-            {
-                var nearestTourPoints = _context.TourPoints
+
+            var customerLocation = await _context.CustomerLocationEntities
                 .AsNoTracking()
-                .Include(tp => tp.City).ThenInclude(c => c.Translations)
-                .AsEnumerable() // distance hesaplaması memory tarafında olacak
-                .Select(tp => new NearbyTourPointDto
-                (
+                .FirstOrDefaultAsync(x => x.Id == customerId, cancellationToken);
+
+            if (customerLocation == null)
+                return new List<NearbyTourPointDto>();
+
+            // Önce SQL tarafında sadece gerekli alanları çek
+            var tourPoints = await _context.TourPoints
+                .AsNoTracking()
+                .Select(tp => new
+                {
                     tp.Id,
-                    tp.City?.Translations
+                    tp.Lat,
+                    tp.Long,
+                    tp.MainImage,
+
+                    CityName = tp.City.Translations
                         .Where(tr => tr.Language.Code == culture)
                         .Select(tr => tr.Title)
                         .FirstOrDefault() ?? "",
-                    tp.TourType?.Translations
+
+                    TourTypeName = tp.TourType.Translations
                         .Where(tr => tr.Language.Code == culture)
                         .Select(tr => tr.Title)
                         .FirstOrDefault() ?? "",
-                    tp.Translations?
+
+                    Title = tp.Translations
                         .Where(tr => tr.Language.Code == culture)
                         .Select(tr => tr.Title)
-                        .FirstOrDefault() ?? "",
+                        .FirstOrDefault() ?? ""
+                })
+                .ToListAsync(cancellationToken);
+
+            // Mesafe hesaplamasını memory tarafında yap
+            var nearestTourPoints = tourPoints
+                .Select(tp => new NearbyTourPointDto(
+                    tp.Id,
+                    tp.CityName,
+                    tp.TourTypeName,
+                    tp.Title,
                     tp.MainImage,
                     CalculateDistance(customerLocation.Latitude, customerLocation.Longitude, tp.Lat, tp.Long)
                 ))
@@ -1686,10 +1708,7 @@ namespace TourBooking.Infrastructure.Repositories
                 .Take(5)
                 .ToList();
 
-                return nearestTourPoints;
-
-            }
-            return new List<NearbyTourPointDto>();
+            return nearestTourPoints;
         }
         private double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
         {
