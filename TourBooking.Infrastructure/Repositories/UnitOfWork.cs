@@ -1662,11 +1662,12 @@ namespace TourBooking.Infrastructure.Repositories
             {
                 var nearestTourPoints = _context.TourPoints
                 .AsNoTracking()
+                .Include(tp => tp.City).ThenInclude(c => c.Translations)
                 .AsEnumerable() // distance hesaplaması memory tarafında olacak
                 .Select(tp => new NearbyTourPointDto
                 (
                     tp.Id,
-                    CityName: tp.City?.Translations
+                    tp.City?.Translations
                         .Where(tr => tr.Language.Code == culture)
                         .Select(tr => tr.Title)
                         .FirstOrDefault() ?? "",
