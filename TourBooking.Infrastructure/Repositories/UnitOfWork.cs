@@ -1700,6 +1700,7 @@ namespace TourBooking.Infrastructure.Repositories
                 Math.Cos(lat1 * Math.PI / 180) * Math.Cos(lat2 * Math.PI / 180) *
                 Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
             var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+            Console.WriteLine(lat1 + lat2+lon1+lon2);
             return R * c;
         }
 
