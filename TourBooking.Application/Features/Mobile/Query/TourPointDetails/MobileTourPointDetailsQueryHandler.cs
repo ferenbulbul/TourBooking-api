@@ -24,7 +24,7 @@ public class MobileTourPointDetailsQueryHandler
     {
         var culture = CultureInfo.CurrentUICulture.Name;
         // Adjust the parameters below to match the required signature of GetAllAsync
-        var tpDetails = await _unitOfWork.MobileTourPointDetail(request.TourPointId, culture);
+        var tpDetails = await _unitOfWork.MobileTourPointDetail(request.TourPointId, culture,request.UserId);
 
         if (tpDetails == null)
         {

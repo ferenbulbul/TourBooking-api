@@ -915,7 +915,8 @@ namespace TourBooking.Infrastructure.Repositories
 
         public async Task<MobileTourPointDetailDto> MobileTourPointDetail(
             Guid tourPointId,
-            string culture
+            string culture,
+            Guid userId
         )
         {
             Stopwatch bestWatch = new();
@@ -924,6 +925,7 @@ namespace TourBooking.Infrastructure.Repositories
                 .TourPoints.Where(tp => tp.Id == tourPointId)
                 .Select(tp => new
                 {
+                    IsFavorite = tp.Favorites.Any(y => y.CustomerId == userId && y.TourPointId == tourPointId),
                     tp.Id,
                     tp.MainImage,
                     tp.OtherImages,
@@ -1010,7 +1012,7 @@ namespace TourBooking.Infrastructure.Repositories
                 MainImage = t.MainImage,
                 OtherImages = t.OtherImages,
                 Description = t.Description,
-
+                IsFavorites = t.IsFavorite,
                 Cities = t
                     .PricingCities.GroupBy(c => c.CityId)
                     .Select(g => new MobileCityDto
