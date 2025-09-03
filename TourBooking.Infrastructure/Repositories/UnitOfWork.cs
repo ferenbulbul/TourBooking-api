@@ -1745,9 +1745,9 @@ namespace TourBooking.Infrastructure.Repositories
                 .Where(x => x.IsConfirmed == true)
                 .Select(tt => new AgencyListDto(
                     tt.Id,
-                    tt.AuthorizedUserFirstName +" "+ tt.AuthorizedUserLastName,
+                    tt.AuthorizedUserFirstName + " " + tt.AuthorizedUserLastName,
                     tt.FullAddress,
-                    tt.City + "-"+ tt.Country,
+                    tt.City + "-" + tt.Country,
                     tt.CompanyName,
                     tt.Email,
                     tt.PhoneNumber,
@@ -1759,5 +1759,34 @@ namespace TourBooking.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<VehicleListDto>> GetVehiclesAsync()
+        {
+            var culture = CultureInfo.CurrentUICulture.Name;
+
+            var vehicles = await _context.Vehicles
+    .AsNoTracking()
+    .Select(tp => new VehicleListDto(
+        tp.Id,
+        tp.Agency.CompanyName,
+        tp.VehicleName,
+        tp.VehicleType.Translations
+            .Where(tr => tr.Language.Code == culture)
+            .Select(tr => tr.Title).FirstOrDefault() ?? "",
+        tp.VehicleBrand.Translations
+            .Where(tr => tr.Language.Code == culture)
+            .Select(tr => tr.Title).FirstOrDefault() ?? "",
+        tp.VehicleClass.Translations
+            .Where(tr => tr.Language.Code == culture)
+            .Select(tr => tr.Title).FirstOrDefault() ?? "",
+        tp.SeatCount,
+        tp.LicensePlate,
+        tp.ModelYear,
+        tp.AracResmi,
+        tp.Ruhsat,
+        tp.Sigorta,
+        tp.Tasimacilik
+    )).ToListAsync();
+            return vehicles;
+        }
     }
 }

@@ -176,5 +176,6 @@ namespace TourBooking.Application.Interfaces.Repositories
         );
         Task<List<CustomerUserDto>> GetCustomerUsersWithAspNetAsync();
         Task<IEnumerable<AgencyListDto>> GetAgencyListAsync();
+        Task<IEnumerable<VehicleListDto>> GetVehiclesAsync();
     }
 }

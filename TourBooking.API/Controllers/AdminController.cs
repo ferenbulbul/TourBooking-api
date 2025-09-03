@@ -133,5 +133,13 @@ namespace TourBooking.API.Controllers
                 ApiResponse<AgencyUsersQueryResponse>.SuccessResponse(agencies, null)
             );
         }
+        [HttpGet("vehicles")]
+        public async Task<IActionResult> VehicleList()
+        {
+            var vehicles = await _mediator.Send(new VehicleListQuery());
+            return Ok(
+                ApiResponse<VehicleListQueryResponse>.SuccessResponse(vehicles, null)
+            );
+        }
     }
 }
