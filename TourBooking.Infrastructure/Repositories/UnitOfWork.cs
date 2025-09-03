@@ -1838,6 +1838,28 @@ namespace TourBooking.Infrastructure.Repositories
         tp.CreatedDate)).ToListAsync();
             return guides;
         }
+
+        public async Task<IEnumerable<GuideTourDto>> GetGuideToursAsnyc() //routes
+        {
+            var culture = CultureInfo.CurrentUICulture.Name;
+            return await (from g in _context.GuideTourPrices
+                          join c in _context.Cities on g.CityId equals c.Id
+                          join d in _context.Districts on g.DistrictId equals d.Id
+                          join t in _context.TourPoints on g.TourPointId equals t.Id
+                          select new GuideTourDto
+                          (
+                            g.Guide.FirstName + " " + g.Guide.LastName,
+                            c.Translations.Where(tr => tr.Language.Code == culture)
+                                .Select(tr => tr.Title).FirstOrDefault() ?? "" +
+                            d.Translations.Where(tr => tr.Language.Code == culture)
+                                .Select(tr => tr.Title).FirstOrDefault() ?? "",
+                            t.Translations.Where(tr => tr.Language.Code == culture)
+                                .Select(tr => tr.Title).FirstOrDefault() ?? "",
+                        g.Price,
+                        g.Commission,
+                        g.CreatedAt
+                            )).ToListAsync();
+        }
     }
 }
 

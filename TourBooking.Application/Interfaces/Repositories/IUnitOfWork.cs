@@ -179,5 +179,6 @@ namespace TourBooking.Application.Interfaces.Repositories
         Task<IEnumerable<VehicleListDto>> GetVehiclesAsync();
         Task<IEnumerable<TourRouteDto>> GetTourRoute();
         Task<IEnumerable<GuideListDto>> GetGuideListAsnyc();
+        Task<IEnumerable<GuideTourDto>> GetGuideToursAsnyc();
     }
 }

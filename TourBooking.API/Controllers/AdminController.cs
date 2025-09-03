@@ -157,5 +157,13 @@ namespace TourBooking.API.Controllers
                 ApiResponse<GuideUsersQueryResponse>.SuccessResponse(guides, null)
             );
         }
+        [HttpGet("guide-routes")]
+        public async Task<IActionResult> GuideRoutes()
+        {
+            var guideTours = await _mediator.Send(new GuideTourRouteQuery());
+            return Ok(
+                ApiResponse<GuideTourRouteQueryResponse>.SuccessResponse(guideTours, null)
+            );
+        }
     }
 }
