@@ -13,7 +13,8 @@ namespace TourBooking.Application.DTOs
          string Username ,
          bool EmailConfirmed ,
          string PhoneNumber ,
-         bool PhoneNumberConfirmed 
+         bool PhoneNumberConfirmed ,
+         DateTime? CreatedAt 
     );
         
     

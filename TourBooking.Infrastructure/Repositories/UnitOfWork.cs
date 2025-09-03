@@ -1734,7 +1734,9 @@ namespace TourBooking.Infrastructure.Repositories
                               asp.UserName,
                                asp.EmailConfirmed,
                               asp.PhoneNumber,
-                              asp.PhoneNumberConfirmed)).ToListAsync();
+                              asp.PhoneNumberConfirmed,
+                              asp.CreateDate
+                              )).ToListAsync();
         }
 
     }
