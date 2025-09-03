@@ -9,7 +9,6 @@ namespace TourBooking.Application.DTOs
     (
          Guid Id ,
          string FirstName ,
-         string LastName ,
          string Username ,
          bool EmailConfirmed ,
          string PhoneNumber ,

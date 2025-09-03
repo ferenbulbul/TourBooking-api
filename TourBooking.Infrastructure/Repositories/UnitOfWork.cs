@@ -1729,8 +1729,7 @@ namespace TourBooking.Infrastructure.Repositories
                           join asp in _context.Users on c.Id equals asp.Id
                           select new CustomerUserDto
                           (asp.Id,
-                               asp.FirstName,
-                              asp.LastName,
+                               asp.FirstName + asp.LastName,
                               asp.UserName,
                                asp.EmailConfirmed,
                               asp.PhoneNumber,
