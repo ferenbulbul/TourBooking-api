@@ -1729,13 +1729,34 @@ namespace TourBooking.Infrastructure.Repositories
                           join asp in _context.Users on c.Id equals asp.Id
                           select new CustomerUserDto
                           (asp.Id,
-                               asp.FirstName + asp.LastName,
-                              asp.UserName,
-                               asp.EmailConfirmed,
-                              asp.PhoneNumber,
-                              asp.PhoneNumberConfirmed,
-                              asp.CreateDate
-                              )).ToListAsync();
+                            asp.FirstName + " " + asp.LastName,
+                            asp.UserName,
+                            asp.EmailConfirmed,
+                            asp.PhoneNumber,
+                            asp.PhoneNumberConfirmed,
+                            asp.CreateDate
+                            )).ToListAsync();
+        }
+
+        public async Task<IEnumerable<AgencyListDto>> GetAgencyListAsync()
+        {
+            return await _context
+                .Agencies.AsNoTracking()
+                .Where(x => x.IsConfirmed == true)
+                .Select(tt => new AgencyListDto(
+                    tt.Id,
+                    tt.AuthorizedUserFirstName +" "+ tt.AuthorizedUserLastName,
+                    tt.FullAddress,
+                    tt.City + "-"+ tt.Country,
+                    tt.CompanyName,
+                    tt.Email,
+                    tt.PhoneNumber,
+                    tt.PhoneNumber2,
+                    tt.TaxNumber,
+                    tt.TursabUrl,
+                    tt.CreatedDate
+                ))
+                .ToListAsync();
         }
 
     }

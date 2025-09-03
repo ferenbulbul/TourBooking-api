@@ -116,13 +116,21 @@ namespace TourBooking.API.Controllers
                 ApiResponse<SystemCountsQueryResponse>.SuccessResponse(counts, null)
             );
         }
-        
+
         [HttpGet("customers")]
         public async Task<IActionResult> GetCustomers()
         {
             var customers = await _mediator.Send(new CustomerUserQuery());
             return Ok(
                 ApiResponse<CustomerUserQueryResponse>.SuccessResponse(customers, null)
+            );
+        }
+        [HttpGet("agencies")]
+        public async Task<IActionResult> GetAgencies()
+        {
+            var agencies = await _mediator.Send(new AgencyUsersQuery());
+            return Ok(
+                ApiResponse<AgencyUsersQueryResponse>.SuccessResponse(agencies, null)
             );
         }
     }

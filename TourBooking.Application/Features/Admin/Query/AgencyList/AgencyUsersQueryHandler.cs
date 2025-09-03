@@ -9,23 +9,23 @@ using TourBooking.Domain.Enums;
 
 namespace TourBooking.Application.Features.Admin.Query
 {
-    public class CustomerUserQueryHandler
-        : IRequestHandler<CustomerUserQuery, CustomerUserQueryResponse>
+    public class AgencyUsersQueryHandler
+        : IRequestHandler<AgencyUsersQuery, AgencyUsersQueryResponse>
     {
         private readonly IUnitOfWork _uow;
 
-        public CustomerUserQueryHandler(IUnitOfWork uow)
+        public AgencyUsersQueryHandler(IUnitOfWork uow)
         {
             _uow = uow;
         }
 
-        public async Task<CustomerUserQueryResponse> Handle(
-            CustomerUserQuery request,
+        public async Task<AgencyUsersQueryResponse> Handle(
+            AgencyUsersQuery request,
             CancellationToken cancellationToken
         )
         {
-            var users = await _uow.GetCustomerUsersWithAspNetAsync();
-            return new CustomerUserQueryResponse { Customers = users };
+            var users = await _uow.GetAgencyListAsync();
+            return new AgencyUsersQueryResponse { Agencies = users };
         }
     }
 }

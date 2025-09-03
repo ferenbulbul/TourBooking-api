@@ -175,5 +175,6 @@ namespace TourBooking.Application.Interfaces.Repositories
             CancellationToken cancellationToken = default
         );
         Task<List<CustomerUserDto>> GetCustomerUsersWithAspNetAsync();
+        Task<IEnumerable<AgencyListDto>> GetAgencyListAsync();
     }
 }

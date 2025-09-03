@@ -3,5 +3,5 @@ using MediatR;
 
 namespace TourBooking.Application.Features.Admin.Query
 {
-    public class CustomerUserQuery : IRequest<CustomerUserQueryResponse> { }
+    public class AgencyUsersQuery : IRequest<AgencyUsersQueryResponse> { }
 }
