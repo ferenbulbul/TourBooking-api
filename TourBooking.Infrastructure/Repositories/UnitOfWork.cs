@@ -1820,6 +1820,24 @@ namespace TourBooking.Infrastructure.Repositories
         tp.CreatedAt)).ToListAsync();
             return vehicles;
         }
+
+        public async Task<IEnumerable<GuideListDto>> GetGuideListAsnyc() //routes
+        {
+            var culture = CultureInfo.CurrentUICulture.Name;
+
+            var guides = await _context.Guides
+    .AsNoTracking()
+    .Select(tp => new GuideListDto(
+        tp.Id,
+        tp.FirstName + tp.LastName,
+        tp.Email,
+        tp.PhoneNumber,
+        tp.DomesticUrl,
+        tp.RegionalUrl,
+        tp.PhotoUrl,
+        tp.CreatedDate)).ToListAsync();
+            return guides;
+        }
     }
 }
 

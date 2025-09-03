@@ -149,5 +149,13 @@ namespace TourBooking.API.Controllers
                 ApiResponse<RouteListQueryResponse>.SuccessResponse(routes, null)
             );
         }
+        [HttpGet("guides")]
+        public async Task<IActionResult> GuideList()
+        {
+            var guides = await _mediator.Send(new GuideUsersQuery());
+            return Ok(
+                ApiResponse<GuideUsersQueryResponse>.SuccessResponse(guides, null)
+            );
+        }
     }
 }
