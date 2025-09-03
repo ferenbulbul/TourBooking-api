@@ -1788,5 +1788,39 @@ namespace TourBooking.Infrastructure.Repositories
     )).ToListAsync();
             return vehicles;
         }
+
+        public async Task<IEnumerable<TourRouteDto>> GetTourRoute() //routes
+        {
+            var culture = CultureInfo.CurrentUICulture.Name;
+
+            var vehicles = await _context.TourRoutePrices
+    .AsNoTracking()
+    .Select(tp => new TourRouteDto(
+        tp.Agency.CompanyName,
+        tp.TourPoint.Translations
+            .Where(tr => tr.Language.Code == culture)
+            .Select(tr => tr.Title).FirstOrDefault() ?? "",
+
+        tp.Country.Translations
+            .Where(tr => tr.Language.Code == culture)
+            .Select(tr => tr.Title).FirstOrDefault() ?? "" +
+        tp.Region.Translations
+            .Where(tr => tr.Language.Code == culture)
+            .Select(tr => tr.Title).FirstOrDefault() ?? "" +
+        tp.City.Translations
+            .Where(tr => tr.Language.Code == culture)
+            .Select(tr => tr.Title).FirstOrDefault() ?? "" +
+        tp.District.Translations
+            .Where(tr => tr.Language.Code == culture)
+            .Select(tr => tr.Title).FirstOrDefault() ?? "",
+        tp.Vehicle.VehicleName,
+        tp.Driver.NameSurname,
+        tp.Price,
+        tp.Commission,
+        tp.CreatedAt)).ToListAsync();
+            return vehicles;
+        }
     }
 }
+
+
