@@ -1,6 +1,7 @@
 using System;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
+using TourBooking.Application.Expactions;
 using TourBooking.Application.Interfaces.Repositories;
 using TourBooking.Domain.Entities;
 
@@ -21,13 +22,17 @@ namespace TourBooking.Application.Features
             CancellationToken cancellationToken
         )
         {
-            var user=await _manager.FindByIdAsync(request.UserId.ToString());
+            if (request.UserId == Guid.Empty)
+            {
+                throw new NotFoundException("PPPPP UserId cannot be empty.");
+            }
+            var user = await _manager.FindByIdAsync(request.UserId.ToString());
 
            var profile= new CustomerProfileQueryResponse
             {
                 FullName = $"{user.FirstName} {user.LastName}",
                 Email = user.Email,
-                PhoneNumber = user.PhoneNumber,
+                PhoneNumber = user.PhoneNumber ?? "",
                 PhoneNumberConfirmed=user.PhoneNumberConfirmed
             };
             return profile;
@@ -35,3 +40,4 @@ namespace TourBooking.Application.Features
         }
     }
 }
+ 
