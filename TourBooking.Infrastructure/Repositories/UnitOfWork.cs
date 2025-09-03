@@ -1723,5 +1723,19 @@ namespace TourBooking.Infrastructure.Repositories
             return R * c;
         }
 
+        public async Task<List<CustomerUserDto>> GetCustomerUsersWithAspNetAsync()
+        {
+            return await (from c in _context.CustomerUsers
+                          join asp in _context.Users on c.Id equals asp.Id
+                          select new CustomerUserDto
+                          (asp.Id,
+                               asp.FirstName,
+                              asp.LastName,
+                              asp.UserName,
+                               asp.EmailConfirmed,
+                              asp.PhoneNumber,
+                              asp.PhoneNumberConfirmed)).ToListAsync();
+        }
+
     }
 }

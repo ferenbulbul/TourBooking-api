@@ -7,6 +7,7 @@ using TourBooking.Application.Features;
 using TourBooking.Application.Features.Admin;
 using TourBooking.Application.Features.Admin.Command.ConfirmAgency;
 using TourBooking.Application.Features.Admin.Command.ConfirmGuide;
+using TourBooking.Application.Features.Admin.Query;
 using TourBooking.Application.Features.Admin.Query.AgenciesToConfirm;
 using TourBooking.Application.Features.Settings.Commands;
 using TourBooking.Application.Interfaces.Services;
@@ -106,13 +107,22 @@ namespace TourBooking.API.Controllers
             await _netgsm.SendBatchAsync(req);
             return Ok(ApiResponse<DriverLocationsQueryResponse>.SuccessResponse(null, null));
         }
-        
+
         [HttpGet("counts")]
         public async Task<IActionResult> SystemCounts()
         {
             var counts = await _mediator.Send(new SystemCountsQuery());
             return Ok(
                 ApiResponse<SystemCountsQueryResponse>.SuccessResponse(counts, null)
+            );
+        }
+        
+        [HttpGet("customers")]
+        public async Task<IActionResult> GetCustomers()
+        {
+            var customers = await _mediator.Send(new CustomerUserQuery());
+            return Ok(
+                ApiResponse<CustomerUserQueryResponse>.SuccessResponse(customers, null)
             );
         }
     }

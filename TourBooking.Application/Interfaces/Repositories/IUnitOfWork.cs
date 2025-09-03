@@ -174,5 +174,6 @@ namespace TourBooking.Application.Interfaces.Repositories
         Task<IEnumerable<NearbyTourPointDto>> NearbyTourPoints(Guid customerId,
             CancellationToken cancellationToken = default
         );
+        Task<List<CustomerUserDto>> GetCustomerUsersWithAspNetAsync();
     }
 }
