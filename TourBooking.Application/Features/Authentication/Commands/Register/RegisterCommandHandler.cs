@@ -76,7 +76,7 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
             var user = await _userManager.FindByEmailAsync(request.Email);
             var token = await _tokenService.CreateTokenAsync(user);
             user.RefreshToken = token.RefreshToken;
-            user.RefreshTokenExpireDate = DateTime.UtcNow.AddDays(7);
+            user.RefreshTokenExpireDate = DateTime.UtcNow.AddDays(90);
             await _userManager.UpdateAsync(user);
 
             await _unitOfWork.GetRepository<CustomerUser>().AddAsync(newCustomerUser);

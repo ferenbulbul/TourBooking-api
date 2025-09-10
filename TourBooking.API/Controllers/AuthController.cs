@@ -2,6 +2,7 @@ using FirebaseAdmin.Auth;
 using Humanizer;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using Org.BouncyCastle.Crypto;
@@ -15,6 +16,8 @@ using TourBooking.Application.Features.Authentication.Commands.SendEmailVerifica
 using TourBooking.Application.Features.Authentication.Commands.VerifyEmail;
 using TourBooking.Application.Features.Authentication.Commands.VerifyPasswordCode;
 using TourBooking.Application.Features.Queries.Login;
+using TourBooking.Application.Interfaces.Services;
+using TourBooking.Domain.Entities;
 using TourBooking.Shared.Localization;
 
 namespace TourBooking.API.Controllers
@@ -25,11 +28,16 @@ namespace TourBooking.API.Controllers
     {
         private readonly IMediator _mediator;
         private readonly IStringLocalizer<SharedResource> _localizer;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly ITokenService _tokenService;
 
-        public AuthController(IMediator mediator, IStringLocalizer<SharedResource> localizer)
+
+        public AuthController(IMediator mediator, IStringLocalizer<SharedResource> localizer, UserManager<AppUser> userManager, ITokenService tokenService)
         {
             _mediator = mediator;
             _localizer = localizer;
+            _userManager = userManager;
+            _tokenService = tokenService;
         }
 
         [HttpPost("login")]
@@ -106,7 +114,7 @@ namespace TourBooking.API.Controllers
         [Authorize]
         public async Task<IActionResult> VerifyEmail([FromBody] VerifyEmailRequestDto request)
         {
-            var userIdString = GetUserIdFromToken(); 
+            var userIdString = GetUserIdFromToken();
 
             var command = new VerifyEmailCommand { UserId = userIdString, Code = request.Code };
             var result = await _mediator.Send(command);
@@ -187,6 +195,38 @@ namespace TourBooking.API.Controllers
             return Ok(
                 ApiResponse<object>.SuccessResponse(null, null)
             );
+        }
+
+        [Authorize]
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest req)
+        {
+            var userId = GetUserIdFromToken(); 
+            var user = await _userManager.FindByIdAsync(userId.ToString());
+
+            if (user is null)
+                return Unauthorized(ApiResponse<AuthResponse>.FailResponse("User not found"));
+
+
+            if (user.RefreshToken != req.RefreshToken)
+                return Unauthorized(ApiResponse<AuthResponse>.FailResponse("Invalid refresh token"));
+
+
+            if (user.RefreshTokenExpireDate <= DateTime.UtcNow)
+                return Unauthorized(ApiResponse<AuthResponse>.FailResponse("Refresh token expired"));
+
+
+            var newToken = await _tokenService.CreateTokenAsync(user);
+
+
+            user.RefreshToken = newToken.RefreshToken;
+            user.RefreshTokenExpireDate = DateTime.UtcNow.AddDays(90);
+
+            await _userManager.UpdateAsync(user);
+            
+
+            var response = new AuthResponse(newToken.AccessToken, newToken.RefreshToken);
+            return Ok(ApiResponse<AuthResponse>.SuccessResponse(response, ""));
         }
 
     }
