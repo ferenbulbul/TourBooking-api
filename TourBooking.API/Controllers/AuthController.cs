@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Org.BouncyCastle.Crypto;
 using TourBooking.Application.DTOs;
@@ -201,8 +202,7 @@ namespace TourBooking.API.Controllers
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest req)
         {
-            var userId = GetUserIdFromToken();
-            var user = await _userManager.FindByIdAsync(userId.ToString());
+            var user = await _userManager.Users.FirstOrDefaultAsync(u => u.RefreshToken == req.RefreshToken);
 
             if (user is null)
                 return Unauthorized(ApiResponse<AuthResponse>.FailResponse("User not found"));
