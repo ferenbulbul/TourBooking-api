@@ -201,7 +201,7 @@ namespace TourBooking.API.Controllers
         [HttpPost("refresh-token")]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest req)
         {
-            var userId = GetUserIdFromToken(); 
+            var userId = GetUserIdFromToken();
             var user = await _userManager.FindByIdAsync(userId.ToString());
 
             if (user is null)
@@ -216,17 +216,44 @@ namespace TourBooking.API.Controllers
                 return Unauthorized(ApiResponse<AuthResponse>.FailResponse("Refresh token expired"));
 
 
-            var newToken = await _tokenService.CreateTokenAsync(user);
+            try
+            {
+                var newToken = await _tokenService.CreateTokenAsync(user);
+                user.RefreshToken = newToken.RefreshToken;
+                user.RefreshTokenExpireDate = DateTime.UtcNow.AddDays(90);
 
+                try
+                {
+                    await _userManager.UpdateAsync(user);
+                }
+                catch (Exception ex)
+                {
+                    // DB update sırasında hata
+                    // _logger.LogError(ex, "UpdateAsync failed for user {UserId}", user.Id);
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        ApiResponse<AuthResponse>.FailResponse("User update failed"));
+                }
 
-            user.RefreshToken = newToken.RefreshToken;
-            user.RefreshTokenExpireDate = DateTime.UtcNow.AddDays(90);
-
-            await _userManager.UpdateAsync(user);
-            
-
-            var response = new AuthResponse(newToken.AccessToken, newToken.RefreshToken);
-            return Ok(ApiResponse<AuthResponse>.SuccessResponse(response, ""));
+                try
+                {
+                    var response = new AuthResponse(newToken.AccessToken, newToken.RefreshToken);
+                    return Ok(ApiResponse<AuthResponse>.SuccessResponse(response, ""));
+                }
+                catch (Exception ex)
+                {
+                    // Response oluşturma sırasında hata
+                    // _logger.LogError(ex, "AuthResponse creation failed for user {UserId}", user.Id);
+                    return StatusCode(StatusCodes.Status500InternalServerError,
+                        ApiResponse<AuthResponse>.FailResponse("Response creation failed"));
+                }
+            }
+            catch (Exception ex)
+            {
+                // Token üretiminde hata
+                // _logger.LogError(ex, "CreateTokenAsync failed for user {UserId}", user.Id);
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    ApiResponse<AuthResponse>.FailResponse("Token creation failed"));
+            }
         }
 
     }
