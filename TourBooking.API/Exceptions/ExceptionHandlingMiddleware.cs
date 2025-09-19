@@ -91,10 +91,17 @@ namespace TourBooking.API.Exceptions
 
                 default:
                     context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                    var userFriendlyMessage = _localizer["UnexpectedServerError"]; // resx dosyasından gelir
+
+                    // Kullanıcıya görünen mesaj (resx üzerinden)
+                    var userFriendlyMessage = _localizer["UnexpectedServerError"];
                     errorResponse = ApiResponse<object>.ExceptionResponse(userFriendlyMessage);
 
+                    // Google Cloud Logging'e düşecek gerçek hata
+                    _logger.LogError(exception, "Unhandled exception occurred. Message: {Message}", exception.Message);
+
                     break;
+
+
             }
 
             var result = JsonSerializer.Serialize(
