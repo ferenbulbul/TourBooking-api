@@ -180,7 +180,7 @@ namespace TourBooking.API.Controllers
                 Console.WriteLine($"🔑 Provider: {provider}");
 
 
-                string email = (string)decodedToken.Claims.GetValueOrDefault("email", "N/A@gmail.com");
+                string email = (string)decodedToken.Claims.GetValueOrDefault("email", "N/A");
                 string name = (string)decodedToken.Claims.GetValueOrDefault("name", "N/A");
 
                 if (provider == "apple.com")
