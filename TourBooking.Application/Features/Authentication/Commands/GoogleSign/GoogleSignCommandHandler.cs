@@ -47,7 +47,7 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
                 {
                     // Email ile bir kullanıcı bulduk! Şimdi Google girişini bu hesaba bağlayalım.
                     Console.WriteLine($"User found by email '{request.Email}'. Linking Google account.");
-                    var info = new UserLoginInfo(loginProvider, request.Uid, "Google");
+                    var info = new UserLoginInfo(loginProvider, request.Uid, request.Provider);
                     var linkResult = await _userManager.AddLoginAsync(user, info);
 
                     if (!linkResult.Succeeded)
@@ -86,7 +86,7 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
                     };
                     await _uow.GetRepository<CustomerUser>().AddAsync(customerUser);
                     // Şimdi yeni oluşturulan kullanıcıya Google girişini bağlayalım.
-                    var info = new UserLoginInfo(loginProvider, request.Uid, "Google");
+                    var info = new UserLoginInfo(loginProvider, request.Uid, request.Provider);
                     var addLoginResult = await _userManager.AddLoginAsync(newUser, info);
                     if (!addLoginResult.Succeeded)
                     {

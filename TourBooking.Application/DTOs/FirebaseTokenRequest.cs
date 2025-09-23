@@ -8,5 +8,6 @@ namespace TourBooking.Application.DTOs
     public class FirebaseTokenRequest
     {
         public string Token { get; set; }
+        public string? FullName { get; set; }
     }
 }
