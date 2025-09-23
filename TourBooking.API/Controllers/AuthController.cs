@@ -168,7 +168,11 @@ namespace TourBooking.API.Controllers
 
                 FirebaseToken decodedToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(request.Token);
                 string uid = decodedToken.Uid;
-                string email = (string)decodedToken.Claims.GetValueOrDefault("email", "eren@gmail.com");
+                var firebaseClaims = decodedToken.Claims["firebase"] as Dictionary<string, object>;
+                var signInProvider = firebaseClaims?["sign_in_provider"]?.ToString() ?? "unknown";
+
+                Console.WriteLine($"🔑 Provider: {signInProvider}");
+                string email = (string)decodedToken.Claims.GetValueOrDefault("email", "N/A@gmail.com");
                 string name = (string)decodedToken.Claims.GetValueOrDefault("name", "N/A");
 
                 var response = await _mediator.Send(new GoogleSignCommand { Uid = uid, Email = email, Name = name });
