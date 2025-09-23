@@ -183,7 +183,11 @@ namespace TourBooking.API.Controllers
                 string email = (string)decodedToken.Claims.GetValueOrDefault("email", "N/A@gmail.com");
                 string name = (string)decodedToken.Claims.GetValueOrDefault("name", "N/A");
 
-                var response = await _mediator.Send(new GoogleSignCommand { Uid = uid, Email = email, Name = name });
+                if (provider == "apple.com")
+                {
+                    name = request.FullName ?? "";
+                }
+                var response = await _mediator.Send(new GoogleSignCommand { Uid = uid, Email = email, Name = name ,Provider=provider});
                 Console.WriteLine($"✅ Token Validated. UID: {uid}, Email: {email}, Name: {name}");
 
 

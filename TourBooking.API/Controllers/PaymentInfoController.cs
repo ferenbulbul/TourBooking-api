@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using TourBooking.Application.Expactions;
 
 namespace TourBooking.API.Controllers
 {
@@ -60,7 +63,7 @@ namespace TourBooking.API.Controllers
             string lang = "tr";
 
             // ####################### TOKEN OLUŞTURMA #######################
-            string basketJson = JsonSerializer.Serialize(user_basket);
+            string basketJson = System.Text.Json.JsonSerializer.Serialize(user_basket);
             string user_basket_str = Convert.ToBase64String(Encoding.UTF8.GetBytes(basketJson));
 
             string concat = string.Concat(
@@ -96,12 +99,47 @@ namespace TourBooking.API.Controllers
                 { "lang", lang }
             };
             var content = new FormUrlEncodedContent(dict);
-            var response = await client.PostAsync("https://www.paytr.com/odeme/api/get-token", content);
-            var result = await response.Content.ReadAsStringAsync();
+            try
+            {
+                var response = await client.PostAsync("https://www.paytr.com/odeme/api/get-token", content);
+                if (response != null && response.StatusCode != HttpStatusCode.OK)
+                {
+                    throw new BusinessRuleValidationException(await response.Content.ReadAsStringAsync());
+                }
+                else
+                {
+                    string responseString = await response.Content.ReadAsStringAsync();
+                    var result = JsonConvert.DeserializeObject<NetgsmResponse>(responseString);
+                    if (result != null && result.Status == "failed")
+                    {
+                        throw new BusinessRuleValidationException(string.Concat("Ödeme alınırken sorun oluştu -> ", result.Reason));
+                    }
+                    if (result != null && result.Status != "failed")
+                    {
+                        // merchant_oid üzerinden kendi tablonu ödeme alındı olarak ghüncelle
+                    }
+
+
+                }
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
 
             return Content("Ödemeniz başarısız oldu. ❌", "text/html");
         }
 
 
     }
+    public class NetgsmResponse
+    {
+        [JsonProperty("status")]
+        public string Status { get; set; }
+
+        [JsonProperty("reason")]
+        public string Reason { get; set; }
+    }
+
 }
