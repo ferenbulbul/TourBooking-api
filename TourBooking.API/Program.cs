@@ -170,6 +170,40 @@ app.UseAuthorization();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // ===== Basit test endpoint'leri =====
+app.MapMethods("/callbacks/sign_in_with_apple", new[] { "GET", "POST" }, async (HttpRequest req) =>
+{
+    var parameters = new Dictionary<string, string>();
+
+    // POST ise form body'den oku
+    if (req.Method == "POST")
+    {
+        var form = await req.ReadFormAsync();
+        foreach (var kv in form)
+        {
+            parameters[kv.Key] = kv.Value.ToString();
+        }
+    }
+    else // GET ise query string'den oku
+    {
+        foreach (var kv in req.Query)
+        {
+            parameters[kv.Key] = kv.Value.ToString();
+        }
+    }
+
+    // Query string oluştur
+    var queryString = string.Join("&", parameters
+        .Select(kv => $"{Uri.EscapeDataString(kv.Key)}={Uri.EscapeDataString(kv.Value)}"));
+
+    // ⚠️ Paket adını manifest'teki package="..." ile aynı yap
+    const string androidPackage = "com.tourbooking.app";
+
+    // Intent URL hazırla
+    var intentUrl = $"intent://callback?{queryString}#Intent;package={androidPackage};scheme=signinwithapple;end";
+
+    // 302 Redirect ile app'e dön
+    return Results.Redirect(intentUrl);
+});
 app.MapGet("/", () => Results.Ok(new { status = "ok" }));
 app.MapGet("/health", () => Results.Ok(new { status = "healthy" }));
 
