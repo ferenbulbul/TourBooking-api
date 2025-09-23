@@ -1,3 +1,4 @@
+using System.Text.Json;
 using FirebaseAdmin.Auth;
 using Humanizer;
 using MediatR;
@@ -168,10 +169,16 @@ namespace TourBooking.API.Controllers
 
                 FirebaseToken decodedToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(request.Token);
                 string uid = decodedToken.Uid;
-                var firebaseClaims = decodedToken.Claims["firebase"] as Dictionary<string, object>;
-                var signInProvider = firebaseClaims?["sign_in_provider"]?.ToString() ?? "unknown";
 
-                Console.WriteLine($"🔑 Provider: {signInProvider}");
+                var firebaseClaims = decodedToken.Claims["firebase"] as Dictionary<string, object>;
+                if (decodedToken.Claims.TryGetValue("firebase", out object firebaseObj) && firebaseObj is JsonElement firebaseElement)
+                {
+                    if (firebaseElement.TryGetProperty("sign_in_provider", out var providerProp))
+                    {
+                        var signInProvider = providerProp.GetString();
+                        Console.WriteLine($"🔑 Provider: {signInProvider}");
+                    }
+                }
                 string email = (string)decodedToken.Claims.GetValueOrDefault("email", "N/A@gmail.com");
                 string name = (string)decodedToken.Claims.GetValueOrDefault("name", "N/A");
 
