@@ -170,15 +170,18 @@ namespace TourBooking.API.Controllers
                 FirebaseToken decodedToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(request.Token);
                 string uid = decodedToken.Uid;
 
-                var firebaseClaims = decodedToken.Claims["firebase"] as Dictionary<string, object>;
+                // 🔹 sign_in_provider'ı parse et
+                string signInProvider = "unknown";
                 if (decodedToken.Claims.TryGetValue("firebase", out object firebaseObj) && firebaseObj is JsonElement firebaseElement)
                 {
                     if (firebaseElement.TryGetProperty("sign_in_provider", out var providerProp))
                     {
-                        var signInProvider = providerProp.GetString();
-                        Console.WriteLine($"🔑 Provider: {signInProvider}");
+                        signInProvider = providerProp.GetString() ?? "unknown";
                     }
                 }
+
+                Console.WriteLine($"🔑 Provider: {signInProvider}");
+
                 string email = (string)decodedToken.Claims.GetValueOrDefault("email", "N/A@gmail.com");
                 string name = (string)decodedToken.Claims.GetValueOrDefault("name", "N/A");
 
