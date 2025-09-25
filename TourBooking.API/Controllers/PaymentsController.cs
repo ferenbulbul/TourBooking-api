@@ -29,7 +29,7 @@ public class PaymentsController : ControllerBase
 
     // STEP 1: Checkout Form Initialize
     [HttpPost("cf-init")]
-    public async Task<IActionResult> InitCheckoutForm()
+    public async Task<IActionResult> InitCheckoutForm([FromBody] InitCheckoutFormRequest request)
     {
         var req = new CreateCheckoutFormInitializeRequest
         {
@@ -148,4 +148,8 @@ public class InitCheckoutFormDto
     public string ConversationId { get; set; } = "";
     public string PaymentPageUrl { get; set; } = "";
     public long? TokenExpireTime { get; set; }
+}
+public class InitCheckoutFormRequest
+{
+    public string BookingId { get; set; }
 }
