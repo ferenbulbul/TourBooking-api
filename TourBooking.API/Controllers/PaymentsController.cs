@@ -25,6 +25,7 @@ public class PaymentsController : ControllerBase
             BaseUrl = config["Iyzico:BaseUrl"]
         };
         _callbackUrl = config["Iyzico:CallbackUrl"]!;
+          Console.WriteLine($"[IYZICO CONFIG] ApiKey: {_options.ApiKey}, SecretKey: {_options.SecretKey}, BaseUrl: {_options.BaseUrl}, CallbackUrl: {_callbackUrl}");
     }
 
     // STEP 1: Checkout Form Initialize
@@ -106,7 +107,6 @@ public class PaymentsController : ControllerBase
         };
 
         var init =await CheckoutFormInitialize.Create(req, _options);
-
         if (init.Status != "success")
         {
             Console.WriteLine(init.ErrorMessage); 
