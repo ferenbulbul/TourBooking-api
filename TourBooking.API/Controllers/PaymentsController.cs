@@ -108,8 +108,11 @@ public class PaymentsController : ControllerBase
         var init =await CheckoutFormInitialize.Create(req, _options);
 
         if (init.Status != "success")
+        {
+            Console.WriteLine(init.ErrorMessage); 
             return BadRequest(ApiResponse<InitCheckoutFormDto>.FailResponse(init.ErrorMessage ?? "Ödeme başlatılamadı"));
-
+        }
+            
         // Mobil için minimal response
         var dto = new InitCheckoutFormDto
         {
