@@ -12,7 +12,8 @@ using TourBooking.API.Extensions;
 using TourBooking.Infrastructure.Context;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
-
+using System.Net;
+ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
