@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System.Globalization;
 using System.Threading.Tasks;
+using TourBooking.Application.DTOs.Comman;
 
 namespace Payments.Api.Controllers;
 
@@ -107,7 +108,7 @@ public class PaymentsController : ControllerBase
         var init =await CheckoutFormInitialize.Create(req, _options);
 
         if (init.Status != "success")
-            return BadRequest(new { error = init.ErrorMessage });
+            return BadRequest(ApiResponse<InitCheckoutFormDto>.FailResponse(init.ErrorMessage ?? "Ödeme başlatılamadı"));
 
         // Mobil için minimal response
         var dto = new InitCheckoutFormDto
@@ -120,9 +121,9 @@ public class PaymentsController : ControllerBase
         // TODO: conversationId ve token’ı DB’ye kaydet (order tablosuna)
         // çünkü callback geldiğinde eşleşmeye ihtiyacın olacak
 
-        return Ok(dto);
+        return Ok(ApiResponse<InitCheckoutFormDto>.SuccessResponse(dto, null));
 
-        return Ok(init);
+        //return Ok(init);
     }
 
     // STEP 2: Callback (iyzico ödeme bitince burayı POST eder)
