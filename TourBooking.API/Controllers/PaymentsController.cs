@@ -145,7 +145,8 @@ public class PaymentsController : ControllerBase
 
         return Ok(result);
     }
-    [HttpGet("result/{conversationId}")]
+
+    [HttpGet("result")]
     public async Task<IActionResult> GetPaymentResult(string conversationId)
     {
         // DB'den bu conversationId'ye ait token'ı bul
