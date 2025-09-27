@@ -193,7 +193,6 @@ public class PaymentsController : ControllerBase
             ConversationId = "checkoutForm.ConversationId",
             PaymentStatus = "SUCCESS", // SUCCESS / FAILURE
             PaymentId = "checkoutForm.PaymentId",
-            BasketId = "checkoutForm.BasketId",
             Price = "checkoutForm.Price",
             PaidPrice = "checkoutForm.PaidPrice",
             ErrorMessage = "checkoutForm.ErrorMessage"
@@ -218,7 +217,6 @@ public class PaymentResultResponse
         public string ConversationId { get; set; } = string.Empty;
         public string PaymentStatus { get; set; } = string.Empty; // SUCCESS / FAILURE
         public string? PaymentId { get; set; }
-        public string? BasketId { get; set; }
         public string? Price { get; set; }
         public string? PaidPrice { get; set; }
         public string? ErrorMessage { get; set; }
