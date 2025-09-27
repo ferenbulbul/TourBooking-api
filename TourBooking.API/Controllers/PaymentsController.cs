@@ -145,10 +145,11 @@ public class PaymentsController : ControllerBase
 
         return Ok(result);
     }
-
+    
     [HttpGet("result")]
     public async Task<IActionResult> GetPaymentResult(string conversationId)
     {
+        var a = conversationId;
         // DB'den bu conversationId'ye ait token'ı bul
         // (cf-init çağrısında kaydetmen lazım)
         // var paymentToken = await _dbContext.Payments
