@@ -46,7 +46,7 @@ namespace TourBooking.Infrastructure.Services
                 Price = booking.TotalPrice.ToString("F2", CultureInfo.InvariantCulture),
                 PaidPrice = booking.TotalPrice.ToString("F2", CultureInfo.InvariantCulture),
                 Currency = Currency.TRY.ToString(),
-                BasketId = booking.TourPointId.ToString("F2", CultureInfo.InvariantCulture),
+                BasketId = booking.TourPointId.ToString(),
                 PaymentGroup = PaymentGroup.PRODUCT.ToString(),
                 CallbackUrl = _callbackUrl
             };
@@ -90,7 +90,7 @@ namespace TourBooking.Infrastructure.Services
                 Category1 = "Tour",
                 Category2 = "Booking",
                 ItemType = BasketItemType.PHYSICAL.ToString(),
-                Price =booking.TotalPrice.ToString() //booking.TotalPrice.ToString("F2", CultureInfo.InvariantCulture)
+                Price =booking.TotalPrice.ToString("F2", CultureInfo.InvariantCulture)
             }
         };
 
