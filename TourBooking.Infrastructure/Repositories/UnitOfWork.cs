@@ -1466,6 +1466,8 @@ namespace TourBooking.Infrastructure.Repositories
             entity.Latitude = request.Latitude;
             entity.Longitude = request.Longitude;
             entity.DepartureTime = request.DepartureTime;
+            entity.TourPrice = request.TourPrice;
+            entity.GuidePrice = request.GuidePrice ?? 0;
             await _context.Bookings.AddAsync(entity);
             await _context.SaveChangesAsync();
             return entity.Id;
@@ -1826,17 +1828,17 @@ namespace TourBooking.Infrastructure.Repositories
             var culture = CultureInfo.CurrentUICulture.Name;
 
             var guides = await _context.Guides
-    .AsNoTracking()
-    .Select(tp => new GuideListDto(
-        tp.Id,
-        tp.FirstName + tp.LastName,
-        tp.Email,
-        tp.PhoneNumber,
-        tp.DomesticUrl,
-        tp.RegionalUrl,
-        tp.PhotoUrl,
-        tp.CreatedDate)).ToListAsync();
-            return guides;
+                                    .AsNoTracking()
+                                    .Select(tp => new GuideListDto(
+                                        tp.Id,
+                                        tp.FirstName + tp.LastName,
+                                        tp.Email,
+                                        tp.PhoneNumber,
+                                        tp.DomesticUrl,
+                                        tp.RegionalUrl,
+                                        tp.PhotoUrl,
+                                        tp.CreatedDate)).ToListAsync();
+                                            return guides;
         }
 
         public async Task<IEnumerable<GuideTourDto>> GetGuideToursAsnyc() //routes
@@ -1860,6 +1862,12 @@ namespace TourBooking.Infrastructure.Repositories
                         g.CreatedAt
                             )).ToListAsync();
         }
+
+        public async Task<PaymentEntity> GetPaymentByTokenAsync(string token) 
+        {
+            return await _context.Payment.FirstOrDefaultAsync(x => x.Token == token);
+        }
+
     }
 }
 

@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TourBooking.Infrastructure.Context;
 
@@ -10,9 +11,11 @@ using TourBooking.Infrastructure.Context;
 namespace TourBooking.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250929145916_addPaymentTable")]
+    partial class addPaymentTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -348,9 +351,6 @@ namespace TourBooking.Infrastructure.Migrations
                     b.Property<Guid?>("GuideId")
                         .HasColumnType("char(36)");
 
-                    b.Property<decimal?>("GuidePrice")
-                        .HasColumnType("decimal(65,30)");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
 
@@ -374,9 +374,6 @@ namespace TourBooking.Infrastructure.Migrations
 
                     b.Property<Guid>("TourPointId")
                         .HasColumnType("char(36)");
-
-                    b.Property<decimal>("TourPrice")
-                        .HasColumnType("decimal(65,30)");
 
                     b.Property<DateTime?>("UpdatedDate")
                         .HasColumnType("datetime(6)");

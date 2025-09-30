@@ -49,6 +49,7 @@ namespace TourBooking.Infrastructure.Context
         public DbSet<GuideLanguageEntity> GuideLanguages => Set<GuideLanguageEntity>();
         public DbSet<TourRoutePriceEntity> TourRoutePrices => Set<TourRoutePriceEntity>();
         public DbSet<VehicleBlockEntity> VehicleBlocks => Set<VehicleBlockEntity>();
+        public DbSet<PaymentEntity> Payment => Set<PaymentEntity>();
         public DbSet<DriverLocationEntity> DriverLocationEntities => Set<DriverLocationEntity>();
         public DbSet<CustomerLocationEntity> CustomerLocationEntities =>
             Set<CustomerLocationEntity>();
@@ -145,10 +146,10 @@ namespace TourBooking.Infrastructure.Context
                 })
                     .IsUnique();
             });
-
             builder.Entity<BookingEntity>(e =>
             {
                 e.HasKey(x => x.Id);
+                e.HasMany(b => b.Payments).WithOne(p => p.Booking).HasForeignKey(p => p.BookingId);
                 e.HasOne(x => x.Guide).WithMany(g => g.Bookings).HasForeignKey(x => x.GuideId);
                 e.HasOne(x => x.Vehicle).WithMany(g => g.Bookings).HasForeignKey(x => x.VehicleId);
                 e.HasOne(x => x.Driver).WithMany(g => g.Bookings).HasForeignKey(x => x.DriverId);
@@ -248,17 +249,28 @@ namespace TourBooking.Infrastructure.Context
                         .HasForeignKey<DriverLocationEntity>(x => x.Id) // Shared PK!
                         .OnDelete(DeleteBehavior.Cascade);
                 });
-
             builder.Entity<CustomerLocationEntity>(e =>
-            {
-                e.ToTable("CustomerLocation");
-                e.HasKey(x => x.Id);
+                 {
+                     e.ToTable("CustomerLocation");
+                     e.HasKey(x => x.Id);
 
-                e.HasOne<CustomerUser>()
-                    .WithOne()
-                    .HasForeignKey<CustomerLocationEntity>(x => x.Id)
-                    .OnDelete(DeleteBehavior.Cascade);
-            });
+                     e.HasOne<CustomerUser>()
+                         .WithOne()
+                         .HasForeignKey<CustomerLocationEntity>(x => x.Id)
+                         .OnDelete(DeleteBehavior.Cascade);
+                 });
+            builder.Entity<PaymentEntity>(entity =>
+        {
+            entity.HasKey(p => p.Id);
+
+            entity.HasOne(p => p.Booking)
+                  .WithMany(b => b.Payments)
+                  .HasForeignKey(p => p.BookingId);
+
+            entity.Property(p => p.ConversationId).IsRequired().HasMaxLength(100);
+            entity.Property(p => p.Token).IsRequired().HasMaxLength(200);
+            entity.Property(p => p.Amount).HasColumnType("decimal(18,2)");
+        });
             builder
                 .Entity<LanguageEntity>()
                 .HasData(

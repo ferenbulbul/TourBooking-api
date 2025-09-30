@@ -15,11 +15,13 @@ namespace TourBooking.API.Extensions
             services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
             services.Configure<NetgsmOptions>(configuration.GetSection("Netgsm"));
             services.Configure<SettingsOptions>(configuration.GetSection("Settings"));
+            services.Configure<IyzicoSettings>(configuration.GetSection("Iyzico"));
 
             services.AddHttpClient<INetgsmSmsService, NetgsmSmsService>();
             services.AddScoped<IEmailService, EmailService>();
             services.AddScoped<IEmailVerificationCodeRepository, EmailVerificationCodeRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IPaymentService,IyzicoPaymentService>();
 
             return services;
         }
