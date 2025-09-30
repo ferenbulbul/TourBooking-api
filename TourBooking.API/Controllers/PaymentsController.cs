@@ -144,7 +144,8 @@ public class PaymentsController : BaseController
     [HttpPost("callback")]
     public async Task<IActionResult> Callback([FromForm] string token)
     {
-        Console.WriteLine(token);
+        Console.WriteLine("123"+token);
+
         var command = new PaymentCallbackCommand{Token=token};
         var result=await _mediator.Send(command);
         return Ok(result);
