@@ -9,6 +9,7 @@ using System.Globalization;
 using System.Threading.Tasks;
 using TourBooking.API;
 using TourBooking.Application.DTOs.Comman;
+using TourBooking.Application.Features;
 using TourBooking.Application.Features.Payment.Command;
 using TourBooking.Application.Features.Payment.Command.PaymentCallback;
 
@@ -31,7 +32,7 @@ public class PaymentsController : BaseController
         var userId = GetUserIdFromToken();
         var command = new InitCheckoutFormCommand { UserId = userId, BookingId = request.BookingId };
         var result = await _mediator.Send(command);
-        return Ok(result);
+        return Ok(ApiResponse<InitCheckoutFormCommandResponse>.SuccessResponse(result,"başarıllı"));
     }
     public class InitCheckoutFormRequest
     {
