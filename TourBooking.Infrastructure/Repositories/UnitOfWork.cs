@@ -1865,7 +1865,14 @@ namespace TourBooking.Infrastructure.Repositories
 
         public async Task<PaymentEntity> GetPaymentByTokenAsync(string token)
         {
-            return await _context.Payment.FirstOrDefaultAsync(x => x.Token == token);
+            return await _context.Payment
+                    .Include(p => p.Booking)
+                        .ThenInclude(b => b.Customer)
+                            .ThenInclude(c => c.AppUser)
+                    .Include(p => p.Booking)
+                        .ThenInclude(b => b.Agency)
+                            .ThenInclude(a => a.AppUser)
+                    .FirstOrDefaultAsync(p => p.Token == token);
         }
         public async Task<BookingEntity> GetBookingByTokenAsync(string token)
         {
