@@ -182,5 +182,7 @@ namespace TourBooking.Application.Interfaces.Repositories
         Task<IEnumerable<GuideTourDto>> GetGuideToursAsnyc();
         Task<PaymentEntity> GetPaymentByTokenAsync(string token);
         Task<BookingEntity> GetBookingByTokenAsync(string token);
+        Task CreateSystemGuideBlock(CreateBlockCommand request);
+        Task CreateSystemVehicleBlock(CreateVehicleBlockCommand request);
     }
 }

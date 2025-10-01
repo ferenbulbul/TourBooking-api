@@ -1422,6 +1422,54 @@ namespace TourBooking.Infrastructure.Repositories
             );
             await _context.SaveChangesAsync();
         }
+        public async Task CreateSystemVehicleBlock(CreateVehicleBlockCommand request)
+        {
+            // Yalnızca diğer blokları kontrol et
+            bool overlapsBlock = await _context.VehicleBlocks.AnyAsync(vb =>
+                vb.VehicleId == request.VehicleId
+                && vb.StartDate <= request.End
+                && request.Start <= vb.EndDate
+            );
+
+            if (overlapsBlock)
+                throw new InvalidOperationException("Seçilen aralık mevcut bir blokla çakışıyor.");
+
+            _context.VehicleBlocks.Add(new VehicleBlockEntity
+            {
+                Id = Guid.NewGuid(),
+                VehicleId = request.VehicleId,
+                StartDate = request.Start,
+                EndDate = request.End,
+                Note = $"Booking-{request.Note}",
+                CreatedDate = DateTime.UtcNow
+            });
+
+            await _context.SaveChangesAsync();
+        }
+        public async Task CreateSystemGuideBlock(CreateBlockCommand request)
+        {
+            bool overlapsBlock = await _context.GuideBlocks.AnyAsync(gb =>
+                gb.GuideId == request.GuideId
+                && gb.StartDate <= request.End
+                && request.Start <= gb.EndDate
+            );
+
+            if (overlapsBlock)
+                throw new InvalidOperationException("Seçilen aralık mevcut bir blokla çakışıyor.");
+
+            _context.GuideBlocks.Add(new GuideBlock
+            {
+                Id = Guid.NewGuid(),
+                GuideId = request.GuideId,
+                StartDate = request.Start,
+                EndDate = request.End,
+                Note = $"Booking-{request.Note}",
+                CreatedDate = DateTime.UtcNow
+            });
+
+            await _context.SaveChangesAsync();
+        }
+
 
         public async Task RemoveGuideBlock(RemoveBlockCommand request)
         {
