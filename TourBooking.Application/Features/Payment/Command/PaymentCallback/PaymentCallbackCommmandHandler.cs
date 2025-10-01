@@ -56,7 +56,7 @@ namespace TourBooking.Application.Features.Payment.Command.PaymentCallback
                     await _unitOfWork.GetRepository<BookingEntity>().UpdateAsync(booking);
                 }
 
-
+                Console.WriteLine(payment.Status);
                 if (payment.Status == PaymentStatus.Success)
                 {   
 
