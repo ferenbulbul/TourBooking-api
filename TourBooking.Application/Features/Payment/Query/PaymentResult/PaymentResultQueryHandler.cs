@@ -44,7 +44,12 @@ namespace TourBooking.Application.Features.Payment.Query.PaymentResult
                     body);
 
             }
-            var response = new PaymentResultQueryResponse { };
+            var response = new PaymentResultQueryResponse
+            {
+                ConversationId = payment.ConversationId,
+                PaymentStatus = payment.Status.ToString(),
+                Price=payment.Amount.ToString(),
+            };
             return response;
         }
         private string BuildPaymentSuccessEmail(string conversationId, decimal paidPrice, string currency)
