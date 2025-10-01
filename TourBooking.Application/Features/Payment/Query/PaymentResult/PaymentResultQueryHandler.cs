@@ -55,8 +55,8 @@ namespace TourBooking.Application.Features.Payment.Query.PaymentResult
                 var messages = new List<SmsMessageDto>
                 {
                     new SmsMessageDto(payment.Booking.Customer.AppUser.PhoneNumber, body),                 // kullanıcı
-                    new SmsMessageDto("905415704552", body),                   // admin
-                    new SmsMessageDto(payment.Booking.Agency.AppUser.PhoneNumber, body)                // acenta
+                    new SmsMessageDto("905415704552", body),                                              // admin
+                    new SmsMessageDto(payment.Booking.Agency.AppUser.PhoneNumber, body)                  // acenta
                 };
                 await _smsService.SendBatchAsync(messages);
 
