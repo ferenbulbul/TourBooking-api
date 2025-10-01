@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
+using TourBooking.Application.DTOs;
 using TourBooking.Application.Interfaces.Repositories;
 using TourBooking.Application.Interfaces.Services;
+using TourBooking.Domain.Entities;
 using TourBooking.Domain.Enums;
 
 namespace TourBooking.Application.Features.Payment.Query.PaymentResult
@@ -13,11 +15,13 @@ namespace TourBooking.Application.Features.Payment.Query.PaymentResult
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailService _emailService;
+        private readonly INetgsmSmsService _smsService;
 
-        public PaymentResultQueryHandler(IUnitOfWork unitOfWork, IEmailService emailService)
+        public PaymentResultQueryHandler(IUnitOfWork unitOfWork, IEmailService emailService, INetgsmSmsService smsService)
         {
             _unitOfWork = unitOfWork;
             _emailService = emailService;
+            _smsService = smsService;
         }
 
         public async Task<PaymentResultQueryResponse> Handle(
@@ -31,7 +35,7 @@ namespace TourBooking.Application.Features.Payment.Query.PaymentResult
             {
                 var body = BuildPaymentSuccessEmail(payment.ConversationId, payment.Amount, "tl");
                 await _emailService.SendEmailAsync(payment.Booking.Customer.AppUser.Email,
-                    $"Siparişiniz Onaylandı – {payment.ConversationId}", body);
+                    $"Siparişiniz Onaylandı – ", body);
 
                 // Admin’e
                 await _emailService.SendEmailAsync("ferenbulbul@gmail.com",
@@ -43,12 +47,26 @@ namespace TourBooking.Application.Features.Payment.Query.PaymentResult
                     $"Size Bağlı Rezervasyon Onaylandı – {payment.ConversationId}",
                     body);
 
+
+                var smSbody = $"Siparişiniz başarıyla onaylandı ✅\n" +
+                        $"Rezervasyon No: {payment.ConversationId}\n" +
+                        $"Tutar: {payment.Amount} TL";
+
+                var messages = new List<SmsMessageDto>
+                {
+                    new SmsMessageDto(payment.Booking.Customer.AppUser.PhoneNumber, body),                 // kullanıcı
+                    new SmsMessageDto("905415704552", body),                   // admin
+                    new SmsMessageDto(payment.Booking.Agency.AppUser.PhoneNumber, body)                // acenta
+                };
+                await _smsService.SendBatchAsync(messages);
+
+
             }
             var response = new PaymentResultQueryResponse
             {
                 ConversationId = payment.ConversationId,
                 PaymentStatus = payment.Status.ToString(),
-                Price=payment.Amount.ToString(),
+                Price = payment.Amount.ToString(),
             };
             return response;
         }

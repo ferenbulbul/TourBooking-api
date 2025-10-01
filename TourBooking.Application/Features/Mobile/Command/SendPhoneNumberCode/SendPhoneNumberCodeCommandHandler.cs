@@ -58,7 +58,7 @@ namespace TourBooking.Application.Features.Authentication.Commands.SendEmailVeri
 
             await _repository.AddAsync(verificationCode);
 
-            var body = $"{_localizer["EmailVerificationCodePrefix"]} <h2>{code}</h2>";
+            var body = $"{_localizer["EmailVerificationCodePrefix"]} {code}";
             var sms = new SmsMessageDto(user.PhoneNumber,body);
             List<SmsMessageDto> list = new();
             list.Add(sms);
