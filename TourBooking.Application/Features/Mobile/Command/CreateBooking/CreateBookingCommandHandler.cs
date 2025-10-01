@@ -60,7 +60,7 @@ public class CreateBookingCommandHandler
         try
         {
             // 1️⃣ Booking ekle
-            var bookingId = await _unitOfWork.FinishBooking(request, tourControl.DriverId, tourControl.AgencyId);
+            var bookingId = await _unitOfWork.CreateBooking(request, tourControl.DriverId, tourControl.AgencyId);
             // if (request.GuideId.HasValue)
             // {
             //     await _unitOfWork.CreateGuideBlock(new CreateBlockCommand { GuideId = request.GuideId.Value, Start = request.Date, End = request.Date, Note = bookingId.ToString() });
