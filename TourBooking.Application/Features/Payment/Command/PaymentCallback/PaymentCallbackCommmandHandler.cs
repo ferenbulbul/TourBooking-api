@@ -43,7 +43,7 @@ namespace TourBooking.Application.Features.Payment.Command.PaymentCallback
 
                 await _unitOfWork.GetRepository<PaymentEntity>().UpdateAsync(payment);
 
-
+                
                 var booking = await _unitOfWork.GetRepository<BookingEntity>().GetByIdAsync(payment.BookingId);
                 if (booking != null)
                 {
@@ -58,12 +58,12 @@ namespace TourBooking.Application.Features.Payment.Command.PaymentCallback
 
 
                 if (payment.Status == PaymentStatus.Success)
-                {
+                {   
+
                     using var transaction = await _unitOfWork.BeginTransactionAsync();
                     try
                     {
-                       var bookingEntityEntity=await _unitOfWork.GetRepository<BookingEntity>().GetByIdAsync(payment.BookingId);
-                        await _unitOfWork.CreateVehicleBlock(new CreateVehicleBlockCommand { VehicleId = booking.VehicleId, Start = booking.StartDate, End = booking.EndDate, Note = booking.Id.ToString() });
+                        await _unitOfWork.CreateVehicleBlock(new CreateVehicleBlockCommand { VehicleId = booking!.VehicleId, Start = booking.StartDate, End = booking.EndDate, Note = booking.Id.ToString() });
                         if (booking.GuideId.HasValue)
                         {
                              await _unitOfWork.CreateGuideBlock(new CreateBlockCommand { GuideId = booking.GuideId.Value, Start = booking.StartDate, End = booking.EndDate, Note = booking.Id.ToString() });
@@ -75,12 +75,11 @@ namespace TourBooking.Application.Features.Payment.Command.PaymentCallback
                     catch
                     {
                         await transaction.RollbackAsync();
-                        
+                        Console.WriteLine("Rollback çalıştı" +booking.VehicleId+booking.StartDate );
                         // 📌 Logla: Payment Success ama block eklenemedi
                         // İleride manuel müdahale gerekebilir
                     }
                 }
-
             }
             else
             {
