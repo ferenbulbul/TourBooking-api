@@ -10,5 +10,6 @@ namespace TourBooking.Application.Features
         public string ConversationId { get; set; } = null!;
         public string PaymentPageUrl { get; set; } = null!;
         public long? TokenExpireTime { get; set; }
+        public string Token { get; set; } = null!;
     }
 }

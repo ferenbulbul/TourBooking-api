@@ -9,6 +9,8 @@ namespace TourBooking.Application.DTOs
     {
         public string ConversationId { get; set; } = "";
         public string PaymentPageUrl { get; set; } = "";
+        public string Token { get; set; } = "";
         public long? TokenExpireTime { get; set; }
+
     }
 }

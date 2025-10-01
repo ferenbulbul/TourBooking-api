@@ -62,7 +62,8 @@ public class InitCheckoutFormHandler
         {
             ConversationId = dto.ConversationId,
             PaymentPageUrl = dto.PaymentPageUrl,
-            TokenExpireTime = dto.TokenExpireTime
+            TokenExpireTime = dto.TokenExpireTime,
+            Token=dto.Token
         };
         return response;
     }
