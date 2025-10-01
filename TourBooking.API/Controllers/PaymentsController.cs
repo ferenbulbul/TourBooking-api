@@ -12,6 +12,7 @@ using TourBooking.Application.DTOs.Comman;
 using TourBooking.Application.Features;
 using TourBooking.Application.Features.Payment.Command;
 using TourBooking.Application.Features.Payment.Command.PaymentCallback;
+using TourBooking.Application.Features.Payment.Query.PaymentResult;
 
 namespace Payments.Api.Controllers;
 
@@ -50,7 +51,9 @@ public class PaymentsController : BaseController
     [HttpGet("result")]
     public async Task<IActionResult> GetPaymentResult(string token)
     {
-        var a = token;
+        var command = new PaymentResultQuery { Token = token };
+        var result = await _mediator.Send(command);
+        return Ok(ApiResponse<PaymentResultQueryResponse>.SuccessResponse(result, null));
         // DB'den bu conversationId'ye ait token'ı bul
         // (cf-init çağrısında kaydetmen lazım)
         // var paymentToken = await _dbContext.Payments
@@ -89,17 +92,17 @@ public class PaymentsController : BaseController
         //     PaidPrice = checkoutForm.PaidPrice,
         //     ErrorMessage = checkoutForm.ErrorMessage
         // };
-        var result = new PaymentResultResponse
-        {
-            ConversationId = "checkoutForm.ConversationId",
-            PaymentStatus = "SUCCESS", // SUCCESS / FAILURE
-            PaymentId = "checkoutForm.PaymentId",
-            Price = "checkoutForm.Price",
-            PaidPrice = "checkoutForm.PaidPrice",
-            ErrorMessage = "checkoutForm.ErrorMessage"
-        };
+        // var result = new PaymentResultResponse
+        // {
+        //     ConversationId = "checkoutForm.ConversationId",
+        //     PaymentStatus = "SUCCESS", // SUCCESS / FAILURE
+        //     PaymentId = "checkoutForm.PaymentId",
+        //     Price = "checkoutForm.Price",
+        //     PaidPrice = "checkoutForm.PaidPrice",
+        //     ErrorMessage = "checkoutForm.ErrorMessage"
+        // };
 
-        return Ok(ApiResponse<PaymentResultResponse>.SuccessResponse(result, null));
+
     }
 
 }

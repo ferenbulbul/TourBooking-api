@@ -154,7 +154,7 @@ namespace TourBooking.Application.Interfaces.Repositories
             Guid districtId,
             Guid cityId
         );
-        Task<Guid> FinishBooking(CreateBookingCommand request, Guid driverId, Guid agencyId);
+        Task<Guid> CreateBooking(CreateBookingCommand request, Guid driverId, Guid agencyId);
         //Task CreateVehicleBlock(Guid vehicleId, DateOnly date);
         Task<bool> IsUserApproved(IsApprovedQuery request);
         Task<IEnumerable<AgencyToConfirmDto>> GetAgenciesToConfirm();
@@ -181,5 +181,6 @@ namespace TourBooking.Application.Interfaces.Repositories
         Task<IEnumerable<GuideListDto>> GetGuideListAsnyc();
         Task<IEnumerable<GuideTourDto>> GetGuideToursAsnyc();
         Task<PaymentEntity> GetPaymentByTokenAsync(string token);
+        Task<BookingEntity> GetBookingByTokenAsync(string token);
     }
 }

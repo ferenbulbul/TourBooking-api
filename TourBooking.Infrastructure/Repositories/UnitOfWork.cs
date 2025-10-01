@@ -1445,7 +1445,7 @@ namespace TourBooking.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Guid> FinishBooking(CreateBookingCommand request, Guid driverId, Guid agencyId)
+        public async Task<Guid> CreateBooking(CreateBookingCommand request, Guid driverId, Guid agencyId)
         {
             var entity = new BookingEntity();
 
@@ -1838,7 +1838,7 @@ namespace TourBooking.Infrastructure.Repositories
                                         tp.RegionalUrl,
                                         tp.PhotoUrl,
                                         tp.CreatedDate)).ToListAsync();
-                                            return guides;
+            return guides;
         }
 
         public async Task<IEnumerable<GuideTourDto>> GetGuideToursAsnyc() //routes
@@ -1863,12 +1863,13 @@ namespace TourBooking.Infrastructure.Repositories
                             )).ToListAsync();
         }
 
-        public async Task<PaymentEntity> GetPaymentByTokenAsync(string token) 
+        public async Task<PaymentEntity> GetPaymentByTokenAsync(string token)
         {
             return await _context.Payment.FirstOrDefaultAsync(x => x.Token == token);
         }
-
+        public async Task<BookingEntity> GetBookingByTokenAsync(string token)
+        {
+            return await _context.Payment.Where(x => x.Token == token).Select(x => x.Booking).FirstOrDefaultAsync();
+        }
     }
 }
-
-

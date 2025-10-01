@@ -16,5 +16,6 @@ namespace TourBooking.Domain.Entities
         public bool IsDeleted { get; set; }
         public string PhoneNumber { get; set; }
         public ICollection<FavoriteEntity> Favorites { get; set; } = new List<FavoriteEntity>();
+        public ICollection<BookingEntity> Bookings { get; set; } = new List<BookingEntity>();
     }
 }

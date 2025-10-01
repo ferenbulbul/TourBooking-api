@@ -144,7 +144,7 @@ namespace TourBooking.API.Controllers
             var userIdString = GetUserIdFromToken();
             request.CustomerId = userIdString;
             var valid = await _mediator.Send(request);
-            return Ok(ApiResponse<CreateBookingCommandResponse>.SuccessResponse(valid, "Oldu"));
+            return Ok(ApiResponse<CreateBookingCommandResponse>.SuccessResponse(valid, null));
         }
 
         [HttpGet("tour-points-by-tour-type")]

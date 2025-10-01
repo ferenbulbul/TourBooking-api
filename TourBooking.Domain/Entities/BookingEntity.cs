@@ -26,6 +26,7 @@ namespace TourBooking.Domain.Entities
         public DateOnly StartDate { get; set; } // .NET 8 kullanıyorsan DateOnly güzel olur
         public DateOnly EndDate { get; set; }
         public Guid CustomerId { get; set; }
+         public CustomerUser Customer { get; set; }= null!;
         public DateTime CreatedAt { get; set; }
         public BookingStatus Status { get; set; } = BookingStatus.Pending;
         public string? LocationDescription { get; set; }
