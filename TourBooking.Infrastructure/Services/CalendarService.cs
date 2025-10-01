@@ -27,7 +27,7 @@ namespace TourBooking.Infrastructure.Services
             bool overlapsBooking = await _db.Bookings.AnyAsync(
                 b =>
                     b.GuideId == guideId
-                    && b.Status != BookingStatus.Cancelled
+                    && b.Status != BookingStatus.Fail
                     && b.StartDate <= end
                     && start <= b.EndDate,
                 ct

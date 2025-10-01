@@ -1277,7 +1277,7 @@ namespace TourBooking.Infrastructure.Repositories
                     x.GuideId == request.GuidId
                     && x.StartDate <= request.To
                     && request.From <= x.EndDate
-                    && x.Status == BookingStatus.Confirmed
+                    && x.Status == BookingStatus.Success
                 )
                 .Select(x => new CalendarEventDto2(
                     null,
@@ -1319,7 +1319,7 @@ namespace TourBooking.Infrastructure.Repositories
         x.VehicleId == request.VehicleId &&
         x.StartDate <= request.To &&
         request.From <= x.EndDate &&
-        x.Status == BookingStatus.Confirmed)
+        x.Status == BookingStatus.Success)
     .Select(x => new CalendarEventDto2(
         null,
         "Rezerve",
@@ -1338,7 +1338,7 @@ namespace TourBooking.Infrastructure.Repositories
                     request.From <= x.EndDate &&
                     !_context.Bookings.Any(b =>
                         b.VehicleId == x.VehicleId &&
-                        b.Status == BookingStatus.Confirmed &&
+                        b.Status == BookingStatus.Success &&
                         // interval overlap: [b.Start,b.End] ∩ [x.Start,x.End] ≠ ∅
                         b.StartDate <= x.EndDate &&
                         x.StartDate <= b.EndDate
@@ -1394,7 +1394,7 @@ namespace TourBooking.Infrastructure.Repositories
         {
             bool overlapsBooking = await _context.Bookings.AnyAsync(b =>
                 b.VehicleId == request.VehicleId
-                && b.Status == BookingStatus.Confirmed
+                && b.Status == BookingStatus.Success
                 && b.StartDate <= request.End
                 && request.Start <= b.EndDate
             );
@@ -1592,7 +1592,7 @@ namespace TourBooking.Infrastructure.Repositories
 
             var list = await _context.Bookings
                 .AsNoTracking()
-                .Where(x => x.StartDate == today && x.Status == BookingStatus.Confirmed)
+                .Where(x => x.StartDate == today && x.Status == BookingStatus.Success)
                 .Select(yy => new DriverLocationDto(
                     yy.DriverId,
                     yy.Driver.NameSurname,
@@ -1612,7 +1612,7 @@ namespace TourBooking.Infrastructure.Repositories
             GuideCount: await _context.Guides.AsNoTracking().Where(x => x.IsConfirmed).CountAsync(),
             VehicleCount: await _context.Vehicles.AsNoTracking().Where(x => x.IsActive).CountAsync(),
             TourPointCount: await _context.TourPoints.AsNoTracking().Where(x => x.IsActive).CountAsync(),
-            BookingCount: await _context.Bookings.AsNoTracking().Where(x => x.Status == BookingStatus.Confirmed).CountAsync(),
+            BookingCount: await _context.Bookings.AsNoTracking().Where(x => x.Status == BookingStatus.Success).CountAsync(),
             CustomerCount: await _context.CustomerUsers.AsNoTracking().Where(x => !x.IsDeleted).CountAsync(),
             TourRouteCount: await _context.TourRoutePrices.AsNoTracking().Where(x => !x.IsDeleted).CountAsync(),
             GuideRouteCount: await _context.GuideTourPrices.AsNoTracking().CountAsync()

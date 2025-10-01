@@ -48,8 +48,8 @@ namespace TourBooking.Application.Features.Payment.Command.PaymentCallback
                 if (booking != null)
                 {
                     booking.Status = payment.Status == PaymentStatus.Success
-                        ? BookingStatus.Confirmed
-                        : BookingStatus.Cancelled;
+                        ? BookingStatus.Success
+                        : BookingStatus.Fail;
 
 
                     booking.UpdatedDate = DateTime.UtcNow;
