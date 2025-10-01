@@ -43,22 +43,15 @@ namespace TourBooking.Application.Features.Payment.Command.PaymentCallback
 
                 await _unitOfWork.GetRepository<PaymentEntity>().UpdateAsync(payment);
 
-                
+
                 var booking = await _unitOfWork.GetRepository<BookingEntity>().GetByIdAsync(payment.BookingId);
-                if (booking != null)
+                if (booking == null)
                 {
-                    booking.Status = payment.Status == PaymentStatus.Success
-                        ? BookingStatus.Success
-                        : BookingStatus.Fail;
-
-
-                    booking.UpdatedDate = DateTime.UtcNow;
-                    await _unitOfWork.GetRepository<BookingEntity>().UpdateAsync(booking);
+                    throw new BusinessRuleValidationException("rezervasyon bulunamadı");
                 }
 
-                Console.WriteLine(payment.Status);
                 if (payment.Status == PaymentStatus.Success)
-                {   
+                {
 
                     using var transaction = await _unitOfWork.BeginTransactionAsync();
                     try
@@ -66,16 +59,24 @@ namespace TourBooking.Application.Features.Payment.Command.PaymentCallback
                         await _unitOfWork.CreateVehicleBlock(new CreateVehicleBlockCommand { VehicleId = booking!.VehicleId, Start = booking.StartDate, End = booking.EndDate, Note = booking.Id.ToString() });
                         if (booking.GuideId.HasValue)
                         {
-                             await _unitOfWork.CreateGuideBlock(new CreateBlockCommand { GuideId = booking.GuideId.Value, Start = booking.StartDate, End = booking.EndDate, Note = booking.Id.ToString() });
+                            await _unitOfWork.CreateGuideBlock(new CreateBlockCommand { GuideId = booking.GuideId.Value, Start = booking.StartDate, End = booking.EndDate, Note = booking.Id.ToString() });
                         }
+
+                        booking.Status = payment.Status == PaymentStatus.Success
+                       ? BookingStatus.Success
+                       : BookingStatus.Fail;
+
+
+                        booking.UpdatedDate = DateTime.UtcNow;
+                        await _unitOfWork.GetRepository<BookingEntity>().UpdateAsync(booking);
 
                         await _unitOfWork.CommitAsync();
                         await transaction.CommitAsync();
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         await transaction.RollbackAsync();
-                        Console.WriteLine("Rollback çalıştı" +ex);
+                        Console.WriteLine("Rollback çalıştı" + ex);
                         // 📌 Logla: Payment Success ama block eklenemedi
                         // İleride manuel müdahale gerekebilir
                     }
