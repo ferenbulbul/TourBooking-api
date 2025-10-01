@@ -50,10 +50,11 @@ public class InitCheckoutFormHandler
         {
             BookingId = booking.Id,
             ConversationId = dto.ConversationId,
-            Token = dto.PaymentPageUrl.Split("token=").LastOrDefault() ?? string.Empty,
+            Token = dto.Token,
             Amount = booking.TotalPrice,
             Status = PaymentStatus.Pending,
             RawResponse = System.Text.Json.JsonSerializer.Serialize(dto)
+
         };
 
         await _unitOfWork.GetRepository<PaymentEntity>().AddAsync(payment);
