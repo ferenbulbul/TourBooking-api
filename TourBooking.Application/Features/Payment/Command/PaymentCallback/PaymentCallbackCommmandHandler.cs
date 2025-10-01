@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using MediatR;
 using TourBooking.Application.DTOs;
 using TourBooking.Application.DTOs.Comman;
+using TourBooking.Application.Expactions;
 using TourBooking.Application.Interfaces.Repositories;
 using TourBooking.Application.Interfaces.Services;
 using TourBooking.Domain.Entities;
@@ -29,9 +30,10 @@ namespace TourBooking.Application.Features.Payment.Command.PaymentCallback
         var dto = await _paymentService.RetrieveCheckoutFormAsync(request.Token);
 
             // DB update (Payment & Booking)
+            Console.WriteLine(request.Token);
             Console.WriteLine("dto dönen token" +dto.Token);
             var payment = await _unitOfWork.GetPaymentByTokenAsync(dto.Token);
-        if (payment != null)
+            if (payment != null)
             {
                 payment.Status = dto.PaymentStatus == "SUCCESS"
                     ? PaymentStatus.Success
@@ -43,7 +45,7 @@ namespace TourBooking.Application.Features.Payment.Command.PaymentCallback
                 await _unitOfWork.GetRepository<PaymentEntity>().UpdateAsync(payment);
 
 
-                var booking=await _unitOfWork.GetRepository<BookingEntity>().GetByIdAsync(payment.BookingId);
+                var booking = await _unitOfWork.GetRepository<BookingEntity>().GetByIdAsync(payment.BookingId);
                 if (booking != null)
                 {
                     booking.Status = payment.Status == PaymentStatus.Success
@@ -51,10 +53,14 @@ namespace TourBooking.Application.Features.Payment.Command.PaymentCallback
                         : BookingStatus.Cancelled;
 
                     booking.UpdatedDate = DateTime.UtcNow;
-                     await _unitOfWork.GetRepository<BookingEntity>().UpdateAsync(booking);
+                    await _unitOfWork.GetRepository<BookingEntity>().UpdateAsync(booking);
                 }
 
                 await _unitOfWork.SaveChangesAsync();
+            }
+            else
+            {
+                throw   new BusinessRuleValidationException("Token ile kayıt bulunamadı");
             }
 
             return new PaymentCallbackCommandResponse{paymentResultDto=dto};
