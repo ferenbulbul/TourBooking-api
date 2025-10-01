@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Iyzipay;
 using Iyzipay.Model;
@@ -48,7 +49,7 @@ namespace TourBooking.Infrastructure.Services
                 Currency = Currency.TRY.ToString(),
                 BasketId = booking.TourPointId.ToString(),
                 PaymentGroup = PaymentGroup.PRODUCT.ToString(),
-                CallbackUrl = _callbackUrl
+                CallbackUrl = _callbackUrl,
             };
 
             // Buyer → gerçek müşteri bilgisi gelecek
@@ -95,6 +96,7 @@ namespace TourBooking.Infrastructure.Services
         };
 
             var init = await CheckoutFormInitialize.Create(req, _options);
+            var initRaw =JsonSerializer.Serialize(init);
             if (init.Status != "success")
                 throw new Exception(init.ErrorMessage ?? "Ödeme başlatılamadı");
 
@@ -103,7 +105,8 @@ namespace TourBooking.Infrastructure.Services
                 ConversationId = req.ConversationId,
                 PaymentPageUrl = init.PaymentPageUrl,
                 TokenExpireTime = init.TokenExpireTime,
-                Token=init.Token
+                Token = init.Token,
+                InitRaw=initRaw
             };
         }
 
@@ -115,7 +118,8 @@ namespace TourBooking.Infrastructure.Services
             };
 
             var result =await CheckoutForm.Retrieve(retrieveReq, _options);
-            Console.WriteLine("callback başarılı" + result);
+            Console.WriteLine("callback başarılı");
+            var RetrieveRawResponse=JsonSerializer.Serialize(result);
             return new PaymentResultDto
             {
                 ConversationId = result.ConversationId,
@@ -123,7 +127,8 @@ namespace TourBooking.Infrastructure.Services
                 PaymentStatus = result.PaymentStatus,
                 PaymentId = result.PaymentId,
                 PaidPrice = decimal.TryParse(result.PaidPrice, out var paid) ? paid : 0,
-                Currency = result.Currency
+                Currency = result.Currency,
+                RetrieveRawResponse=RetrieveRawResponse
             };
         }
     }

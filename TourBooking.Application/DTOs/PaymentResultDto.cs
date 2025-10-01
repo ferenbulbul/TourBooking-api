@@ -13,5 +13,6 @@ namespace TourBooking.Application.DTOs
         public string? PaymentId { get; set; }
         public decimal PaidPrice { get; set; }
         public string Currency { get; set; } = "TRY";
+        public string RetrieveRawResponse { get; set; }= default!;
     }
 }

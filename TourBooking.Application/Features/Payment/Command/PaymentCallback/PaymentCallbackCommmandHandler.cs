@@ -29,9 +29,6 @@ namespace TourBooking.Application.Features.Payment.Command.PaymentCallback
     {
         var dto = await _paymentService.RetrieveCheckoutFormAsync(request.Token);
 
-            // DB update (Payment & Booking)
-            Console.WriteLine(request.Token);
-            Console.WriteLine("dto dönen token" +dto.Token);
             var payment = await _unitOfWork.GetPaymentByTokenAsync(dto.Token);
             if (payment != null)
             {
@@ -39,8 +36,9 @@ namespace TourBooking.Application.Features.Payment.Command.PaymentCallback
                     ? PaymentStatus.Success
                     : PaymentStatus.Fail;
 
-                payment.RawResponse = JsonSerializer.Serialize(dto);
+                payment.RetrieveRawResponse = dto.RetrieveRawResponse;
                 payment.UpdatedDate = DateTime.UtcNow;
+
 
                 await _unitOfWork.GetRepository<PaymentEntity>().UpdateAsync(payment);
 
@@ -52,6 +50,7 @@ namespace TourBooking.Application.Features.Payment.Command.PaymentCallback
                         ? BookingStatus.Confirmed
                         : BookingStatus.Cancelled;
 
+                    
                     booking.UpdatedDate = DateTime.UtcNow;
                     await _unitOfWork.GetRepository<BookingEntity>().UpdateAsync(booking);
                 }
@@ -62,8 +61,16 @@ namespace TourBooking.Application.Features.Payment.Command.PaymentCallback
             {
                 throw   new BusinessRuleValidationException("Token ile kayıt bulunamadı");
             }
-
-            return new PaymentCallbackCommandResponse{paymentResultDto=dto};
+            var response = new PaymentCallbackCommandResponse
+            {
+                ConversationId = dto.ConversationId,
+                Token = dto.Token,
+                PaymentStatus = dto.PaymentStatus,
+                PaymentId = dto.PaymentId,
+                PaidPrice = dto.PaidPrice,
+                Currency = dto.Currency
+            };
+            return response;
     }
 }
 

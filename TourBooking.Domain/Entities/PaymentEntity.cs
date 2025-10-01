@@ -20,14 +20,12 @@ namespace TourBooking.Domain.Entities
         public decimal Amount { get; set; }
         public PaymentStatus Status { get; set; } = PaymentStatus.Pending;
 
-        // Audit
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        public DateTime? UpdatedAt { get; set; }
 
         // Opsiyonel: iyzico response’unu loglamak istersen
-        public string? RawResponse { get; set; }
+        public string? CfRawResponse { get; set; }        // Init sırasında
+        public string? RetrieveRawResponse { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedDate { get; set; } = DateTime.UtcNow;
-        public bool IsDeleted { get; set; } 
+        public bool IsDeleted { get; set; }
     }
 }

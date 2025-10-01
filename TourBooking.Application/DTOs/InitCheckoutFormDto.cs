@@ -11,6 +11,7 @@ namespace TourBooking.Application.DTOs
         public string PaymentPageUrl { get; set; } = "";
         public string Token { get; set; } = "";
         public long? TokenExpireTime { get; set; }
+        public string InitRaw { get; set; } = "";
 
     }
 }

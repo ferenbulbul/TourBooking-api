@@ -39,7 +39,91 @@ public class PaymentsController : BaseController
         public Guid BookingId { get; set; }
     }
 
-    // STEP 1: Checkout Form Initialize
+    [HttpPost("callback")]
+    public async Task<IActionResult> Callback([FromForm] string token)
+    {
+        var command = new PaymentCallbackCommand{Token=token};
+        var result=await _mediator.Send(command);
+        return Ok(result);
+    }
+
+    [HttpGet("result")]
+    public async Task<IActionResult> GetPaymentResult(string token)
+    {
+        var a = token;
+        // DB'den bu conversationId'ye ait token'ı bul
+        // (cf-init çağrısında kaydetmen lazım)
+        // var paymentToken = await _dbContext.Payments
+        //     .Where(p => p.ConversationId == conversationId)
+        //     .Select(p => p.Token)
+        //     .FirstOrDefaultAsync();
+
+        // if (paymentToken == null)
+        // {
+        //     return NotFound(ApiResponse<PaymentResultResponse>.FailResponse(
+        //         "ConversationId bulunamadı", 404));
+        // }
+
+        // iyzico'dan sonucu sorgula
+        // var request = new RetrieveCheckoutFormRequest
+        // {
+        //     Token = paymentToken
+        // };
+
+        // var checkoutForm = await CheckoutForm.Retrieve(request, _options);
+
+        // if (checkoutForm == null)
+        // {
+        //     return BadRequest(ApiResponse<PaymentResultResponse>.FailResponse(
+        //         "Sonuç alınamadı", 400));
+        // }
+
+        // Response DTO'ya map et
+        // var result = new PaymentResultResponse
+        // {
+        //     ConversationId = checkoutForm.ConversationId,
+        //     PaymentStatus = checkoutForm.PaymentStatus, // SUCCESS / FAILURE
+        //     PaymentId = checkoutForm.PaymentId,
+        //     BasketId = checkoutForm.BasketId,
+        //     Price = checkoutForm.Price,
+        //     PaidPrice = checkoutForm.PaidPrice,
+        //     ErrorMessage = checkoutForm.ErrorMessage
+        // };
+        var result = new PaymentResultResponse
+        {
+            ConversationId = "checkoutForm.ConversationId",
+            PaymentStatus = "SUCCESS", // SUCCESS / FAILURE
+            PaymentId = "checkoutForm.PaymentId",
+            Price = "checkoutForm.Price",
+            PaidPrice = "checkoutForm.PaidPrice",
+            ErrorMessage = "checkoutForm.ErrorMessage"
+        };
+
+        return Ok(ApiResponse<PaymentResultResponse>.SuccessResponse(result, null));
+    }
+
+}
+public class InitCheckoutFormDto
+{
+    public string ConversationId { get; set; } = "";
+    public string PaymentPageUrl { get; set; } = "";
+    public long? TokenExpireTime { get; set; }
+}
+public class InitCheckoutFormRequest
+{
+    public string BookingId { get; set; }
+}
+public class PaymentResultResponse
+{
+    public string ConversationId { get; set; } = string.Empty;
+    public string PaymentStatus { get; set; } = string.Empty; // SUCCESS / FAILURE
+    public string? PaymentId { get; set; }
+    public string? Price { get; set; }
+    public string? PaidPrice { get; set; }
+    public string? ErrorMessage { get; set; }
+}
+
+// STEP 1: Checkout Form Initialize
     // [HttpPost("cf-init")]
     // public async Task<IActionResult> InitCheckoutForm([FromBody] InitCheckoutFormRequest request)
     // {
@@ -141,88 +225,3 @@ public class PaymentsController : BaseController
     // }
 
     //STEP 2: Callback (iyzico ödeme bitince burayı POST eder)
-    [HttpPost("callback")]
-    public async Task<IActionResult> Callback([FromForm] string token)
-    {
-        Console.WriteLine("123"+token);
-
-        var command = new PaymentCallbackCommand{Token=token};
-        var result=await _mediator.Send(command);
-        return Ok(result);
-    }
-
-    [HttpGet("result")]
-    public async Task<IActionResult> GetPaymentResult(string token)
-    {
-        var a = token;
-        // DB'den bu conversationId'ye ait token'ı bul
-        // (cf-init çağrısında kaydetmen lazım)
-        // var paymentToken = await _dbContext.Payments
-        //     .Where(p => p.ConversationId == conversationId)
-        //     .Select(p => p.Token)
-        //     .FirstOrDefaultAsync();
-
-        // if (paymentToken == null)
-        // {
-        //     return NotFound(ApiResponse<PaymentResultResponse>.FailResponse(
-        //         "ConversationId bulunamadı", 404));
-        // }
-
-        // iyzico'dan sonucu sorgula
-        // var request = new RetrieveCheckoutFormRequest
-        // {
-        //     Token = paymentToken
-        // };
-
-        // var checkoutForm = await CheckoutForm.Retrieve(request, _options);
-
-        // if (checkoutForm == null)
-        // {
-        //     return BadRequest(ApiResponse<PaymentResultResponse>.FailResponse(
-        //         "Sonuç alınamadı", 400));
-        // }
-
-        // Response DTO'ya map et
-        // var result = new PaymentResultResponse
-        // {
-        //     ConversationId = checkoutForm.ConversationId,
-        //     PaymentStatus = checkoutForm.PaymentStatus, // SUCCESS / FAILURE
-        //     PaymentId = checkoutForm.PaymentId,
-        //     BasketId = checkoutForm.BasketId,
-        //     Price = checkoutForm.Price,
-        //     PaidPrice = checkoutForm.PaidPrice,
-        //     ErrorMessage = checkoutForm.ErrorMessage
-        // };
-        var result = new PaymentResultResponse
-        {
-            ConversationId = "checkoutForm.ConversationId",
-            PaymentStatus = "SUCCESS", // SUCCESS / FAILURE
-            PaymentId = "checkoutForm.PaymentId",
-            Price = "checkoutForm.Price",
-            PaidPrice = "checkoutForm.PaidPrice",
-            ErrorMessage = "checkoutForm.ErrorMessage"
-        };
-
-        return Ok(ApiResponse<PaymentResultResponse>.SuccessResponse(result, null));
-    }
-
-}
-public class InitCheckoutFormDto
-{
-    public string ConversationId { get; set; } = "";
-    public string PaymentPageUrl { get; set; } = "";
-    public long? TokenExpireTime { get; set; }
-}
-public class InitCheckoutFormRequest
-{
-    public string BookingId { get; set; }
-}
-public class PaymentResultResponse
-{
-    public string ConversationId { get; set; } = string.Empty;
-    public string PaymentStatus { get; set; } = string.Empty; // SUCCESS / FAILURE
-    public string? PaymentId { get; set; }
-    public string? Price { get; set; }
-    public string? PaidPrice { get; set; }
-    public string? ErrorMessage { get; set; }
-}

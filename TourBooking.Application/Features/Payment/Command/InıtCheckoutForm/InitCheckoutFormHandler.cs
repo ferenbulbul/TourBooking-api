@@ -53,8 +53,7 @@ public class InitCheckoutFormHandler
             Token = dto.Token,
             Amount = booking.TotalPrice,
             Status = PaymentStatus.Pending,
-            RawResponse = System.Text.Json.JsonSerializer.Serialize(dto)
-
+            CfRawResponse = dto.InitRaw
         };
 
         await _unitOfWork.GetRepository<PaymentEntity>().AddAsync(payment);
