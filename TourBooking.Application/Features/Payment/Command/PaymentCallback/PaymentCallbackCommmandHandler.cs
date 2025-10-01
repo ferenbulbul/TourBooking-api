@@ -72,10 +72,10 @@ namespace TourBooking.Application.Features.Payment.Command.PaymentCallback
                         await _unitOfWork.CommitAsync();
                         await transaction.CommitAsync();
                     }
-                    catch
+                    catch(Exception ex)
                     {
                         await transaction.RollbackAsync();
-                        Console.WriteLine("Rollback çalıştı" +booking.VehicleId+booking.StartDate );
+                        Console.WriteLine("Rollback çalıştı" +ex);
                         // 📌 Logla: Payment Success ama block eklenemedi
                         // İleride manuel müdahale gerekebilir
                     }
