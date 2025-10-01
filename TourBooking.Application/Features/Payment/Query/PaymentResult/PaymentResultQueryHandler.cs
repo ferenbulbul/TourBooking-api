@@ -66,7 +66,6 @@ namespace TourBooking.Application.Features.Payment.Query.PaymentResult
             {
                 ConversationId = payment.ConversationId,
                 PaymentStatus = payment.Status.ToString(),
-                Price = payment.Amount.ToString(),
             };
             return response;
         }

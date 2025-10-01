@@ -220,16 +220,18 @@ namespace TourBooking.API.Controllers
         {
             var user = await _userManager.Users.FirstOrDefaultAsync(u => u.RefreshToken == req.RefreshToken);
 
-            if (user is null)
+            if (user is null) {
+                Console.WriteLine("RefreshToken null geldi a100");
                 return Unauthorized(ApiResponse<AuthResponse>.FailResponse("User not found"));
 
-
-            if (user.RefreshToken != req.RefreshToken)
-                return Unauthorized(ApiResponse<AuthResponse>.FailResponse("Invalid refresh token"));
+            }
 
 
             if (user.RefreshTokenExpireDate <= DateTime.UtcNow)
+            {
+                Console.WriteLine("RefreshToken süresi dolmuş geldi a1001");
                 return Unauthorized(ApiResponse<AuthResponse>.FailResponse("Refresh token expired"));
+            }
 
 
             try

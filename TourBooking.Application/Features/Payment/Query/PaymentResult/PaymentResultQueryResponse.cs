@@ -9,7 +9,6 @@ namespace TourBooking.Application.Features.Payment.Query.PaymentResult
     {
         public string PaymentStatus { get; set; } = default!;
         public string ConversationId { get; set; } = default!;
-        public string Price { get; set; } = default!;
 
     }
 }
