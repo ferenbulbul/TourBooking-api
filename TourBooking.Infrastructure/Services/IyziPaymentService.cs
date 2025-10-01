@@ -102,7 +102,8 @@ namespace TourBooking.Infrastructure.Services
             {
                 ConversationId = req.ConversationId,
                 PaymentPageUrl = init.PaymentPageUrl,
-                TokenExpireTime = init.TokenExpireTime
+                TokenExpireTime = init.TokenExpireTime,
+                Token=init.Token
             };
         }
 
