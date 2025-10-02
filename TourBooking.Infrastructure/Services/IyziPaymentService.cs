@@ -57,7 +57,7 @@ namespace TourBooking.Infrastructure.Services
             {
                 Id = user.Id.ToString(),
                 Name = user.FirstName,
-                Surname = user.FirstName,
+                Surname = user.LastName,
                 GsmNumber = user.PhoneNumber,
                 Email = user.Email,
                 IdentityNumber = "74300864791",

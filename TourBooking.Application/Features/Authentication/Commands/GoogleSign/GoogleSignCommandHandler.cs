@@ -61,13 +61,18 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
                 {
                     // Bu kullanıcı sistemde hiç yok. Yeni bir AppUser oluşturalım.
                     Console.WriteLine($"Creating a new user for email '{request.Email}'.");
+                    string soyisim = request.Name.Trim().Split(' ').Last();
+
+                    string name =request.Name.Trim().Split(' ').Last(); 
+                    string surname = string.Join(" ", name.Take(name.Length - 1));
                     var newUser = new AppUser
                     {
                         Email = request.Email,
                         UserName = request.Email,
-                        FirstName = request.Name, // veya FullName, modelinize göre
+                        FirstName = name,
+                        LastName=surname, // veya FullName, modelinize göre
                         EmailConfirmed = true,
-                        UserType=UserType.Customer
+                        UserType = UserType.Customer
                     };
 
                     var createResult = await _userManager.CreateAsync(newUser);
@@ -77,12 +82,12 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
                         var errors = createResult.Errors.Select(e => e.Description).ToList();
                         throw new ValidationException(errors);
                     }
-                    var customerUser=new CustomerUser
+                    var customerUser = new CustomerUser
                     {
                         Id = newUser.Id,
                         BirthDate = default,
                         PhoneNumber = "",
-                        CreatedDate=DateTime.Now
+                        CreatedDate = DateTime.Now
                     };
                     await _uow.GetRepository<CustomerUser>().AddAsync(customerUser);
                     // Şimdi yeni oluşturulan kullanıcıya Google girişini bağlayalım.
