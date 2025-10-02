@@ -61,16 +61,18 @@ namespace TourBooking.Application.Features.Authentication.Commands.Register
                 {
                     // Bu kullanıcı sistemde hiç yok. Yeni bir AppUser oluşturalım.
                     Console.WriteLine($"Creating a new user for email '{request.Email}'.");
-                    string soyisim = request.Name.Trim().Split(' ').Last();
 
-                    string name =request.Name.Trim().Split(' ').Last(); 
-                    string surname = string.Join(" ", name.Take(name.Length - 1));
+                    string fullName = request.Name.Trim();
+                    string[] parts = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+                    string surname = parts.Last();                         // son eleman soyisim
+                    string name = string.Join(" ", parts.Take(parts.Length - 1));
                     var newUser = new AppUser
                     {
                         Email = request.Email,
                         UserName = request.Email,
                         FirstName = name,
-                        LastName=surname, // veya FullName, modelinize göre
+                        LastName = surname, // veya FullName, modelinize göre
                         EmailConfirmed = true,
                         UserType = UserType.Customer
                     };
