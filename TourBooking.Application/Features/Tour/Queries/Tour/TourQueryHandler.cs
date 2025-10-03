@@ -34,7 +34,7 @@ public class TourQueryHandler : IRequestHandler<TourQuery, TourQueryResponse>
                 .TourPoint.Translations.FirstOrDefault(x => x.Language.Code == languageCode)
                 .Title,
             Pricings = tt
-                .PricingEntity.Select(ttr => new PricingDto
+                .TourRoutePriceEntity.Select(ttr => new PricingDto
                 {
                     CityId = ttr.CityId,
                     CountryId = ttr.CountryId,

@@ -8,7 +8,6 @@ namespace TourBooking.Domain.Entities
         public AgencyUserEntity Agency { get; set; }
         public TourPointEntity TourPoint { get; set; }
         public Guid TourPointId { get; set; }
-        public ICollection<TourPricingEntity> PricingEntity { get; set; }
          public ICollection<TourRoutePriceEntity> TourRoutePriceEntity { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }

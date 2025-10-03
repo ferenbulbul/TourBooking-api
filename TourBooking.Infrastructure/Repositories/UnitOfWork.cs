@@ -408,17 +408,17 @@ namespace TourBooking.Infrastructure.Repositories
         {
             return await _context
                 .Tours.AsNoTracking()
-                .Include(t => t.PricingEntity)
+                .Include(t => t.TourRoutePriceEntity)
                 .ThenInclude(pe => pe.City)
-                .Include(t => t.PricingEntity)
+                .Include(t => t.TourRoutePriceEntity)
                 .ThenInclude(pe => pe.Country)
-                .Include(t => t.PricingEntity)
+                .Include(t => t.TourRoutePriceEntity)
                 .ThenInclude(pe => pe.Region)
-                .Include(t => t.PricingEntity)
+                .Include(t => t.TourRoutePriceEntity)
                 .ThenInclude(pe => pe.District)
-                .Include(t => t.PricingEntity)
+                .Include(t => t.TourRoutePriceEntity)
                 .ThenInclude(pe => pe.Vehicle)
-                .Include(t => t.PricingEntity)
+                .Include(t => t.TourRoutePriceEntity)
                 .ThenInclude(pe => pe.Driver)
                 .Include(q => q.TourPoint)
                 .FirstOrDefaultAsync(x => x.Id == Id);
@@ -430,25 +430,25 @@ namespace TourBooking.Infrastructure.Repositories
         {
             return await _context
                 .Tours.AsNoTracking()
-                .Include(t => t.PricingEntity)
+                .Include(t => t.TourRoutePriceEntity)
                 .ThenInclude(pe => pe.City)
                 .ThenInclude(t => t.Translations)
                 .ThenInclude(tt => tt.Language)
-                .Include(t => t.PricingEntity)
+                .Include(t => t.TourRoutePriceEntity)
                 .ThenInclude(pe => pe.Country)
                 .ThenInclude(t => t.Translations)
                 .ThenInclude(tt => tt.Language)
-                .Include(t => t.PricingEntity)
+                .Include(t => t.TourRoutePriceEntity)
                 .ThenInclude(pe => pe.Region)
                 .ThenInclude(t => t.Translations)
                 .ThenInclude(tt => tt.Language)
-                .Include(t => t.PricingEntity)
+                .Include(t => t.TourRoutePriceEntity)
                 .ThenInclude(pe => pe.District)
                 .ThenInclude(t => t.Translations)
                 .ThenInclude(tt => tt.Language)
-                .Include(t => t.PricingEntity)
+                .Include(t => t.TourRoutePriceEntity)
                 .ThenInclude(pe => pe.Vehicle)
-                .Include(t => t.PricingEntity)
+                .Include(t => t.TourRoutePriceEntity)
                 .ThenInclude(pe => pe.Driver)
                 .Include(t => t.TourPoint)
                 .ThenInclude(t => t.Translations)
@@ -560,25 +560,25 @@ namespace TourBooking.Infrastructure.Repositories
         {
             return await _context
                 .Tours.AsNoTracking()
-                .Include(t => t.PricingEntity)
+                .Include(t => t.TourRoutePriceEntity)
                 .ThenInclude(pe => pe.City)
                 .ThenInclude(tt => tt.Translations)
                 .ThenInclude(tt => tt.Language)
-                .Include(t => t.PricingEntity)
+                .Include(t => t.TourRoutePriceEntity)
                 .ThenInclude(pe => pe.Country)
                 .ThenInclude(tt => tt.Translations)
                 .ThenInclude(tt => tt.Language)
-                .Include(t => t.PricingEntity)
+                .Include(t => t.TourRoutePriceEntity)
                 .ThenInclude(pe => pe.Region)
                 .ThenInclude(tt => tt.Translations)
                 .ThenInclude(tt => tt.Language)
-                .Include(t => t.PricingEntity)
+                .Include(t => t.TourRoutePriceEntity)
                 .ThenInclude(pe => pe.District)
                 .ThenInclude(tt => tt.Translations)
                 .ThenInclude(tt => tt.Language)
-                .Include(t => t.PricingEntity)
+                .Include(t => t.TourRoutePriceEntity)
                 .ThenInclude(pe => pe.Vehicle)
-                .Include(t => t.PricingEntity)
+                .Include(t => t.TourRoutePriceEntity)
                 .ThenInclude(pe => pe.Driver)
                 .Include(t => t.TourPoint)
                 .ThenInclude(t => t.Translations)
@@ -1495,7 +1495,12 @@ namespace TourBooking.Infrastructure.Repositories
 
         public async Task<Guid> CreateBooking(CreateBookingCommand request, Guid driverId, Guid agencyId)
         {
+            var tourRoturePriceId = await _context.TourRoutePrices
+                .Where(tr => tr.TourPointId == request.TourPointId
+                  && tr.DistrictId == request.DistrictId
+                  && tr.VehicleId == request.VehicleId).FirstOrDefaultAsync();
             var entity = new BookingEntity();
+
 
             entity.AgencyId = agencyId;
             entity.DriverId = driverId;
@@ -1926,5 +1931,37 @@ namespace TourBooking.Infrastructure.Repositories
         {
             return await _context.Payment.Where(x => x.Token == token).Select(x => x.Booking).FirstOrDefaultAsync();
         }
+
+        // public async Task<IEnumerable<CustomerBookingDto>> CustomerBooking() //routes
+        // {
+        //     var culture = CultureInfo.CurrentUICulture.Name;
+
+        //     var vehicles = await _context.TourRoutePrices
+        //             .AsNoTracking()
+        //             .Select(tp => new TourRouteDto(
+        //                 tp.Agency.CompanyName,
+        //                 tp.TourPoint.Translations 
+        //                     .Where(tr => tr.Language.Code == culture)
+        //                     .Select(tr => tr.Title).FirstOrDefault() ?? "",
+
+        //                 tp.Country.Translations
+        //                     .Where(tr => tr.Language.Code == culture)
+        //                     .Select(tr => tr.Title).FirstOrDefault() ?? "" +
+        //                 tp.Region.Translations
+        //                     .Where(tr => tr.Language.Code == culture)
+        //                     .Select(tr => tr.Title).FirstOrDefault() ?? "" +
+        //                 tp.City.Translations
+        //                     .Where(tr => tr.Language.Code == culture)
+        //                     .Select(tr => tr.Title).FirstOrDefault() ?? "" +
+        //                 tp.District.Translations
+        //                     .Where(tr => tr.Language.Code == culture)
+        //                     .Select(tr => tr.Title).FirstOrDefault() ?? "",
+        //                 tp.Vehicle.VehicleName,
+        //                 tp.Driver.NameSurname,
+        //                 tp.Price,
+        //                 tp.Commission,
+        //                 tp.CreatedAt)).ToListAsync();
+        //     return vehicles;
+        // }
     }
 }

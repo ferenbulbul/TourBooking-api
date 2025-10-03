@@ -28,7 +28,7 @@ namespace TourBooking.Application.Features
                         {
                             foreach (var newPricing in request.Pricing)
                             {
-                                var existingPricing = existing.PricingEntity.FirstOrDefault(p =>
+                                var existingPricing = existing.TourRoutePriceEntity.FirstOrDefault(p =>
                                     p.Id == newPricing.Id
                                 );
 
@@ -47,8 +47,8 @@ namespace TourBooking.Application.Features
                                 else
                                 {
                                     // Yeni ekle
-                                    existing.PricingEntity.Add(
-                                        new TourPricingEntity
+                                    existing.TourRoutePriceEntity.Add(
+                                        new TourRoutePriceEntity
                                         {
                                             Id = Guid.NewGuid(),
                                             CountryId = newPricing.CountryId,
@@ -72,13 +72,13 @@ namespace TourBooking.Application.Features
                                 .ToList();
 
                             var toRemove = existing
-                                .PricingEntity.Where(pe =>
+                                .TourRoutePriceEntity.Where(pe =>
                                     pe.Id != Guid.Empty && !newPricingIds.Contains(pe.Id)
                                 )
                                 .ToList();
 
                             foreach (var item in toRemove)
-                                existing.PricingEntity.Remove(item);
+                                existing.TourRoutePriceEntity.Remove(item);
                         }
                     }
                 }
@@ -88,8 +88,8 @@ namespace TourBooking.Application.Features
                     {
                         TourPointId = request.TourPointId,
                         AgencyId = request.AgencyId,
-                        PricingEntity = request
-                            .Pricing.Select(t => new TourPricingEntity
+                        TourRoutePriceEntity = request
+                            .Pricing.Select(t => new TourRoutePriceEntity
                             {
                                 CityId = t.CityId,
                                 CountryId = t.CountryId,
