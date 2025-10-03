@@ -37,7 +37,6 @@ namespace TourBooking.Infrastructure.Context
         public DbSet<VehicleClassEntity> VehicleClasses { get; set; }
         public DbSet<VehicleEntity> Vehicles { get; set; }
         public DbSet<TourEntity> Tours { get; set; }
-        public DbSet<TourPricingEntity> TourPricings { get; set; }
         public DbSet<GuideUserEntity> Guides { get; set; }
         public DbSet<GuideBlock> GuideBlocks => Set<GuideBlock>();
         public DbSet<AgencyUserEntity> Agencies { get; set; }
