@@ -15,5 +15,6 @@ namespace TourBooking.Domain.Entities
         public string Currency { get; set; } = "TRY";
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public decimal Commission { get; set; }
+        public ICollection<BookingEntity> Bookings { get; set; }
     }
 }

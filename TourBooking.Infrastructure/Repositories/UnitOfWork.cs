@@ -1274,7 +1274,7 @@ namespace TourBooking.Infrastructure.Repositories
             // Bookings (read-only)
             var bookings = await _context
                 .Bookings.Where(x =>
-                    x.GuideId == request.GuidId
+                    x.GuideTourPrice!.GuideId == request.GuidId
                     && x.StartDate <= request.To
                     && request.From <= x.EndDate
                     && x.Status == BookingStatus.Success
@@ -1315,20 +1315,20 @@ namespace TourBooking.Infrastructure.Repositories
         {
             // Bookings (read-only)
             var bookings = await _context.Bookings
-    .Where(x =>
-        x.VehicleId == request.VehicleId &&
-        x.StartDate <= request.To &&
-        request.From <= x.EndDate &&
-        x.Status == BookingStatus.Success)
-    .Select(x => new CalendarEventDto2(
-        null,
-        "Rezerve",
-        x.StartDate,
-        x.EndDate,
-        false,
-        "#dc2626" // kırmızı
-    ))
-    .ToListAsync();
+                .Where(x =>
+                    x.TourRoutePrice.VehicleId == request.VehicleId &&
+                    x.StartDate <= request.To &&
+                    request.From <= x.EndDate &&
+                    x.Status == BookingStatus.Success)
+                .Select(x => new CalendarEventDto2(
+                    null,
+                    "Rezerve",
+                    x.StartDate,
+                    x.EndDate,
+                    false,
+                    "#dc2626" // kırmızı
+                ))
+                .ToListAsync();
 
             // Blocks: confirmed booking ile ÖRTÜŞENLERİ ELEMEl
             var blocks = await _context.VehicleBlocks
@@ -1337,7 +1337,7 @@ namespace TourBooking.Infrastructure.Repositories
                     x.StartDate <= request.To &&
                     request.From <= x.EndDate &&
                     !_context.Bookings.Any(b =>
-                        b.VehicleId == x.VehicleId &&
+                        b.TourRoutePrice.VehicleId == x.VehicleId &&
                         b.Status == BookingStatus.Success &&
                         // interval overlap: [b.Start,b.End] ∩ [x.Start,x.End] ≠ ∅
                         b.StartDate <= x.EndDate &&
@@ -1360,7 +1360,7 @@ namespace TourBooking.Infrastructure.Repositories
         public async Task CreateGuideBlock(CreateBlockCommand request)
         {
             bool overlapsBooking = await _context.Bookings.AnyAsync(b =>
-                b.GuideId == request.GuideId
+                b.GuideTourPrice!.GuideId == request.GuideId
                 && b.Status != BookingStatus.Pending
                 && b.StartDate <= request.End
                 && request.Start <= b.EndDate
@@ -1393,7 +1393,7 @@ namespace TourBooking.Infrastructure.Repositories
         public async Task CreateVehicleBlock(CreateVehicleBlockCommand request)
         {
             bool overlapsBooking = await _context.Bookings.AnyAsync(b =>
-                b.VehicleId == request.VehicleId
+                b.TourRoutePrice.VehicleId == request.VehicleId
                 && b.Status == BookingStatus.Success
                 && b.StartDate <= request.End
                 && request.Start <= b.EndDate
@@ -1495,32 +1495,43 @@ namespace TourBooking.Infrastructure.Repositories
 
         public async Task<Guid> CreateBooking(CreateBookingCommand request, Guid driverId, Guid agencyId)
         {
-            var tourRoturePriceId = await _context.TourRoutePrices
+            var tourRoturePrice = await _context.TourRoutePrices
                 .Where(tr => tr.TourPointId == request.TourPointId
+                  && tr.CityId == request.CityId
                   && tr.DistrictId == request.DistrictId
                   && tr.VehicleId == request.VehicleId).FirstOrDefaultAsync();
+
+            GuideTourPriceEntity? guideTourRoutePrice = null;
+            if (request.GuideId is not null)
+            {
+                guideTourRoutePrice = await _context.GuideTourPrices
+               .Where(gt => gt.GuideId == request.GuideId
+                && gt.CityId == request.CityId
+                && gt.DistrictId == request.DistrictId
+                && gt.TourPointId == request.TourPointId
+               ).FirstOrDefaultAsync();
+            }
             var entity = new BookingEntity();
 
 
-            entity.AgencyId = agencyId;
-            entity.DriverId = driverId;
+            entity.TourPrice = tourRoturePrice!.Price;
+            entity.TourRoutePriceId = tourRoturePrice!.Id;
+            entity.GuidePrice = guideTourRoutePrice?.Price ?? 0;
+            entity.GuideTourPriceId = guideTourRoutePrice?.Id;
+            entity.TotalPrice = request.TourPrice + (guideTourRoutePrice?.Price ?? 0);
+
+
             entity.CreatedDate = DateTime.Now;
-            entity.CreatedAt = DateTime.Now;
             entity.CustomerId = request.CustomerId ?? throw new InvalidOperationException("CustomerId boş");
-            entity.VehicleId = request.VehicleId;
             entity.EndDate = request.Date;
             entity.StartDate = request.Date;
-            entity.FromCityId = request.CityId;
-            entity.FromDistrictId = request.DistrictId;
-            entity.GuideId = request.GuideId;
             entity.TourPointId = request.TourPointId;
-            entity.TotalPrice = request.TourPrice + (request.GuidePrice ?? 0);
+
             entity.LocationDescription = request.LocationDescription;
             entity.Latitude = request.Latitude;
             entity.Longitude = request.Longitude;
             entity.DepartureTime = request.DepartureTime;
-            entity.TourPrice = request.TourPrice;
-            entity.GuidePrice = request.GuidePrice ?? 0;
+
             await _context.Bookings.AddAsync(entity);
             await _context.SaveChangesAsync();
             return entity.Id;
@@ -1647,12 +1658,12 @@ namespace TourBooking.Infrastructure.Repositories
                 .AsNoTracking()
                 .Where(x => x.StartDate == today && x.Status == BookingStatus.Success)
                 .Select(yy => new DriverLocationDto(
-                    yy.DriverId,
-                    yy.Driver.NameSurname,
-                    yy.Vehicle.LicensePlate,
-                    yy.Driver.DriverLocation.Latitude,
-                    yy.Driver.DriverLocation.Longitude,
-                    yy.Agency.CompanyName
+                    yy.TourRoutePrice.DriverId,
+                    yy.TourRoutePrice.Driver.NameSurname,
+                    yy.TourRoutePrice.Vehicle.LicensePlate,
+                    yy.TourRoutePrice.Driver.DriverLocation.Latitude,
+                    yy.TourRoutePrice.Driver.DriverLocation.Longitude,
+                    yy.TourRoutePrice.Agency.CompanyName
                 ))
                 .ToListAsync();
             return list;
@@ -1872,7 +1883,7 @@ namespace TourBooking.Infrastructure.Repositories
         tp.Driver.NameSurname,
         tp.Price,
         tp.Commission,
-        tp.CreatedAt)).ToListAsync();
+        tp.CreatedDate)).ToListAsync();
             return vehicles;
         }
 
@@ -1923,8 +1934,9 @@ namespace TourBooking.Infrastructure.Repositories
                         .ThenInclude(b => b.Customer)
                             .ThenInclude(c => c.AppUser)
                     .Include(p => p.Booking)
-                        .ThenInclude(b => b.Agency)
-                            .ThenInclude(a => a.AppUser)
+                        .ThenInclude(b => b.TourRoutePrice)
+                            .ThenInclude(b => b.Agency)
+                                 .ThenInclude(a => a.AppUser)
                     .FirstOrDefaultAsync(p => p.Token == token);
         }
         public async Task<BookingEntity> GetBookingByTokenAsync(string token)

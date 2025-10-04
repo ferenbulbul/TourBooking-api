@@ -149,14 +149,9 @@ namespace TourBooking.Infrastructure.Context
             {
                 e.HasKey(x => x.Id);
                 e.HasMany(b => b.Payments).WithOne(p => p.Booking).HasForeignKey(p => p.BookingId);
-                e.HasOne(x => x.Guide).WithMany(g => g.Bookings).HasForeignKey(x => x.GuideId);
-                e.HasOne(x => x.Vehicle).WithMany(g => g.Bookings).HasForeignKey(x => x.VehicleId);
-                e.HasOne(x => x.Driver).WithMany(g => g.Bookings).HasForeignKey(x => x.DriverId);
-                e.HasOne(x => x.Agency).WithMany(g => g.Bookings).HasForeignKey(x => x.AgencyId);
                 e.Property(x => x.Status).HasConversion<int>();
                 e.HasIndex(x => new
                 {
-                    x.GuideId,
                     x.StartDate,
                     x.EndDate
                 });

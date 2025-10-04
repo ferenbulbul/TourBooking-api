@@ -8,15 +8,15 @@ namespace TourBooking.Domain.Entities
         public Guid Id { get; set; }
 
         public Guid AgencyId { get; set; }
-        public AgencyUserEntity Agency { get; set; }
+        public AgencyUserEntity Agency { get; set; } = null!;
 
-        public Guid TourPointId { get; set; } 
-        public TourPointEntity TourPoint { get; set; } 
+        public Guid TourPointId { get; set; }
+        public TourPointEntity TourPoint { get; set; }
 
         public Guid CityId { get; set; }
-        public CityEntity City { get; set; }         
-         // (varsa)
-        
+        public CityEntity City { get; set; }
+        // (varsa)
+
         public Guid CountryId { get; set; }
         public CountryEntity Country { get; set; }
 
@@ -27,7 +27,7 @@ namespace TourBooking.Domain.Entities
         public Guid DistrictId { get; set; }
         public DistrictEntity District { get; set; }
 
-        
+
         public Guid VehicleId { get; set; }
         public VehicleEntity Vehicle { get; set; }
 
@@ -39,10 +39,10 @@ namespace TourBooking.Domain.Entities
         public decimal Commission { get; set; }
         public string Currency { get; set; } = "TRY";
 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedDate { get; set; }
         public bool IsDeleted { get; set; }
+        public ICollection<BookingEntity> Bookings { get; set; }
     }
 }

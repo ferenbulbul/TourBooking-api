@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TourBooking.Infrastructure.Context;
 
@@ -10,9 +11,11 @@ using TourBooking.Infrastructure.Context;
 namespace TourBooking.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251003225401_BookingTourRotute")]
+    partial class BookingTourRotute
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -346,6 +349,9 @@ namespace TourBooking.Infrastructure.Migrations
                     b.Property<Guid?>("GuideTourPriceId")
                         .HasColumnType("char(36)");
 
+                    b.Property<Guid?>("GuideUserEntityId")
+                        .HasColumnType("char(36)");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("tinyint(1)");
 
@@ -384,6 +390,8 @@ namespace TourBooking.Infrastructure.Migrations
                     b.HasIndex("CustomerId");
 
                     b.HasIndex("GuideTourPriceId");
+
+                    b.HasIndex("GuideUserEntityId");
 
                     b.HasIndex("TourRoutePriceId");
 
@@ -2016,8 +2024,12 @@ namespace TourBooking.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("TourBooking.Domain.Entities.GuideTourPriceEntity", "GuideTourPrice")
-                        .WithMany("Bookings")
+                        .WithMany()
                         .HasForeignKey("GuideTourPriceId");
+
+                    b.HasOne("TourBooking.Domain.Entities.GuideUserEntity", null)
+                        .WithMany("Bookings")
+                        .HasForeignKey("GuideUserEntityId");
 
                     b.HasOne("TourBooking.Domain.Entities.TourRoutePriceEntity", "TourRoutePrice")
                         .WithMany("Bookings")
@@ -2704,14 +2716,11 @@ namespace TourBooking.Infrastructure.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("TourBooking.Domain.Entities.GuideTourPriceEntity", b =>
-                {
-                    b.Navigation("Bookings");
-                });
-
             modelBuilder.Entity("TourBooking.Domain.Entities.GuideUserEntity", b =>
                 {
                     b.Navigation("Blocks");
+
+                    b.Navigation("Bookings");
 
                     b.Navigation("GuideLanguages");
                 });

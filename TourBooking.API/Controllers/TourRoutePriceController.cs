@@ -22,7 +22,7 @@ public class TourRoutePriceController : BaseController
         var agencyId = GetUserIdFromToken();
         var items = await _db
             .TourRoutePrices.Where(x => x.AgencyId == agencyId)
-            .OrderByDescending(x => x.CreatedAt)
+            .OrderByDescending(x => x.CreatedDate)
             .Select(x => new TourRoutePriceDto(
                 x.Id,
                 x.TourPointId,

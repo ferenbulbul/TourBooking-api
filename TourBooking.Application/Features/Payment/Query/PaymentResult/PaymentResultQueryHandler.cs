@@ -29,7 +29,6 @@ namespace TourBooking.Application.Features.Payment.Query.PaymentResult
             CancellationToken cancellationToken
         )
         {
-            var booking = await _unitOfWork.GetBookingByTokenAsync(request.Token);
             var payment = await _unitOfWork.GetPaymentByTokenAsync(request.Token);
             if (payment.Status == PaymentStatus.Success)
             {
@@ -43,7 +42,7 @@ namespace TourBooking.Application.Features.Payment.Query.PaymentResult
                     body);
 
                 // Acenta’ya
-                await _emailService.SendEmailAsync(payment.Booking.Agency.AppUser.Email,
+                await _emailService.SendEmailAsync(payment.Booking.TourRoutePrice.Agency.AppUser.Email,
                     $"Size Bağlı Rezervasyon Onaylandı – {payment.ConversationId}",
                     body);
 
@@ -56,7 +55,7 @@ namespace TourBooking.Application.Features.Payment.Query.PaymentResult
                 {
                     new SmsMessageDto(payment.Booking.Customer.AppUser.PhoneNumber, smSbody),                 // kullanıcı
                     new SmsMessageDto("05415704552", smSbody),                                              // admin
-                    new SmsMessageDto(payment.Booking.Agency.AppUser.PhoneNumber, smSbody)                  // acenta
+                    new SmsMessageDto(payment.Booking.TourRoutePrice.Agency.AppUser.PhoneNumber, smSbody)                  // acenta
                 };
                 await _smsService.SendBatchAsync(messages);
 

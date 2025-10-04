@@ -56,10 +56,10 @@ namespace TourBooking.Application.Features.Payment.Command.PaymentCallback
                     using var transaction = await _unitOfWork.BeginTransactionAsync();
                     try
                     {
-                        await _unitOfWork.CreateSystemVehicleBlock(new CreateVehicleBlockCommand { VehicleId = booking!.VehicleId, Start = booking.StartDate, End = booking.EndDate, Note = booking.Id.ToString() });
-                        if (booking.GuideId.HasValue)
+                        await _unitOfWork.CreateSystemVehicleBlock(new CreateVehicleBlockCommand { VehicleId = booking!.TourRoutePrice.VehicleId, Start = booking.StartDate, End = booking.EndDate, Note = booking.Id.ToString() });
+                        if (booking.GuideTourPriceId.HasValue)
                         {
-                            await _unitOfWork.CreateSystemGuideBlock(new CreateBlockCommand { GuideId = booking.GuideId.Value, Start = booking.StartDate, End = booking.EndDate, Note = booking.Id.ToString() });
+                            await _unitOfWork.CreateSystemGuideBlock(new CreateBlockCommand { GuideId = booking.GuideTourPrice!.GuideId, Start = booking.StartDate, End = booking.EndDate, Note = booking.Id.ToString() });
                         }
                         booking.Status = BookingStatus.Success;
                         booking.UpdatedDate = DateTime.UtcNow;

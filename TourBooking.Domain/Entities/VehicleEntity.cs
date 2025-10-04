@@ -25,12 +25,10 @@ namespace TourBooking.Domain.Entities
         public List<string>? VehicleFeatures { get; set; }
         public string Ruhsat { get; set; }
         public string Sigorta { get; set; }
-        public string Tasimacilik { get; set; }
-        public DateTime CreatedDate { get; set; }
+        public string Tasimacilik { get; set; }        public DateTime CreatedDate { get; set; }
         public DateTime? UpdatedDate { get; set; }
         public bool IsDeleted { get; set; }
         public virtual ICollection<AvailabilityEntity> AvailabilityList { get; set; }
         public ICollection<VehicleBlockEntity> Blocks { get; set; } = new List<VehicleBlockEntity>();
-        public ICollection<BookingEntity> Bookings { get; set; } = new List<BookingEntity>();
     }
 }

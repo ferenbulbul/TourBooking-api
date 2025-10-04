@@ -62,7 +62,7 @@ namespace TourBooking.Infrastructure.Services
                 Email = user.Email,
                 IdentityNumber = "74300864791",
                 LastLoginDate = DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"),
-                RegistrationDate = booking.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss"),
+                RegistrationDate = booking.CreatedDate.ToString("yyyy-MM-dd HH:mm:ss"),
                 RegistrationAddress = "Adres",
                 Ip = "85.34.78.112",
                 City = "Istanbul",
